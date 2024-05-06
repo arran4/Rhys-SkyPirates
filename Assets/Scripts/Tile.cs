@@ -17,4 +17,15 @@ public class Tile : MonoBehaviour
         HexColider = GetComponent<MeshCollider>();
         HexColider.sharedMesh = Hex.H_Mesh;
     }
+
+    private void Update()
+    {
+        SetMesh();
+    }
+
+    public void SetMesh()
+    {
+        
+        HexColider.convex = false;
+    }
 }

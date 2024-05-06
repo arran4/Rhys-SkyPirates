@@ -10,6 +10,8 @@ public class Map : MonoBehaviour
     public float innerSize , outerSize, height;
     public bool isFlatTopped;
 
+
+
     private Board PlayArea;
 
     public Material Mat;
@@ -31,9 +33,11 @@ public class Map : MonoBehaviour
                 ToAdd.Hex.height = height;
                 ToAdd.Hex.isFlatTopped = isFlatTopped;
                 ToAdd.Hex.meshupdate();
+                ToAdd.transform.SetParent(this.transform);
                 PlayArea.set_Tile(x, y, ToAdd);
             }
         }
+
     }
 
     public Vector3 GetHexPositionFromCoordinate(Vector2Int Coordinates)
@@ -89,12 +93,8 @@ public class Map : MonoBehaviour
                 PlayArea.get_Tile(x, y).Hex.height = height;
                 PlayArea.get_Tile(x, y).Hex.isFlatTopped = isFlatTopped;
                 PlayArea.get_Tile(x, y).gameObject.transform.position = GetHexPositionFromCoordinate(new Vector2Int(x, y));
+                PlayArea.get_Tile(x, y).SetMesh();
             }
         }
-    }
-    // Update is called once per frame
-    void Update()
-    {
-        Redraw();
     }
 }

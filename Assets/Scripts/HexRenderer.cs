@@ -30,6 +30,8 @@ public class HexRenderer : MonoBehaviour
     public bool isFlatTopped;
 
     List<Face> H_Faces;
+
+    private bool doOnce = true;
     public void Awake()
     {
         H_Meshfilter = GetComponent<MeshFilter>();
@@ -45,14 +47,18 @@ public class HexRenderer : MonoBehaviour
 
     public void Update()
     {
-        DrawMesh();
+       if (doOnce)
+        {
+            DrawMesh();
+            doOnce = false;
+        }
+        
     }
 
     public void DrawMesh()
     {
         DrawFaces();
-        CombineFaces();
-        
+        CombineFaces();       
     }
 
     private void DrawFaces()
