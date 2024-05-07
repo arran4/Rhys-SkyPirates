@@ -46,16 +46,7 @@ public class HexRenderer : MonoBehaviour
 
     }
 
-    public void Update()
-    {
-       if (doOnce)
-        {
-            DrawMesh();
-            GetColliderMesh();
-            doOnce = false;
-        }
-        
-    }
+
 
     public void DrawMesh()
     {

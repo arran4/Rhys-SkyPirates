@@ -11,14 +11,18 @@ public class Tile : MonoBehaviour
     public int row { get; private set; }
     public HexRenderer Hex;
     public MeshCollider HexColider;
+
+    private bool DoOnce = true;
     public void Awake()
     {
         Hex = GetComponent<HexRenderer>();
         HexColider = GetComponent<MeshCollider>();
     }
 
-    private void Update()
+    public void Start()
     {
+        Hex.DrawMesh();
+        Hex.GetColliderMesh();
         SetMesh();
     }
 
