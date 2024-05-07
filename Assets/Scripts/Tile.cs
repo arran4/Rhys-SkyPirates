@@ -23,6 +23,7 @@ public class Tile : MonoBehaviour
         SetMesh();
     }
 
+    //this is a tempory solution to a rediculous issue. will need to figure out something more substantual.
     public void SetMesh()
     {
         

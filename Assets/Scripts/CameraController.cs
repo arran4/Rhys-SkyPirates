@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//ripped from another project will really need to fix. temporay solution I am not interested in coding right now.
 public class CameraController : MonoBehaviour
 {
     public Transform cameraTransform;
