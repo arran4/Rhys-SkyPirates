@@ -23,6 +23,7 @@ public class HexRenderer : MonoBehaviour
     public Mesh H_Mesh { get; private set; }
     private MeshFilter H_Meshfilter;
     private MeshRenderer H_Meshrenderer;
+    public Mesh H_ColiderMesh;
 
     public Material H_Mat;
 
@@ -50,6 +51,7 @@ public class HexRenderer : MonoBehaviour
        if (doOnce)
         {
             DrawMesh();
+            GetColliderMesh();
             doOnce = false;
         }
         
@@ -142,4 +144,36 @@ public class HexRenderer : MonoBehaviour
     {
         H_Meshrenderer.material = H_Mat;
     }
+
+    public void GetColliderMesh()
+    {
+        H_ColiderMesh = new Mesh();
+        for (int point = 0; point < 6; point++)
+        {
+            H_Faces.Add(CreateFace(0, outerSize, height / 2f, height / 2f, point));
+        }
+
+        List<Vector3> verticies = new List<Vector3>();
+        List<int> tris = new List<int>();
+        List<Vector2> uvs = new List<Vector2>();
+
+        for (int x = 0; x < H_Faces.Count; x++)
+        {
+            verticies.AddRange(H_Faces[x].Verts);
+            uvs.AddRange(H_Faces[x].Uvs);
+
+            int offset = (4 * x);
+
+            foreach (int triangle in H_Faces[x].Tris)
+            {
+                tris.Add(triangle + offset);
+            }
+        }
+        H_ColiderMesh.vertices = verticies.ToArray();
+        H_ColiderMesh.triangles = tris.ToArray();
+        H_ColiderMesh.uv = uvs.ToArray();
+        H_ColiderMesh.RecalculateNormals();
+    }
+
+    //Add function to add a set of faces across the top to make the colider mesh whole
 }

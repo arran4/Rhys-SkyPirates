@@ -32,6 +32,7 @@ public class HexSelect : MonoBehaviour
                 HighLightSelect.GetComponent<MeshRenderer>().material = HighlightMat;
             }
             //for clarity in testing, remove later.
+            Debug.DrawLine(ray.origin, ray.direction * 100000, Color.red, 5);
             Debug.Log(hit.transform.name);
             Debug.Log("hit");
         }

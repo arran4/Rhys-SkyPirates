@@ -15,7 +15,6 @@ public class Tile : MonoBehaviour
     {
         Hex = GetComponent<HexRenderer>();
         HexColider = GetComponent<MeshCollider>();
-        HexColider.sharedMesh = Hex.H_Mesh;
     }
 
     private void Update()
@@ -26,7 +25,7 @@ public class Tile : MonoBehaviour
     //this is a tempory solution to a rediculous issue. will need to figure out something more substantual.
     public void SetMesh()
     {
-        
+        HexColider.sharedMesh = Hex.H_ColiderMesh;
         HexColider.convex = false;
     }
 }
