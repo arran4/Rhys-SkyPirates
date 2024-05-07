@@ -30,11 +30,14 @@ public class Map : MonoBehaviour
                 ToAdd.Hex.H_Mat = Mat;
                 ToAdd.Hex.innerSize = innerSize;
                 ToAdd.Hex.outerSize = outerSize;
-                ToAdd.Hex.height = height;
+                ToAdd.height = Random.Range(1, 7) * 5;
+                ToAdd.Hex.height = ToAdd.height;
                 ToAdd.Hex.isFlatTopped = isFlatTopped;
                 ToAdd.Hex.meshupdate();
+                Holder.transform.position = new Vector3(Holder.transform.position.x, ToAdd.height / 2f, Holder.transform.position.z);
                 ToAdd.transform.SetParent(this.transform);
                 PlayArea.set_Tile(x, y, ToAdd);
+                
             }
         }
 
@@ -90,7 +93,7 @@ public class Map : MonoBehaviour
             {
                 PlayArea.get_Tile(x, y).Hex.innerSize = innerSize;
                 PlayArea.get_Tile(x, y).Hex.outerSize = outerSize;
-                PlayArea.get_Tile(x, y).Hex.height = height;
+                PlayArea.get_Tile(x, y).Hex.height = PlayArea.get_Tile(x, y).height;
                 PlayArea.get_Tile(x, y).Hex.isFlatTopped = isFlatTopped;
                 PlayArea.get_Tile(x, y).gameObject.transform.position = GetHexPositionFromCoordinate(new Vector2Int(x, y));
                 PlayArea.get_Tile(x, y).SetMesh();

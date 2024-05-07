@@ -328,7 +328,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 077e4ba4eb0f3f64981bc6526facd004, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MapSize: {x: 15, y: 15}
+  MapSize: {x: 100, y: 100}
   innerSize: 10
   outerSize: 10.5
   height: 1
@@ -358,6 +358,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1258532743}
   - component: {fileID: 1258532744}
+  - component: {fileID: 1258532745}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -405,3 +406,18 @@ MonoBehaviour:
   dragCurrentPosition: {x: 0, y: 0, z: 0}
   rotateStartPosition: {x: 0, y: 0, z: 0}
   rotateCurrentPosition: {x: 0, y: 0, z: 0}
+--- !u!114 &1258532745
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1258532742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f323530933c2cca47952c864de641afc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CSTile: {fileID: 0}
+  BaseMat: {fileID: 10302, guid: 0000000000000000f000000000000000, type: 0}
+  HighlightMat: {fileID: 2100000, guid: 1bfb50ba18d140840a1beb1a042e91f6, type: 2}
