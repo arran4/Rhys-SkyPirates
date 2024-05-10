@@ -12,8 +12,6 @@ public class Tile : MonoBehaviour
     public HexRenderer Hex;
     public MeshCollider HexColider;
     public float height = 1;
-
-    private bool DoOnce = true;
     public void Awake()
     {
         Hex = GetComponent<HexRenderer>();

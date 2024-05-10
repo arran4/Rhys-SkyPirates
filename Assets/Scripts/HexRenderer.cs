@@ -31,8 +31,6 @@ public class HexRenderer : MonoBehaviour
     public bool isFlatTopped;
 
     List<Face> H_Faces;
-
-    private bool doOnce = true;
     public void Awake()
     {
         H_Meshfilter = GetComponent<MeshFilter>();
