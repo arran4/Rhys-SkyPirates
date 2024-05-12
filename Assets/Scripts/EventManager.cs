@@ -5,6 +5,7 @@ using UnityEngine;
 public class EventManager : MonoBehaviour
 {
     public static EventManager EventInstance { get; private set; }
+    public BasicControls inputActions { get; private set; }
 
     public static event TileHover OnTileHover;
     public delegate void TileHover(Tile Selected);
@@ -26,5 +27,9 @@ public class EventManager : MonoBehaviour
         {
             EventInstance = this;
         }
+
+        inputActions = new BasicControls();
+
+        inputActions.Battle.Enable();
     }
 }

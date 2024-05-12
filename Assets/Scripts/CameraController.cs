@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 //ripped from another project will really need to fix. temporay solution I am not interested in coding right now.
 public class CameraController : MonoBehaviour
@@ -22,13 +23,16 @@ public class CameraController : MonoBehaviour
     public Vector3 dragCurrentPosition;
     public Vector3 rotateStartPosition;
     public Vector3 rotateCurrentPosition;
+
+    public BasicControls inputActions; 
     // Start is called before the first frame update
+
     void Start()
     {
         newPosition = transform.position;
         newRotation = transform.rotation;
         newZoom = cameraTransform.localPosition;
-
+        inputActions = EventManager.EventInstance.inputActions;
     }
 
     // Update is called once per frame
@@ -42,17 +46,18 @@ public class CameraController : MonoBehaviour
         {
             movementSpeed = movementSpeedNormal;
         }
-        HandleMouseInput();
-        HandleMovementInput();
+        Movement(inputActions.Battle.MoveCamera.ReadValue<Vector2>());
+        Rotation(inputActions.Battle.RotateCamera.ReadValue<float>());
+        Zoom(inputActions.Battle.Zoom.ReadValue<float>());
        
     }
 
     void HandleMouseInput()
     {
-        if (Input.mouseScrollDelta.y != 0)
+        if (1 != 0)
         {
             //multiply the zoom amount by 2 to make zooming on the mouse feel faster
-            newZoom += Input.mouseScrollDelta.y * (zoomAmount *2);     
+            newZoom +=0 * (zoomAmount *2);     
             if (newZoom.y < 50)
             {
                 newZoom.y = 50;
@@ -71,7 +76,7 @@ public class CameraController : MonoBehaviour
             }
 
         }
-        if (Input.GetMouseButtonDown(0))
+        if (true)
         {
             Plane plane = new Plane(Vector3.up, Vector3.zero);
 
@@ -82,11 +87,11 @@ public class CameraController : MonoBehaviour
                 dragStartPosition = ray.GetPoint(entry);
             }
         }
-        if (Input.GetMouseButton(0))
+        if (true)
         {
             Plane plane = new Plane(Vector3.up, Vector3.zero);
 
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = Camera.main.ScreenPointToRay(new Vector3(0, 0, 0));
             float entry;
             if (plane.Raycast(ray, out entry))
             {
@@ -95,13 +100,13 @@ public class CameraController : MonoBehaviour
                 newPosition = transform.position + dragStartPosition - dragCurrentPosition;
             }
         }
-        if (Input.GetMouseButtonDown(2))
+        if (true)
         {
-            rotateStartPosition = Input.mousePosition;
+            rotateStartPosition = new Vector3 (0,0,0);
         }
-        if (Input.GetMouseButton(2))
+        if (true)
         {
-            rotateCurrentPosition = Input.mousePosition;
+            rotateCurrentPosition = new Vector3(0, 0, 0);
             Vector3 difference = rotateStartPosition - rotateCurrentPosition;
 
             //reset the drag position for the next frame
@@ -112,38 +117,46 @@ public class CameraController : MonoBehaviour
             newRotation *= Quaternion.Euler(Vector3.up * (-difference.x / 5));
         }
     }
-    void HandleMovementInput()
+
+    public void Movement(Vector2 Move)
     {
 
-
-        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
+        if (Move.y > 0)
         {
             newPosition += (transform.forward * movementSpeed);
-
         }
-
-        if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
+        if (Move.y < 0)
         {
             newPosition += (transform.forward * -movementSpeed);
         }
-        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
+        if (Move.x > 0)
         {
             newPosition += (transform.right * movementSpeed);
         }
-        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
+        if (Move.x < 0)
         {
             newPosition += (transform.right * -movementSpeed);
         }
+        transform.position = Vector3.Lerp(transform.position, newPosition, Time.deltaTime * movementTime);
+    }
 
-        if (Input.GetKey(KeyCode.Q) || Input.GetKey(KeyCode.Comma))
+    public void Rotation(float Rotate)
+    {
+
+        if (Rotate > 0)
         {
             newRotation *= Quaternion.Euler(Vector3.up * rotationAmount);
         }
-        if (Input.GetKey(KeyCode.E) || Input.GetKey(KeyCode.Period))
+        if (Rotate < 0)
         {
             newRotation *= Quaternion.Euler(Vector3.up * -rotationAmount);
         }
-        if (Input.GetKey(KeyCode.R) || Input.GetKey(KeyCode.LeftBracket))
+        transform.rotation = Quaternion.Lerp(transform.rotation, newRotation, Time.deltaTime * movementTime);
+    }
+    public void Zoom(float Zoom)
+    {
+
+        if (Zoom > 0)
         {
             newZoom += zoomAmount;
             if (newZoom.y < 50)
@@ -164,7 +177,7 @@ public class CameraController : MonoBehaviour
             }
 
         }
-        if (Input.GetKey(KeyCode.F) || Input.GetKey(KeyCode.RightBracket))
+        if (Zoom < 0)
         {
             newZoom -= zoomAmount;
 
@@ -188,10 +201,6 @@ public class CameraController : MonoBehaviour
            
         }
 
-
-
-        transform.position = Vector3.Lerp(transform.position, newPosition, Time.deltaTime * movementTime);
-        transform.rotation = Quaternion.Lerp(transform.rotation, newRotation, Time.deltaTime * movementTime);
         cameraTransform.localPosition = Vector3.Lerp(cameraTransform.localPosition, newZoom, Time.deltaTime * movementTime);
     }
 }

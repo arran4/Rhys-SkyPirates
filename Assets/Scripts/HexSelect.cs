@@ -17,24 +17,24 @@ public class HexSelect : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
+    //    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+    //    RaycastHit hit;
         //bellow is clunky, refactor to use events?
-        if (Physics.Raycast(ray, out hit, 100000f))
-        {
-            if (HighLightSelect != hit.transform.gameObject)
-            {
-                if(HighLightSelect != null)
-                {
-                    HighLightSelect.GetComponent<MeshRenderer>().material = BaseMat;
-                }
-                HighLightSelect = hit.transform.gameObject;
-                HighLightSelect.GetComponent<MeshRenderer>().material = HighlightMat;
-            }
+    //    if (Physics.Raycast(ray, out hit, 100000f))
+    //    {
+     //       if (HighLightSelect != hit.transform.gameObject)
+     //       {
+      //          if(HighLightSelect != null)
+      //          {
+      //              HighLightSelect.GetComponent<MeshRenderer>().material = BaseMat;
+      //          }
+      //          HighLightSelect = hit.transform.gameObject;
+      //          HighLightSelect.GetComponent<MeshRenderer>().material = HighlightMat;
+      //      }
             //for clarity in testing, remove later.
-            Debug.DrawLine(ray.origin, ray.direction * 100000, Color.red, 5);
-            Debug.Log(hit.transform.name);
-            Debug.Log("hit");
-        }
+      //      Debug.DrawLine(ray.origin, ray.direction * 100000, Color.red, 5);
+      //      Debug.Log(hit.transform.name);
+      //      Debug.Log("hit");
+       // }
     }
 }

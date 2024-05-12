@@ -142,6 +142,61 @@
                     "isPartOfComposite": true
                 },
                 {
+                    "name": "2D Vector",
+                    "id": "bc4e6858-ee98-43f5-9bcd-628335537054",
+                    "path": "2DVector",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MoveCamera",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "a84ce37f-9fac-4f2b-b3f0-979ffc3e6a07",
+                    "path": "<HID::Bigben Interactive Revolution Pro Controller 2>/stick/up",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MoveCamera",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "8bb4d547-c3b6-4f16-809a-e6617df34709",
+                    "path": "<HID::Bigben Interactive Revolution Pro Controller 2>/stick/down",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MoveCamera",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "238c0458-4905-4cb8-807f-7f4c86a932d5",
+                    "path": "<HID::Bigben Interactive Revolution Pro Controller 2>/stick/left",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MoveCamera",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "f0ca4d38-6635-4d1d-a706-4f6b17f9b725",
+                    "path": "<HID::Bigben Interactive Revolution Pro Controller 2>/stick/right",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MoveCamera",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
                     "name": "",
                     "id": "8771ea50-2dbb-491c-ade2-20cb9c585848",
                     "path": "<Mouse>/scroll/y",
@@ -151,6 +206,39 @@
                     "action": "Zoom",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "1D Axis",
+                    "id": "ed0ffd0d-58dc-4fea-8eb5-06dea30625b1",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Zoom",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "479beed1-1d49-45eb-8804-ad2a5d46dbd2",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Zoom",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "4beecbd2-f5b4-424a-ae2c-29acffada102",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Zoom",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 },
                 {
                     "name": "1D Axis",
