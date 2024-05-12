@@ -242,6 +242,39 @@
                 },
                 {
                     "name": "1D Axis",
+                    "id": "3e67f5a5-082e-49d0-9930-bf27ee56e984",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Zoom",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "a6506c56-46f7-43c5-bb98-7e828203e129",
+                    "path": "<HID::Bigben Interactive Revolution Pro Controller 2>/button11",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Zoom",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "93427d80-7e48-4687-95f7-d9035e130f4f",
+                    "path": "<HID::Bigben Interactive Revolution Pro Controller 2>/button12",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Zoom",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "1D Axis",
                     "id": "dbf09cd6-0145-4e1d-85ae-a72616935e60",
                     "path": "1DAxis",
                     "interactions": "",

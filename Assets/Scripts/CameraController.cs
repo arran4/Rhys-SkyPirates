@@ -23,6 +23,7 @@ public class CameraController : MonoBehaviour
     public Vector3 dragCurrentPosition;
     public Vector3 rotateStartPosition;
     public Vector3 rotateCurrentPosition;
+    public float HoldTimer = 0;
 
     public BasicControls inputActions; 
     // Start is called before the first frame update
@@ -46,67 +47,29 @@ public class CameraController : MonoBehaviour
         {
             movementSpeed = movementSpeedNormal;
         }
+        HandleMouseMovement();
+        HandleMouseRotate();
         Movement(inputActions.Battle.MoveCamera.ReadValue<Vector2>());
         Rotation(inputActions.Battle.RotateCamera.ReadValue<float>());
         Zoom(inputActions.Battle.Zoom.ReadValue<float>());
        
     }
 
-    void HandleMouseInput()
+
+    public void HandleMouseRotate()
     {
-        if (1 != 0)
+        if (Mouse.current.rightButton.IsPressed() && Mouse.current.rightButton.wasPressedThisFrame)
         {
-            //multiply the zoom amount by 2 to make zooming on the mouse feel faster
-            newZoom +=0 * (zoomAmount *2);     
-            if (newZoom.y < 50)
-            {
-                newZoom.y = 50;
-            }
-            if (newZoom.z > -50)
-            {
-                newZoom.z = -50;
-            }
-            if (newZoom.y > 700)
-            {
-                newZoom.y = 700;
-            }
-            if (newZoom.z < -700)
-            {
-                newZoom.z = -700;
-            }
-
+            rotateStartPosition = new Vector3(Mouse.current.position.ReadValue().x, Mouse.current.position.ReadValue().y,0);
         }
-        if (true)
+        else if (Mouse.current.rightButton.IsPressed())
         {
-            Plane plane = new Plane(Vector3.up, Vector3.zero);
-
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            float entry;
-            if (plane.Raycast(ray, out entry))
-            {
-                dragStartPosition = ray.GetPoint(entry);
-            }
+            HoldTimer += Time.deltaTime;
         }
-        if (true)
-        {
-            Plane plane = new Plane(Vector3.up, Vector3.zero);
 
-            Ray ray = Camera.main.ScreenPointToRay(new Vector3(0, 0, 0));
-            float entry;
-            if (plane.Raycast(ray, out entry))
-            {
-                dragCurrentPosition = ray.GetPoint(entry);
-
-                newPosition = transform.position + dragStartPosition - dragCurrentPosition;
-            }
-        }
-        if (true)
+        if (Mouse.current.rightButton.IsPressed() && !Mouse.current.rightButton.wasPressedThisFrame && HoldTimer > 0.25f)
         {
-            rotateStartPosition = new Vector3 (0,0,0);
-        }
-        if (true)
-        {
-            rotateCurrentPosition = new Vector3(0, 0, 0);
+            rotateCurrentPosition = new Vector3(Mouse.current.position.ReadValue().x, Mouse.current.position.ReadValue().y, 0);
             Vector3 difference = rotateStartPosition - rotateCurrentPosition;
 
             //reset the drag position for the next frame
@@ -115,6 +78,47 @@ public class CameraController : MonoBehaviour
             //Negating the value here so that the world spins in the opposite direction of the drag 
 
             newRotation *= Quaternion.Euler(Vector3.up * (-difference.x / 5));
+        }
+        if (Mouse.current.rightButton.wasReleasedThisFrame)
+        {
+            HoldTimer = 0;
+        }
+    }
+
+    public void HandleMouseMovement()
+    {
+        if (Mouse.current.leftButton.IsPressed() && Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            Plane plane = new Plane(Vector3.up, Vector3.zero);
+
+            Ray ray = Camera.main.ScreenPointToRay(new Vector3(Mouse.current.position.ReadValue().x ,Mouse.current.position.ReadValue().y, 0f));
+            float entry;
+            if (plane.Raycast(ray, out entry))
+            {
+                dragStartPosition = ray.GetPoint(entry);
+            }
+        }
+        else if(Mouse.current.leftButton.IsPressed())
+        {
+            HoldTimer += Time.deltaTime;
+        }
+        
+        if (Mouse.current.leftButton.IsPressed() && !Mouse.current.leftButton.wasPressedThisFrame && HoldTimer > 0.25f)
+        {
+            Plane plane = new Plane(Vector3.up, Vector3.zero);
+
+            Ray ray = Camera.main.ScreenPointToRay(new Vector3(Mouse.current.position.ReadValue().x, Mouse.current.position.ReadValue().y, 0f));
+            float entry;
+            if (plane.Raycast(ray, out entry))
+            {
+                dragCurrentPosition = ray.GetPoint(entry);
+
+                newPosition = transform.position + dragStartPosition - dragCurrentPosition;
+            }
+        }
+        if(Mouse.current.leftButton.wasReleasedThisFrame)
+        {
+            HoldTimer = 0;
         }
     }
 
