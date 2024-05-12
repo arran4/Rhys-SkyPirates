@@ -9,7 +9,19 @@ public class EventManager : MonoBehaviour
 
     public static event TileHover OnTileHover;
     public delegate void TileHover(Tile Selected);
+    public static event TileSelect OnTileSelect;
+    public delegate void TileSelect();
+    public static event TileDeselect OnTileDeselect;
+    public delegate void TileDeselect();
 
+    public static void TileSelectTrigger()
+    {
+        OnTileSelect?.Invoke();
+    }
+    public static void TileDeselectTrigger()
+    {
+        OnTileDeselect?.Invoke();
+    }
     public static void TileHoverTrigger(Tile Selected)
     {
         OnTileHover?.Invoke(Selected);

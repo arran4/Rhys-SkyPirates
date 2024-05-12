@@ -79,6 +79,10 @@ public class CameraController : MonoBehaviour
 
             newRotation *= Quaternion.Euler(Vector3.up * (-difference.x / 5));
         }
+        else if(Mouse.current.rightButton.wasReleasedThisFrame && HoldTimer < 0.25f)
+        {
+            EventManager.TileDeselectTrigger();
+        }
         if (Mouse.current.rightButton.wasReleasedThisFrame)
         {
             HoldTimer = 0;
@@ -116,7 +120,11 @@ public class CameraController : MonoBehaviour
                 newPosition = transform.position + dragStartPosition - dragCurrentPosition;
             }
         }
-        if(Mouse.current.leftButton.wasReleasedThisFrame)
+        else if (Mouse.current.leftButton.wasReleasedThisFrame && HoldTimer < 0.25f)
+        {
+            EventManager.TileSelectTrigger();
+        }
+        if (Mouse.current.leftButton.wasReleasedThisFrame)
         {
             HoldTimer = 0;
         }
