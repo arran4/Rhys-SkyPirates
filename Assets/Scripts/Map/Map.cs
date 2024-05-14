@@ -20,9 +20,9 @@ public class Map : MonoBehaviour
     {
         PlayArea = new Board(MapSize);
 
-        for(int x = 0; x < MapSize.x; x++)
+        for (int x = 0; x < MapSize.x; x++)
         {
-            for(int y = 0; y < MapSize.y; y++)
+            for (int y = 0; y < MapSize.y; y++)
             {
                 GameObject Holder = new GameObject($"Hex {x},{y}", typeof(Tile));
                 Holder.transform.position = GetHexPositionFromCoordinate(new Vector2Int(x, y));
@@ -36,11 +36,21 @@ public class Map : MonoBehaviour
                 ToAdd.Hex.meshupdate();
                 Holder.transform.position = new Vector3(Holder.transform.position.x, ToAdd.height / 2f, Holder.transform.position.z);
                 ToAdd.transform.SetParent(this.transform);
+                ToAdd.setPositon(new Vector2Int(x, y));
                 PlayArea.set_Tile(x, y, ToAdd);
-                
+
             }
         }
 
+        for (int x = 0; x < MapSize.x; x++)
+        {
+            for (int y = 0; y < MapSize.y; y++)
+            {
+                Tile NeighbourGet = PlayArea.get_Tile(x, y);
+                NeighbourGet.Neighbours = PlayArea.GetNeighbours(new Vector2Int(NeighbourGet.column, NeighbourGet.row));
+            }
+        }
+        setFirstHex();
     }
 
     public Vector3 GetHexPositionFromCoordinate(Vector2Int Coordinates)
@@ -99,5 +109,27 @@ public class Map : MonoBehaviour
                 PlayArea.get_Tile(x, y).SetMesh();
             }
         }
+    }
+
+    public void setFirstHex()
+    {
+        Vector3 center = Camera.main.ScreenToWorldPoint(new Vector3(Camera.main.scaledPixelHeight / 2, Camera.main.scaledPixelWidth / 2, 0));
+        Tile Closest = new Tile();
+        float minDist = Mathf.Infinity;
+        for (int x = 0; x < MapSize.x; x++)
+        {
+            for (int y = 0; y < MapSize.y; y++)
+            {
+                    float dist = Vector3.Distance(PlayArea.get_Tile(x,y).transform.position, center);
+                    if (dist < minDist)
+                    {
+                        Closest = PlayArea.get_Tile(x, y);
+                        minDist = dist;
+                    }             
+            }
+
+        }
+        Debug.Log(Closest.gameObject.name);
+        EventManager.TileHoverTrigger(PlayArea.get_Tile(Closest.column, Closest.row).transform.gameObject);
     }
 }

@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-//ripped from another project will really need to fix. temporay solution I am not interested in coding right now.
+//Have fixed on a basic level. Is also taking in most controls, may rename just to player controller. Was given a suggestion to have the
+//camera rotate around a fixed point giveing the illusion that the world is rotating not the camera. May be more immersive will have to try later.
 public class CameraController : MonoBehaviour
 {
     public Transform cameraTransform;
+    public Vector3 Forward;
 
     private float movementSpeed;
     public float movementSpeedNormal;
@@ -26,7 +28,7 @@ public class CameraController : MonoBehaviour
     public float HoldTimer = 0;
 
     public BasicControls inputActions; 
-    // Start is called before the first frame update
+
 
     void Start()
     {
@@ -36,9 +38,9 @@ public class CameraController : MonoBehaviour
         inputActions = EventManager.EventInstance.inputActions;
     }
 
-    // Update is called once per frame
     void Update()
     {
+        Forward = this.gameObject.transform.forward;
         if (newZoom.y >=325)
         {
             movementSpeed = movementSpeedFast;

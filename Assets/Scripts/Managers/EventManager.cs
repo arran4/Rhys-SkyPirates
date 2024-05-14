@@ -8,7 +8,7 @@ public class EventManager : MonoBehaviour
     public BasicControls inputActions { get; private set; }
 
     public static event TileHover OnTileHover;
-    public delegate void TileHover(Tile Selected);
+    public delegate void TileHover(GameObject Selected);
     public static event TileSelect OnTileSelect;
     public delegate void TileSelect();
     public static event TileDeselect OnTileDeselect;
@@ -22,9 +22,10 @@ public class EventManager : MonoBehaviour
     {
         OnTileDeselect?.Invoke();
     }
-    public static void TileHoverTrigger(Tile Selected)
+    public static void TileHoverTrigger(GameObject Selected)
     {
         OnTileHover?.Invoke(Selected);
+        Debug.Log("Hover Triggered");
     }
 
     private void Awake()

@@ -7,11 +7,19 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
+
     public int column { get; private set; }
     public int row { get; private set; }
     public HexRenderer Hex;
     public MeshCollider HexColider;
     public float height = 1;
+
+    public List<Tile> Neighbours;
+
+    [SerializeField]
+    private int s { get { return -column - row; } }
+
+
     public void Awake()
     {
         Hex = GetComponent<HexRenderer>();
@@ -30,5 +38,28 @@ public class Tile : MonoBehaviour
     {
         HexColider.sharedMesh = Hex.H_ColiderMesh;
         HexColider.convex = false;
+    }
+
+    public void setPositon(Vector2Int coords)
+    {
+        column = coords.x;
+        row = coords.y;
+    }
+
+    public Tile CheckNeighbours()
+    {
+        Vector3 Forawrd = (Camera.main.GetComponentInParent<CameraController>().Forward * Hex.outerSize) + this.transform.position;
+        Tile Closest = new Tile();
+        float minDist = Mathf.Infinity;
+        foreach (Tile Next in Neighbours)
+        {
+            float dist = Vector3.Distance(Next.transform.position, Forawrd);
+            if (dist < minDist)
+            {
+                Closest = Next;
+                minDist = dist;
+            }
+        }
+        return Closest;
     }
 }
