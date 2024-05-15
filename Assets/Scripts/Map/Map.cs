@@ -114,7 +114,7 @@ public class Map : MonoBehaviour
     public void setFirstHex()
     {
         Vector3 center = Camera.main.ScreenToWorldPoint(new Vector3(Camera.main.scaledPixelHeight / 2, Camera.main.scaledPixelWidth / 2, 0));
-        Tile Closest = new Tile();
+        Tile Closest = null;
         float minDist = Mathf.Infinity;
         for (int x = 0; x < MapSize.x; x++)
         {
@@ -129,7 +129,6 @@ public class Map : MonoBehaviour
             }
 
         }
-        Debug.Log(Closest.gameObject.name);
         EventManager.TileHoverTrigger(PlayArea.get_Tile(Closest.column, Closest.row).transform.gameObject);
     }
 }

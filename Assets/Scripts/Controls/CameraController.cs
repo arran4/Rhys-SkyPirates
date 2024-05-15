@@ -9,6 +9,7 @@ public class CameraController : MonoBehaviour
 {
     public Transform cameraTransform;
     public Vector3 Forward;
+    public Vector3 Right;
 
     private float movementSpeed;
     public float movementSpeedNormal;
@@ -41,6 +42,7 @@ public class CameraController : MonoBehaviour
     void Update()
     {
         Forward = this.gameObject.transform.forward;
+        Right = new Vector3(Forward.z, 0, -Forward.x);
         if (newZoom.y >=325)
         {
             movementSpeed = movementSpeedFast;

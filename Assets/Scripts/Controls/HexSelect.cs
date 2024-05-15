@@ -31,8 +31,15 @@ public class HexSelect : MonoBehaviour
         }
         if (inputActions.Battle.MoveSelection.triggered)
         {
-            Debug.Log("Up");
-            Uparrow(inputActions.Battle.MoveSelection.ReadValue<Vector2>());
+            HexMove(inputActions.Battle.MoveSelection.ReadValue<Vector2>());
+        }
+        if (inputActions.Battle.Select.triggered)
+        {
+            Select();
+        }
+        if (inputActions.Battle.Deselect.triggered)
+        {
+            Deselect();
         }
     }
 
@@ -86,11 +93,12 @@ public class HexSelect : MonoBehaviour
         }
     }
 
-    private void Uparrow(Vector2 Input)
+    private void HexMove(Vector2 Input)
     {
-        if (Input.y > 0)
+        Tile check = HighLightSelect.GetComponent<Tile>().CheckNeighbours(Input);
+        if (check != null)
         {
-            setHighlight(HighLightSelect.GetComponent<Tile>().CheckNeighbours().gameObject);
+            setHighlight(check.gameObject);
         }
     }
 

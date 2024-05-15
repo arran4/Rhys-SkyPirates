@@ -46,20 +46,66 @@ public class Tile : MonoBehaviour
         row = coords.y;
     }
 
-    public Tile CheckNeighbours()
+    public Tile CheckNeighbours(Vector2 Direction)
     {
-        Vector3 Forawrd = (Camera.main.GetComponentInParent<CameraController>().Forward * Hex.outerSize) + this.transform.position;
-        Tile Closest = new Tile();
-        float minDist = Mathf.Infinity;
-        foreach (Tile Next in Neighbours)
+        Tile Closest = null;
+        if (Direction.y > 0)
         {
-            float dist = Vector3.Distance(Next.transform.position, Forawrd);
-            if (dist < minDist)
+            Vector3 Forawrd = (Camera.main.GetComponentInParent<CameraController>().Forward * Hex.outerSize) + this.transform.position;
+            float minDist = Mathf.Infinity;
+            foreach (Tile Next in Neighbours)
             {
-                Closest = Next;
-                minDist = dist;
+                float dist = Vector3.Distance(Next.transform.position, Forawrd);
+                if (dist < minDist)
+                {
+                    Closest = Next;
+                    minDist = dist;
+                }
             }
         }
+        if(Direction.y < 0)
+        {
+            Vector3 Forawrd = (-Camera.main.GetComponentInParent<CameraController>().Forward * Hex.outerSize) + this.transform.position;        
+            float minDist = Mathf.Infinity;
+            foreach (Tile Next in Neighbours)
+            {
+                float dist = Vector3.Distance(Next.transform.position, Forawrd);
+                if (dist < minDist)
+                {
+                    Closest = Next;
+                    minDist = dist;
+                }
+            }
+        }
+        if(Direction.x > 0)
+        {
+            Vector3 Forawrd = (Camera.main.GetComponentInParent<CameraController>().Right * Hex.outerSize) + this.transform.position;
+            float minDist = Mathf.Infinity;
+            foreach (Tile Next in Neighbours)
+            {
+                float dist = Vector3.Distance(Next.transform.position, Forawrd);
+                if (dist < minDist)
+                {
+                    Closest = Next;
+                    minDist = dist;
+                }
+            }
+        }
+        if (Direction.x < 0)
+        {
+            Vector3 Forawrd = (-Camera.main.GetComponentInParent<CameraController>().Right * Hex.outerSize) + this.transform.position;
+            float minDist = Mathf.Infinity;
+            foreach (Tile Next in Neighbours)
+            {
+                float dist = Vector3.Distance(Next.transform.position, Forawrd);
+                if (dist < minDist)
+                {
+                    Closest = Next;
+                    minDist = dist;
+                }
+            }
+        }
+
         return Closest;
     }
 }

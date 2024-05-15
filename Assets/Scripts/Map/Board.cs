@@ -53,7 +53,7 @@ public class Board
         {
             foreach (Vector2Int neighbour in OddNeighbours)
             {
-                if ((centerTile.x + neighbour.x > 0 && centerTile.x + neighbour.x < _size_X) && (centerTile.y + neighbour.y > 0 && centerTile.y + neighbour.y < _size_Y))
+                if ((centerTile.x + neighbour.x >= 0 && centerTile.x + neighbour.x < _size_X) && (centerTile.y + neighbour.y >= 0 && centerTile.y + neighbour.y < _size_Y))
                 {
                     Neighbours.Add(get_Tile(centerTile.x + neighbour.x, centerTile.y + neighbour.y));
                 }
