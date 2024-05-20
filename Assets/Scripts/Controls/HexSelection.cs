@@ -7,6 +7,14 @@ public class HexSelection : MonoBehaviour, ISelectionResponce
     public Material selectedMat;
     public GameObject SelectedTile { get; private set; } = null;
 
+
+    public void Update()
+    {
+        if (SelectedTile != null)
+        {
+            SelectedTile.GetComponent<MeshRenderer>().material = selectedMat;
+        }
+    }
     public void Select(GameObject Selection)
     {
         if (Selection != null && SelectedTile == null)
