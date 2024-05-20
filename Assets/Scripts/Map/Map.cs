@@ -27,10 +27,11 @@ public class Map : MonoBehaviour
                 GameObject Holder = new GameObject($"Hex {x},{y}", typeof(Tile));
                 Holder.transform.position = GetHexPositionFromCoordinate(new Vector2Int(x, y));
                 Tile ToAdd = Holder.GetComponent<Tile>();
+                ToAdd.BaseMat = Mat;
                 ToAdd.Hex.H_Mat = Mat;
                 ToAdd.Hex.innerSize = innerSize;
                 ToAdd.Hex.outerSize = outerSize;
-                ToAdd.height = Random.Range(1, 7) * 5;
+                ToAdd.setHeight(Random.Range(1, 7) * 5);
                 ToAdd.Hex.height = ToAdd.height;
                 ToAdd.Hex.isFlatTopped = isFlatTopped;
                 ToAdd.Hex.meshupdate();

@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-//Have fixed on a basic level. Is also taking in most controls, may rename just to player controller. Was given a suggestion to have the
-//camera rotate around a fixed point giveing the illusion that the world is rotating not the camera. May be more immersive will have to try later.
 public class CameraController : MonoBehaviour
 {
     public Transform cameraTransform;
@@ -126,7 +124,13 @@ public class CameraController : MonoBehaviour
         }
         else if (Mouse.current.leftButton.wasReleasedThisFrame && HoldTimer < 0.25f)
         {
-            EventManager.TileSelectTrigger();
+            Ray ray = Camera.main.ScreenPointToRay(new Vector3(Mouse.current.position.ReadValue().x, Mouse.current.position.ReadValue().y, 0));
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit, 100000f))
+            {
+                EventManager.TileSelectTrigger(hit.transform.gameObject);
+            }
+           
         }
         if (Mouse.current.leftButton.wasReleasedThisFrame)
         {

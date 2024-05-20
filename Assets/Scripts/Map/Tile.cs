@@ -12,9 +12,11 @@ public class Tile : MonoBehaviour
     public int row { get; private set; }
     public HexRenderer Hex;
     public MeshCollider HexColider;
-    public float height = 1;
+    public float height { get; private set; }
 
     public List<Tile> Neighbours;
+
+    public Material BaseMat;
 
     [SerializeField]
     private int s { get { return -column - row; } }
@@ -46,6 +48,10 @@ public class Tile : MonoBehaviour
         row = coords.y;
     }
 
+    public void setHeight(int  Height)
+    {
+        height = Height;
+    }
     public Tile CheckNeighbours(Vector2 Direction)
     {
         Tile Closest = null;

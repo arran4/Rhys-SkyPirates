@@ -336,7 +336,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: 0.38268343, y: 0, z: 0, w: 0.92387956}
-  m_LocalPosition: {x: 0, y: 100, z: 100}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1258532743}
@@ -371,7 +371,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 077e4ba4eb0f3f64981bc6526facd004, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MapSize: {x: 100, y: 100}
+  MapSize: {x: 20, y: 20}
   innerSize: 10
   outerSize: 10.5
   height: 1
@@ -417,7 +417,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1258532742}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -61, y: 105, z: -391}
+  m_LocalPosition: {x: 60, y: 60, z: 60}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 963194228}
@@ -437,6 +437,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraTransform: {fileID: 963194228}
+  Forward: {x: 0, y: 0, z: 0}
+  Right: {x: 0, y: 0, z: 0}
   movementSpeedNormal: 2.5
   movementSpeedFast: 5
   movementTime: 5
@@ -466,3 +468,4 @@ MonoBehaviour:
   BaseMat: {fileID: 10302, guid: 0000000000000000f000000000000000, type: 0}
   HighlightMat: {fileID: 2100000, guid: 1bfb50ba18d140840a1beb1a042e91f6, type: 2}
   selectedMat: {fileID: 2100000, guid: d7806e505ddf59d418ec93becf72d829, type: 2}
+  ajacentMat: {fileID: 2100000, guid: 954e95ba543aa78468d8f9bbdeedc99a, type: 2}
