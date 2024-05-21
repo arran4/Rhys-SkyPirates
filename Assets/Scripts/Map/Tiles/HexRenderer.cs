@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//Defining a face to avoid having to keep track of verticies and triangles.
 public struct Face
 {
     public List<Vector3> Verts { get; private set; }
@@ -44,14 +45,14 @@ public class HexRenderer : MonoBehaviour
 
     }
 
-
-
+    //Command to be used if the hexes need to be redrawn for any reason.
     public void DrawMesh()
     {
         DrawFaces();
         CombineFaces();       
     }
 
+    //Builds all of the faces for the mesh
     private void DrawFaces()
     {
         H_Faces = new List<Face>();
@@ -78,6 +79,7 @@ public class HexRenderer : MonoBehaviour
 
     }
 
+    //Puts the faces together into a mesh ready for rendering 
     public void CombineFaces()
     {
         List<Vector3> verticies = new List<Vector3>();
@@ -104,6 +106,7 @@ public class HexRenderer : MonoBehaviour
         
     }
 
+    //builds the faces of the hex
     private Face CreateFace(float innerRad, float outerRad, float heightA, float heightB, int point, bool reverse = false)
     {
         Vector3 pointA = GetPoint(innerRad, heightB, point);
@@ -122,6 +125,7 @@ public class HexRenderer : MonoBehaviour
         return new Face(verticies,triangles,uvs);
     }
     
+    //Returns a verticy based on input
     protected Vector3 GetPoint(float size, float height, int index)
     {
         float angle_deg = isFlatTopped ? 60 * index: 60 * index - 30;
@@ -129,14 +133,17 @@ public class HexRenderer : MonoBehaviour
         return new Vector3((size * Mathf.Cos(angle_rad)), height, size * Mathf.Sin(angle_rad));
     }
 
-    public void meshupdate()
+    //Changes the mesh of the renderer.
+    public void meshupdate(Material Mat)
     {
-        H_Meshrenderer.material = H_Mat;
+        H_Meshrenderer.material = Mat;
     }
 
+    //Creates a mesh to be used as the colider mesh, which is the same as the drawn mesh but with a flat hex on top.
     public void GetColliderMesh()
     {
         H_ColiderMesh = new Mesh();
+
         for (int point = 0; point < 6; point++)
         {
             H_Faces.Add(CreateFace(0, outerSize, height / 2f, height / 2f, point));
@@ -158,11 +165,10 @@ public class HexRenderer : MonoBehaviour
                 tris.Add(triangle + offset);
             }
         }
+
         H_ColiderMesh.vertices = verticies.ToArray();
         H_ColiderMesh.triangles = tris.ToArray();
         H_ColiderMesh.uv = uvs.ToArray();
         H_ColiderMesh.RecalculateNormals();
     }
-
-    //Add function to add a set of faces across the top to make the colider mesh whole
 }

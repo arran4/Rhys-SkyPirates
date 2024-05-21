@@ -2,33 +2,39 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//Base highlight implementation.
 public class HexHighlight : MonoBehaviour, IHighlightResponce
 {
-    public GameObject HighLightSelect { get; private set; } = null;
+    private GameObject HighLightSelect = null;
+    private Tile HighlightTile = null;
     public Material HighlightMat;
 
+    //Sets the Highlight
     public void SetHighlight(GameObject Input)
     {
         if (HighLightSelect != Input)
         {
             if (HighLightSelect != null)
             {
-                HighLightSelect.GetComponent<MeshRenderer>().material = HighLightSelect.GetComponent<Tile>().BaseMat;
+                HighlightTile.Hex.meshupdate(HighlightTile.BaseMat);
             }
             HighLightSelect = Input;
-            HighLightSelect.GetComponent<MeshRenderer>().material = HighlightMat;
+            HighlightTile = HighLightSelect.GetComponent<Tile>();
+            HighlightTile.Hex.meshupdate(HighlightMat);
         }
     }
 
+    //Finds the Tile in the direction relitive to the camera and moves the highlight 1 space.
     public void MoveHighlight(Vector2 Input)
     {
-        Tile check = HighLightSelect.GetComponent<Tile>().CheckNeighbours(Input);
+        Tile check = HighlightTile.CheckNeighbours(Input);
         if (check != null)
         {
             SetHighlight(check.gameObject);
         }
     }
 
+    //Returns the current highlight
     public GameObject ReturnHighlight()
     {
         return HighLightSelect;

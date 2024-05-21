@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//Class used for storing any events. All events should be here if not realocate here and use from the instance of the manager.
 public class EventManager : MonoBehaviour
 {
     public static EventManager EventInstance { get; private set; }
@@ -25,7 +26,6 @@ public class EventManager : MonoBehaviour
     public static void TileHoverTrigger(GameObject Selected)
     {
         OnTileHover?.Invoke(Selected);
-        Debug.Log("Hover Triggered");
     }
 
     private void Awake()
@@ -41,8 +41,9 @@ public class EventManager : MonoBehaviour
             EventInstance = this;
         }
 
+        //Have to orginise all controls into one script and have that initalize this.
+        //For nowthis will give the entire project access without allocating multiple times.
         inputActions = new BasicControls();
-
         inputActions.Battle.Enable();
     }
 }

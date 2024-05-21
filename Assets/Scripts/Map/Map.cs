@@ -34,7 +34,7 @@ public class Map : MonoBehaviour
                 ToAdd.setHeight(Random.Range(1, 7) * 5);
                 ToAdd.Hex.height = ToAdd.height;
                 ToAdd.Hex.isFlatTopped = isFlatTopped;
-                ToAdd.Hex.meshupdate();
+                ToAdd.Hex.meshupdate(Mat);
                 Holder.transform.position = new Vector3(Holder.transform.position.x, ToAdd.height / 2f, Holder.transform.position.z);
                 ToAdd.transform.SetParent(this.transform);
                 ToAdd.setPositon(new Vector2Int(x, y));

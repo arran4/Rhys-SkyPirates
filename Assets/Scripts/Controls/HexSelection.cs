@@ -5,22 +5,26 @@ using UnityEngine;
 public class HexSelection : MonoBehaviour, ISelectionResponce
 {
     public Material selectedMat;
-    public GameObject SelectedTile { get; private set; } = null;
+    public GameObject SelectedObject { get; private set; } = null;
+    public Tile SelectedTile { get; private set; } = null;
 
 
     public void Update()
     {
+        //better implementaiton needed to fix highlight overwrite
         if (SelectedTile != null)
         {
-            SelectedTile.GetComponent<MeshRenderer>().material = selectedMat;
+            SelectedTile.Hex.meshupdate(selectedMat);
         }
     }
+    //Basic Tile selection using recusion to swap selections
     public void Select(GameObject Selection)
     {
-        if (Selection != null && SelectedTile == null)
+        if (Selection != null && SelectedObject == null)
         {
-            SelectedTile = Selection;
-            SelectedTile.GetComponent<MeshRenderer>().material = selectedMat;
+            SelectedObject = Selection;
+            SelectedTile = SelectedObject.GetComponent<Tile>();
+            SelectedTile.Hex.meshupdate(selectedMat);
         }
         else if (Selection != null)
         {
@@ -29,18 +33,20 @@ public class HexSelection : MonoBehaviour, ISelectionResponce
         }
     }
 
+    //Deselects current tile
     public void Deselect()
     {
-        if (SelectedTile != null)
+        if (SelectedObject != null)
         {
-            SelectedTile.GetComponent<MeshRenderer>().material = SelectedTile.GetComponent<Tile>().BaseMat;
+            SelectedTile.Hex.meshupdate(SelectedTile.BaseMat);
             SelectedTile = null;
+            SelectedObject = null;
         }
     }
 
     public GameObject CurrentSelection()
     {
-        return SelectedTile;
+        return SelectedObject;
     }
 
 }
