@@ -10,12 +10,11 @@ public class Map : MonoBehaviour
     public float innerSize , outerSize, height;
     public bool isFlatTopped;
 
-
+    [SerializeField]
+    public List<TileDataSO> TileTypes;
 
     private Board PlayArea;
 
-    public Material Mat;
-    // Start is called before the first frame update
     void Start()
     {
         PlayArea = new Board(MapSize);
@@ -27,16 +26,27 @@ public class Map : MonoBehaviour
                 GameObject Holder = new GameObject($"Hex {x},{y}", typeof(Tile));
                 Holder.transform.position = GetHexPositionFromCoordinate(new Vector2Int(x, y));
                 Tile ToAdd = Holder.GetComponent<Tile>();
-                ToAdd.BaseMat = Mat;
-                ToAdd.Hex.H_Mat = Mat;
+                ToAdd.Data = TileTypes[Random.Range(0,TileTypes.Count)];
+                ToAdd.BaseMat = ToAdd.Data.BaseMat;
+                ToAdd.Hex.H_Mat = ToAdd.Data.BaseMat;
                 ToAdd.Hex.innerSize = innerSize;
                 ToAdd.Hex.outerSize = outerSize;
-                ToAdd.setHeight(Random.Range(1, 7) * 5);
+                if(ToAdd.Data == TileTypes[0])
+                {
+                    ToAdd.setHeight(5);
+                }
+                else 
+                { 
+                    ToAdd.setHeight(Random.Range(1, 7) * 5); 
+                }             
                 ToAdd.Hex.height = ToAdd.height;
                 ToAdd.Hex.isFlatTopped = isFlatTopped;
-                ToAdd.Hex.meshupdate(Mat);
+                ToAdd.Hex.meshupdate(ToAdd.Data.BaseMat);
                 Holder.transform.position = new Vector3(Holder.transform.position.x, ToAdd.height / 2f, Holder.transform.position.z);
                 ToAdd.transform.SetParent(this.transform);
+                GameObject Prefab = Instantiate(ToAdd.Data.TilePrefab, Holder.transform);
+                Prefab.transform.position = new Vector3( ToAdd.transform.position.x, ToAdd.transform.position.y + (ToAdd.height / 2) - 1, ToAdd.transform.position.z);
+                
                 ToAdd.setPositon(new Vector2Int(x, y));
                 PlayArea.set_Tile(x, y, ToAdd);
 

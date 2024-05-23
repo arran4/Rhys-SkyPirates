@@ -14,6 +14,8 @@ public class Tile : MonoBehaviour
     public MeshCollider HexColider;
     public float height { get; private set; }
 
+    public TileDataSO Data;
+
     public List<Tile> Neighbours;
 
     public Material BaseMat;

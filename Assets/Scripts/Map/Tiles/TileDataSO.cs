@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "TileData", menuName = "ScriptableObject/TileData")]
-public class TileDateSO : ScriptableObject
+public class TileDataSO : ScriptableObject
 {
     [SerializeField]
     public int MovementCost;
