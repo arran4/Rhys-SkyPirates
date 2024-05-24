@@ -57,24 +57,25 @@ public class Tile : MonoBehaviour
     public Tile CheckNeighbours(Vector2 Direction)
     {
         //Can seperate out the camera direction calculation to somewhere else removing 15~ lines here.
-        Tile Closest = null;
-        Vector3 Forawrd = new Vector3();
+        Tile Closest = null; 
         float minDist = Mathf.Infinity;
+        Vector3 Forawrd = new Vector3();
+        CameraController Cam = Camera.main.GetComponentInParent<CameraController>();    
         if (Direction.y > 0)
         {
-            Forawrd = (Camera.main.GetComponentInParent<CameraController>().Forward * Hex.outerSize) + this.transform.position;
+            Forawrd = (Cam.Forward * Hex.outerSize) + this.transform.position;
         }
         if(Direction.y < 0)
         {
-            Forawrd = (-Camera.main.GetComponentInParent<CameraController>().Forward * Hex.outerSize) + this.transform.position;        
+            Forawrd = (-Cam.Forward * Hex.outerSize) + this.transform.position;        
         }
         if(Direction.x > 0)
         {
-            Forawrd = (Camera.main.GetComponentInParent<CameraController>().Right * Hex.outerSize) + this.transform.position;
+            Forawrd = (Cam.Right * Hex.outerSize) + this.transform.position;
         }
         if (Direction.x < 0)
         {
-            Forawrd = (-Camera.main.GetComponentInParent<CameraController>().Right * Hex.outerSize) + this.transform.position;         
+            Forawrd = (-Cam.Right * Hex.outerSize) + this.transform.position;         
         }
         foreach (Tile Next in Neighbours)
         {

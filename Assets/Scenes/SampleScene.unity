@@ -372,11 +372,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MapSize: {x: 20, y: 20}
-  innerSize: 10
+  innerSize: 9
   outerSize: 10.5
   height: 1
   isFlatTopped: 1
-  Mat: {fileID: 10302, guid: 0000000000000000f000000000000000, type: 0}
+  TileTypes:
+  - {fileID: 11400000, guid: 13d612b77ee3c0741861b8fb4bf84678, type: 2}
+  - {fileID: 11400000, guid: f339a3a7c010af341877bf70c612f264, type: 2}
 --- !u!4 &1137514811
 Transform:
   m_ObjectHideFlags: 0

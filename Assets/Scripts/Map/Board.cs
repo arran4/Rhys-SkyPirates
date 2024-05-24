@@ -9,6 +9,7 @@ public class Board
 
     private Tile[,] _board_Contents;
 
+    //Additive vectors for assigning neighbours 
     private Vector2Int[] EvenNeighbours = new Vector2Int[6] { new Vector2Int(1, 0), new Vector2Int(1, -1), new Vector2Int(0, -1), new Vector2Int(-1, -1), new Vector2Int(-1, 0), new Vector2Int(0, 1) };
     private Vector2Int[] OddNeighbours = new Vector2Int[6] { new Vector2Int(1, 1), new Vector2Int(1, 0), new Vector2Int(0, -1), new Vector2Int(-1, 0), new Vector2Int(-1, 1), new Vector2Int(0, 1) };
 
@@ -37,6 +38,7 @@ public class Board
         set_Tile(Tile2.x, Tile2.y, placeholder);
     }
 
+    //Sets the 6 neighbours of each tile on the board
     public List<Tile> GetNeighbours(Vector2Int centerTile)
     {
         List<Tile> Neighbours = new List<Tile>();
