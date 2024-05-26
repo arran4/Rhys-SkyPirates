@@ -38,7 +38,7 @@ public class HexSelection : MonoBehaviour, ISelectionResponce
     {
         if (SelectedObject != null)
         {
-            SelectedTile.Hex.meshupdate(SelectedTile.BaseMat);
+            SelectedTile.Hex.meshupdate(SelectedTile.BaseMaterial);
             SelectedTile = null;
             SelectedObject = null;
         }

@@ -4,88 +4,97 @@ using UnityEngine;
 
 [RequireComponent(typeof(HexRenderer))]
 [RequireComponent(typeof(MeshCollider))]
-
 public class Tile : MonoBehaviour
 {
-
-    public int column { get; private set; }
-    public int row { get; private set; }
-    public HexRenderer Hex;
-    public MeshCollider HexColider;
-    public float height { get; private set; }
-
+    public int Column { get; private set; }
+    public int Row { get; private set; }
+    public float Height { get; private set; }
+    public HexRenderer Hex { get; private set; }
+    public MeshCollider HexCollider { get; private set; }
     public TileDataSO Data;
-
     public List<Tile> Neighbours;
+    public Material BaseMaterial;
 
-    public Material BaseMat;
+    private CameraController cameraController;
 
-    [SerializeField]
-    private int s { get { return -column - row; } }
-
-
-    public void Awake()
+    private void Awake()
     {
         Hex = GetComponent<HexRenderer>();
-        HexColider = GetComponent<MeshCollider>();
+        HexCollider = GetComponent<MeshCollider>();
+        cameraController = Camera.main.GetComponentInParent<CameraController>();
     }
 
-    public void Start()
+    private void Start()
     {
         Hex.DrawMesh();
         Hex.GetColliderMesh();
-        SetMesh();
+        SetColliderMesh();
     }
 
-    //this is a tempory solution to a rediculous issue. will need to figure out something more substantual.
-    public void SetMesh()
+    public void SetColliderMesh()
     {
-        HexColider.sharedMesh = Hex.H_ColiderMesh;
-        HexColider.convex = false;
+        HexCollider.sharedMesh = Hex.H_ColiderMesh;
+        HexCollider.convex = false;
     }
 
-    public void setPositon(Vector2Int coords)
+    public void SetPosition(Vector2Int coords)
     {
-        column = coords.x;
-        row = coords.y;
+        Column = coords.x;
+        Row = coords.y;
     }
 
-    public void setHeight(int  Height)
+    public void SetHeight(float height)
     {
-        height = Height;
+        Height = height;
     }
-    public Tile CheckNeighbours(Vector2 Direction)
+
+    public Tile CheckNeighbours(Vector2 direction)
     {
-        //Can seperate out the camera direction calculation to somewhere else removing 15~ lines here.
-        Tile Closest = null; 
+        Vector3 forward = CalculateForwardVector(direction);
+
+        Tile closest = null;
         float minDist = Mathf.Infinity;
-        Vector3 Forawrd = new Vector3();
-        CameraController Cam = Camera.main.GetComponentInParent<CameraController>();    
-        if (Direction.y > 0)
+
+        foreach (Tile next in Neighbours)
         {
-            Forawrd = (Cam.Forward * Hex.outerSize) + this.transform.position;
-        }
-        if(Direction.y < 0)
-        {
-            Forawrd = (-Cam.Forward * Hex.outerSize) + this.transform.position;        
-        }
-        if(Direction.x > 0)
-        {
-            Forawrd = (Cam.Right * Hex.outerSize) + this.transform.position;
-        }
-        if (Direction.x < 0)
-        {
-            Forawrd = (-Cam.Right * Hex.outerSize) + this.transform.position;         
-        }
-        foreach (Tile Next in Neighbours)
-        {
-            float dist = Vector3.Distance(Next.transform.position, Forawrd);
+            float dist = Vector3.Distance(next.transform.position, forward);
             if (dist < minDist)
             {
-                Closest = Next;
+                closest = next;
                 minDist = dist;
             }
         }
-        return Closest;
+
+        return closest;
+    }
+
+    private Vector3 CalculateForwardVector(Vector2 direction)
+    {
+        Vector3 forward = Vector3.zero;
+
+        if (cameraController == null)
+        {
+            Debug.LogError("Camera Controller is missing!");
+            return forward;
+        }
+
+        if (direction.y > 0)
+        {
+            forward = (cameraController.Forward * Hex.outerSize) + transform.position;
+        }
+        else if (direction.y < 0)
+        {
+            forward = (-cameraController.Forward * Hex.outerSize) + transform.position;
+        }
+        else if (direction.x > 0)
+        {
+            forward = (cameraController.Right * Hex.outerSize) + transform.position;
+        }
+        else if (direction.x < 0)
+        {
+            forward = (-cameraController.Right * Hex.outerSize) + transform.position;
+        }
+
+        return forward;
     }
 }

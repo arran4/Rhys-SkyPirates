@@ -16,7 +16,7 @@ public class HexHighlight : MonoBehaviour, IHighlightResponce
         {
             if (HighLightSelect != null)
             {
-                HighlightTile.Hex.meshupdate(HighlightTile.BaseMat);
+                HighlightTile.Hex.meshupdate(HighlightTile.BaseMaterial);
             }
             HighLightSelect = Input;
             HighlightTile = HighLightSelect.GetComponent<Tile>();

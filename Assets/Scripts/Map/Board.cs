@@ -27,7 +27,7 @@ public class Board
 
     public void set_Tile(int x, int y, Tile toset)
     {
-        toset.setPositon(new Vector2Int(x, y));
+        toset.SetPosition(new Vector2Int(x, y));
         _board_Contents[x, y] = toset;
     }
 

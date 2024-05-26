@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PawnManager : MonoBehaviour
 {
+    public static PawnManager PawnManagerInstance { get; private set; }
     private List<GameObject> PlayerPawns;
     private List<GameObject> EnemyPawns;
     // Start is called before the first frame update
@@ -97,5 +98,19 @@ public class PawnManager : MonoBehaviour
         }
         return -1;
     }
-   
+
+    private void Awake()
+    {
+        // If there is an instance, and it's not me, delete myself.
+
+        if (PawnManagerInstance != null && PawnManagerInstance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            PawnManagerInstance = this;
+        }
+    }
+
 }

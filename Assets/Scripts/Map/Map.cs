@@ -15,6 +15,7 @@ public class Map : MonoBehaviour
 
     private Board PlayArea;
 
+    //Using currently as a crude random map maker. Will probably have this build a map from a .json or two 
     void Start()
     {
         PlayArea = new Board(MapSize);
@@ -27,27 +28,27 @@ public class Map : MonoBehaviour
                 Holder.transform.position = GetHexPositionFromCoordinate(new Vector2Int(x, y));
                 Tile ToAdd = Holder.GetComponent<Tile>();
                 ToAdd.Data = TileTypes[Random.Range(0,TileTypes.Count)];
-                ToAdd.BaseMat = ToAdd.Data.BaseMat;
+                ToAdd.BaseMaterial = ToAdd.Data.BaseMat;
                 ToAdd.Hex.H_Mat = ToAdd.Data.BaseMat;
                 ToAdd.Hex.innerSize = innerSize;
                 ToAdd.Hex.outerSize = outerSize;
                 if(ToAdd.Data == TileTypes[0])
                 {
-                    ToAdd.setHeight(5);
+                    ToAdd.SetHeight(5);
                 }
                 else 
                 { 
-                    ToAdd.setHeight(Random.Range(1, 7) * 5); 
+                    ToAdd.SetHeight(Random.Range(1, 7) * 5); 
                 }             
-                ToAdd.Hex.height = ToAdd.height;
+                ToAdd.Hex.height = ToAdd.Height;
                 ToAdd.Hex.isFlatTopped = isFlatTopped;
                 ToAdd.Hex.meshupdate(ToAdd.Data.BaseMat);
-                Holder.transform.position = new Vector3(Holder.transform.position.x, ToAdd.height / 2f, Holder.transform.position.z);
+                Holder.transform.position = new Vector3(Holder.transform.position.x, ToAdd.Height / 2f, Holder.transform.position.z);
                 ToAdd.transform.SetParent(this.transform);
                 GameObject Prefab = Instantiate(ToAdd.Data.TilePrefab, Holder.transform);
-                Prefab.transform.position = new Vector3( ToAdd.transform.position.x, ToAdd.transform.position.y + (ToAdd.height / 2) - 1, ToAdd.transform.position.z);
+                Prefab.transform.position = new Vector3( ToAdd.transform.position.x, ToAdd.transform.position.y + (ToAdd.Height / 2) - 1, ToAdd.transform.position.z);
                 
-                ToAdd.setPositon(new Vector2Int(x, y));
+                ToAdd.SetPosition(new Vector2Int(x, y));
                 PlayArea.set_Tile(x, y, ToAdd);
 
             }
@@ -58,12 +59,13 @@ public class Map : MonoBehaviour
             for (int y = 0; y < MapSize.y; y++)
             {
                 Tile NeighbourGet = PlayArea.get_Tile(x, y);
-                NeighbourGet.Neighbours = PlayArea.GetNeighbours(new Vector2Int(NeighbourGet.column, NeighbourGet.row));
+                NeighbourGet.Neighbours = PlayArea.GetNeighbours(new Vector2Int(NeighbourGet.Column, NeighbourGet.Row));
             }
         }
         setFirstHex();
     }
 
+    //Sets a hexes possition in world coords from its x,y values
     public Vector3 GetHexPositionFromCoordinate(Vector2Int Coordinates)
     {
         int column = Coordinates.x;
@@ -106,6 +108,7 @@ public class Map : MonoBehaviour
         return new Vector3(xposition,0,-yposition);
     }
 
+    //If for any reason the board needs to be entirely redrawn
     public void Redraw()
     {
         for (int x = 0; x < MapSize.x; x++)
@@ -114,32 +117,41 @@ public class Map : MonoBehaviour
             {
                 PlayArea.get_Tile(x, y).Hex.innerSize = innerSize;
                 PlayArea.get_Tile(x, y).Hex.outerSize = outerSize;
-                PlayArea.get_Tile(x, y).Hex.height = PlayArea.get_Tile(x, y).height;
+                PlayArea.get_Tile(x, y).Hex.height = PlayArea.get_Tile(x, y).Height;
                 PlayArea.get_Tile(x, y).Hex.isFlatTopped = isFlatTopped;
                 PlayArea.get_Tile(x, y).gameObject.transform.position = GetHexPositionFromCoordinate(new Vector2Int(x, y));
-                PlayArea.get_Tile(x, y).SetMesh();
+                PlayArea.get_Tile(x, y).SetColliderMesh();
             }
         }
     }
 
+    //sets first highlight assuming no mouse input
     public void setFirstHex()
     {
-        Vector3 center = Camera.main.ScreenToWorldPoint(new Vector3(Camera.main.scaledPixelHeight / 2, Camera.main.scaledPixelWidth / 2, 0));
-        Tile Closest = null;
+        // Calculate the center point of the screen
+        Vector3 screenCenter = new Vector3(Camera.main.pixelWidth / 2, Camera.main.pixelHeight / 2, Camera.main.nearClipPlane);
+        Vector3 center = Camera.main.ScreenToWorldPoint(screenCenter);
+
+        Tile closest = null;
         float minDist = Mathf.Infinity;
+
         for (int x = 0; x < MapSize.x; x++)
         {
             for (int y = 0; y < MapSize.y; y++)
             {
-                    float dist = Vector3.Distance(PlayArea.get_Tile(x,y).transform.position, center);
-                    if (dist < minDist)
-                    {
-                        Closest = PlayArea.get_Tile(x, y);
-                        minDist = dist;
-                    }             
+                Tile currentTile = PlayArea.get_Tile(x, y);
+                float dist = Vector3.Distance(currentTile.transform.position, center);
+                if (dist < minDist)
+                {
+                    closest = currentTile;
+                    minDist = dist;
+                }
             }
-
         }
-        EventManager.TileHoverTrigger(PlayArea.get_Tile(Closest.column, Closest.row).transform.gameObject);
+
+        if (closest != null)
+        {
+            EventManager.TileHoverTrigger(PlayArea.get_Tile(closest.Column, closest.Row).transform.gameObject);
+        }
     }
 }
