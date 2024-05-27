@@ -403,6 +403,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1258532743}
   - component: {fileID: 1258532744}
+  - component: {fileID: 1258532748}
   - component: {fileID: 1258532745}
   - component: {fileID: 1258532746}
   - component: {fileID: 1258532747}
@@ -441,21 +442,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraTransform: {fileID: 963194228}
-  Forward: {x: 0, y: 0, z: 0}
-  Right: {x: 0, y: 0, z: 0}
-  movementSpeedNormal: 2.5
-  movementSpeedFast: 5
+  movementSpeedNormal: 4
+  movementSpeedFast: 8
   movementTime: 5
   rotationAmount: 1
   zoomAmount: {x: 0, y: -10, z: 10}
-  newPosition: {x: 0, y: 0, z: 0}
-  newRotation: {x: 1, y: 1, z: 1, w: 1}
-  newZoom: {x: 0, y: 0, z: 0}
-  dragStartPosition: {x: 0, y: 0, z: 0}
-  dragCurrentPosition: {x: 0, y: 0, z: 0}
-  rotateStartPosition: {x: 0, y: 0, z: 0}
-  rotateCurrentPosition: {x: 0, y: 0, z: 0}
-  HoldTimer: 0
 --- !u!114 &1258532745
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -494,3 +485,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HighlightMat: {fileID: 2100000, guid: 1bfb50ba18d140840a1beb1a042e91f6, type: 2}
+--- !u!114 &1258532748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1258532742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8b454c6f876eeb4b9051d003da6ab31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -26,9 +26,9 @@ public class HexSelectManager : MonoBehaviour
     {
         //If possible need to move most of this to a player controls script. This should honestly be assigning events to the highlight and select scripts.
         //It may also call specific methods based on the type of highlighter or selector.
-        Ray ray = Camera.main.ScreenPointToRay(new Vector3(Mouse.current.position.ReadValue().x, Mouse.current.position.ReadValue().y, 0));
+        Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
 
-        if (Physics.Raycast(ray, out RaycastHit hit, 100000f))
+        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
         {
             Highlight.SetHighlight(hit.transform.gameObject);
         }
