@@ -15,14 +15,15 @@ public class EnemySpawner : MonoBehaviour
 
     private void SpawnEnemies()
     {
-        List<GameObject> Enemies = new List<GameObject>();
+        List<EnemyPawn> Enemies = new List<EnemyPawn>();
         int count = 0;
         foreach (EType n in ToSpawn.EnemyType)
         {
 
             for (int x = 0; x < ToSpawn.NumberInPack[count]; x++)
             {
-                GameObject ToAdd = Instantiate(EnemyList.ListInstance.AllEnemies[((int)n)]);
+                GameObject Holder = Instantiate(EnemyList.ListInstance.AllEnemies[((int)n)]);
+                EnemyPawn ToAdd = Holder.GetComponent<EnemyPawn>();
                 Enemies.Add(ToAdd);
             }
             count++;

@@ -6,9 +6,9 @@ public class PawnManager : MonoBehaviour
 {
     public static PawnManager PawnManagerInstance { get; private set; }
     private List<GameObject> PlayerPawns;
-    public List<GameObject> EnemyPawns;
+    public List<EnemyPawn> EnemyPawns;
 
-    public List<GameObject> GetAllEnemies()
+    public List<EnemyPawn> GetAllEnemies()
     {
         return EnemyPawns;
     }
@@ -28,10 +28,10 @@ public class PawnManager : MonoBehaviour
         return -1;
     }
 
-    public int getEnemyPawnPosition(GameObject Pawn)
+    public int getEnemyPawnPosition(EnemyPawn Pawn)
     {
         int count = 0;
-        foreach (GameObject n in EnemyPawns)
+        foreach (EnemyPawn n in EnemyPawns)
         {
             if (n == Pawn)
             {
@@ -48,21 +48,21 @@ public class PawnManager : MonoBehaviour
         return PlayerPawns[Index];
     }
 
-    public GameObject getEnemyPawn(int Index)
+    public EnemyPawn getEnemyPawn(int Index)
     {
         return EnemyPawns[Index];
     }
 
-    public GameObject getPawn(GameObject Pawn)
+    public Pawn getPawn(GameObject Pawn)
     {
         foreach(GameObject n in PlayerPawns)
         {
             if(n == Pawn)
             {
-                return n;
+              //  return n;
             }
         }
-        foreach(GameObject n in EnemyPawns)
+        foreach(EnemyPawn n in EnemyPawns)
         {
             if(n == Pawn)
             {
@@ -106,12 +106,12 @@ public class PawnManager : MonoBehaviour
             PawnManagerInstance = this;
         }
         PlayerPawns = new List<GameObject>();
-        EnemyPawns = new List<GameObject>();
+        EnemyPawns = new List<EnemyPawn>();
     }
 
-    public void populateEnemey(List<GameObject> Enemy)
+    public void populateEnemey(List<EnemyPawn> Enemy)
     {
-        foreach(GameObject n in Enemy)
+        foreach(EnemyPawn n in Enemy)
         {
             EnemyPawns.Add(n);
         }

@@ -16,13 +16,12 @@ public class Map : MonoBehaviour
     private Board PlayArea;
 
     [SerializeField]
-    public List<GameObject> EnemyList;
 
     //Using currently as a crude random map maker. Will probably have this build a map from a .json or two 
     void Start()
     {
         PlayArea = new Board(MapSize);
-
+        int nuberofenemies = PawnManager.PawnManagerInstance.GetAllEnemies().Count -1;
         for (int x = 0; x < MapSize.x; x++)
         {
             for (int y = 0; y < MapSize.y; y++)
@@ -31,6 +30,11 @@ public class Map : MonoBehaviour
                 Holder.transform.position = GetHexPositionFromCoordinate(new Vector2Int(x, y));
                 Tile ToAdd = Holder.GetComponent<Tile>();
                 ToAdd.Data = TileTypes[Random.Range(0,TileTypes.Count)];
+                if(ToAdd.Data.BaseMat == TileTypes[1].BaseMat && nuberofenemies >=0)
+                {
+                    PawnManager.PawnManagerInstance.EnemyPawns[nuberofenemies].SetPosition(ToAdd);
+                    nuberofenemies--;
+                }
                 ToAdd.BaseMaterial = ToAdd.Data.BaseMat;
                 ToAdd.Hex.H_Mat = ToAdd.Data.BaseMat;
                 ToAdd.Hex.innerSize = innerSize;
@@ -66,7 +70,7 @@ public class Map : MonoBehaviour
             }
         }
         setFirstHex();
-        PawnManager.PawnManagerInstance.populateEnemey(EnemyList);
+
     }
 
     //Sets a hexes possition in world coords from its x,y values

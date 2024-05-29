@@ -20,6 +20,10 @@ public class HexHighlight : MonoBehaviour, IHighlightResponce
             }
             HighLightSelect = Input;
             HighlightTile = HighLightSelect.GetComponent<Tile>();
+            if(HighlightTile == null)
+            {
+                HighlightTile = HighLightSelect.GetComponent<Pawn>().Position;
+            }
             HighlightTile.Hex.meshupdate(HighlightMat);
         }
     }
