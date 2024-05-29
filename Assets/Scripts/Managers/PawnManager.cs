@@ -6,19 +6,13 @@ public class PawnManager : MonoBehaviour
 {
     public static PawnManager PawnManagerInstance { get; private set; }
     private List<GameObject> PlayerPawns;
-    private List<GameObject> EnemyPawns;
-    // Start is called before the first frame update
-    public void populatePawns(List<GameObject> Players, List<GameObject> Enemies)
-    { 
-        foreach(GameObject n in Players)
-        {
-            PlayerPawns.Add(n);
-        }
-        foreach(GameObject n in Enemies)
-        {
-            EnemyPawns.Add(n);
-        }
+    public List<GameObject> EnemyPawns;
+
+    public List<GameObject> GetAllEnemies()
+    {
+        return EnemyPawns;
     }
+
     public int getPlayerPawnPosition(GameObject Pawn)
     {
         int count = 0;
@@ -111,6 +105,29 @@ public class PawnManager : MonoBehaviour
         {
             PawnManagerInstance = this;
         }
+        PlayerPawns = new List<GameObject>();
+        EnemyPawns = new List<GameObject>();
     }
 
+    public void populateEnemey(List<GameObject> Enemy)
+    {
+        foreach(GameObject n in Enemy)
+        {
+            EnemyPawns.Add(n);
+        }
+    }
+
+    public void populatePlayer(List<GameObject> Player)
+    {
+        foreach(GameObject n in Player)
+        {
+            PlayerPawns.Add(n);
+        }
+    }
+
+    public void clearPawns()
+    {
+        PlayerPawns.Clear();
+        EnemyPawns.Clear();
+    }
 }

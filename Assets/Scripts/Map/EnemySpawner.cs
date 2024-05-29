@@ -1,0 +1,32 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class EnemySpawner : MonoBehaviour
+{
+
+    public EnemyPackSO ToSpawn;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        SpawnEnemies();
+    }
+
+    private void SpawnEnemies()
+    {
+        List<GameObject> Enemies = new List<GameObject>();
+        int count = 0;
+        foreach (EType n in ToSpawn.EnemyType)
+        {
+
+            for (int x = 0; x < ToSpawn.NumberInPack[count]; x++)
+            {
+                GameObject ToAdd = Instantiate(EnemyList.ListInstance.AllEnemies[((int)n)]);
+                Enemies.Add(ToAdd);
+            }
+            count++;
+        }
+        PawnManager.PawnManagerInstance.populateEnemey(Enemies);
+    }
+}

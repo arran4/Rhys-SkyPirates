@@ -15,6 +15,9 @@ public class Map : MonoBehaviour
 
     private Board PlayArea;
 
+    [SerializeField]
+    public List<GameObject> EnemyList;
+
     //Using currently as a crude random map maker. Will probably have this build a map from a .json or two 
     void Start()
     {
@@ -63,6 +66,7 @@ public class Map : MonoBehaviour
             }
         }
         setFirstHex();
+        PawnManager.PawnManagerInstance.populateEnemey(EnemyList);
     }
 
     //Sets a hexes possition in world coords from its x,y values

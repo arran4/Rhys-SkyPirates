@@ -7,7 +7,8 @@ public class MouseInputHandler : MonoBehaviour
     private float holdTimer = 0;
     private Vector3 dragStartPosition;
     private Vector3 rotateStartPosition;
-    public BasicControls inputActions;
+    private BasicControls inputActions;
+    public float Sensitivity;
 
     void Start()
     {
@@ -41,8 +42,8 @@ public class MouseInputHandler : MonoBehaviour
             {
                 Vector3 dragCurrentPosition = Mouse.current.position.ReadValue();
                 Vector2 movement = dragCurrentPosition - dragStartPosition;
-                movement = movement.normalized;
-                cameraController.Movement(-movement);
+                movement = movement.normalized; //Correct for extream numbers back to a reasonable move
+                cameraController.Movement(-movement / Sensitivity);
                 dragStartPosition = dragCurrentPosition;
             }
         }
@@ -67,7 +68,7 @@ public class MouseInputHandler : MonoBehaviour
         {
             if (Mouse.current.rightButton.wasPressedThisFrame)
             {
-                rotateStartPosition = GetMouseWorldPosition();
+                rotateStartPosition = Mouse.current.position.ReadValue();
             }
             else
             {
@@ -76,9 +77,9 @@ public class MouseInputHandler : MonoBehaviour
 
             if (!Mouse.current.rightButton.wasPressedThisFrame && holdTimer > 0.25f)
             {
-                Vector3 rotateCurrentPosition = GetMouseWorldPosition();
+                Vector3 rotateCurrentPosition = Mouse.current.position.ReadValue();
                 Vector3 difference = rotateStartPosition - rotateCurrentPosition;
-                cameraController.Rotation(-difference.x / 5);  // Adjusted to call Rotation method with the appropriate parameter
+                cameraController.Rotation(-(difference.x - difference.y) / Sensitivity);
                 rotateStartPosition = rotateCurrentPosition;
             }
         }
