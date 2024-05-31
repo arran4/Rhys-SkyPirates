@@ -14,6 +14,7 @@ public class Tile : MonoBehaviour
     public TileDataSO Data;
     public List<Tile> Neighbours;
     public Material BaseMaterial;
+    public Pawn Contents = null;
 
     private CameraController cameraController;
 

@@ -16,7 +16,7 @@ public class HexSelectManager : MonoBehaviour
     {
         Responce = GetComponent<ISelectionResponce>();
         Highlight = GetComponent<IHighlightResponce>();
-        EventManager.OnTileSelect += Responce.Select;
+        EventManager.OnTileSelect += Select;
         EventManager.OnTileDeselect += Responce.Deselect;
         EventManager.OnTileHover += Highlight.SetHighlight;
         inputActions = EventManager.EventInstance.inputActions;
@@ -38,7 +38,7 @@ public class HexSelectManager : MonoBehaviour
         }
         if (inputActions.Battle.Select.triggered)
         {
-            Responce.Select(Highlight.ReturnHighlight());
+            Select();
         }
         if (inputActions.Battle.Deselect.triggered)
         {
@@ -46,9 +46,14 @@ public class HexSelectManager : MonoBehaviour
         }
     }
 
+    private void Select()
+    {
+        Responce.Select(Highlight.ReturnHighlight());
+    }
+
     private void OnDestroy()
     {
-        EventManager.OnTileSelect -= Responce.Select;
+        EventManager.OnTileSelect -= Select;
         EventManager.OnTileDeselect -= Responce.Deselect;
         EventManager.OnTileHover -= Highlight.SetHighlight;
     }

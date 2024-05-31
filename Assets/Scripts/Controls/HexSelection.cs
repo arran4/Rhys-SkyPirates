@@ -7,6 +7,7 @@ public class HexSelection : MonoBehaviour, ISelectionResponce
     public Material selectedMat;
     public GameObject SelectedObject { get; private set; } = null;
     public Tile SelectedTile { get; private set; } = null;
+    public Pawn SelectedContents { get; private set; } = null;
 
 
     public void Update()

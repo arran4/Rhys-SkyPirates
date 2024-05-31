@@ -52,7 +52,7 @@ public class MouseInputHandler : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(GetMouseRay(), out hit, 100000f))
             {
-                EventManager.TileSelectTrigger(hit.transform.gameObject);
+                EventManager.TileSelectTrigger();
             }
         }
 

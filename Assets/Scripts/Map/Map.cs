@@ -30,11 +30,6 @@ public class Map : MonoBehaviour
                 Holder.transform.position = GetHexPositionFromCoordinate(new Vector2Int(x, y));
                 Tile ToAdd = Holder.GetComponent<Tile>();
                 ToAdd.Data = TileTypes[Random.Range(0,TileTypes.Count)];
-                if(ToAdd.Data.BaseMat == TileTypes[1].BaseMat && nuberofenemies >=0)
-                {
-                    PawnManager.PawnManagerInstance.EnemyPawns[nuberofenemies].SetPosition(ToAdd);
-                    nuberofenemies--;
-                }
                 ToAdd.BaseMaterial = ToAdd.Data.BaseMat;
                 ToAdd.Hex.H_Mat = ToAdd.Data.BaseMat;
                 ToAdd.Hex.innerSize = innerSize;
@@ -57,7 +52,11 @@ public class Map : MonoBehaviour
                 
                 ToAdd.SetPosition(new Vector2Int(x, y));
                 PlayArea.set_Tile(x, y, ToAdd);
-
+                if (ToAdd.Data.BaseMat == TileTypes[1].BaseMat && nuberofenemies >= 0)
+                {
+                    PawnManager.PawnManagerInstance.EnemyPawns[nuberofenemies].SetPosition(ToAdd);
+                    nuberofenemies--;
+                }
             }
         }
 

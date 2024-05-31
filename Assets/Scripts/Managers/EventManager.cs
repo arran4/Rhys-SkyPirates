@@ -11,13 +11,13 @@ public class EventManager : MonoBehaviour
     public static event TileHover OnTileHover;
     public delegate void TileHover(GameObject Selected);
     public static event TileSelect OnTileSelect;
-    public delegate void TileSelect(GameObject Select);
+    public delegate void TileSelect();
     public static event TileDeselect OnTileDeselect;
     public delegate void TileDeselect();
 
-    public static void TileSelectTrigger(GameObject Select)
+    public static void TileSelectTrigger()
     {
-        OnTileSelect?.Invoke(Select);
+        OnTileSelect?.Invoke();
     }
     public static void TileDeselectTrigger()
     {

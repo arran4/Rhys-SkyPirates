@@ -8,6 +8,7 @@ public class HexHighlight : MonoBehaviour, IHighlightResponce
     private GameObject HighLightSelect = null;
     private Tile HighlightTile = null;
     public Material HighlightMat;
+    private Pawn HighlightContent;
 
     //Sets the Highlight
     public void SetHighlight(GameObject Input)
@@ -23,7 +24,13 @@ public class HexHighlight : MonoBehaviour, IHighlightResponce
             if(HighlightTile == null)
             {
                 HighlightTile = HighLightSelect.GetComponent<Pawn>().Position;
+                if(HighlightTile != null)
+                {
+                    HighLightSelect = HighlightTile.gameObject;
+                }
             }
+           
+            HighlightContent = HighlightTile.Contents;
             HighlightTile.Hex.meshupdate(HighlightMat);
         }
     }
