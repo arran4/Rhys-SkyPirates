@@ -15,8 +15,6 @@ public class Map : MonoBehaviour
 
     private Board PlayArea;
 
-    [SerializeField]
-
     //Using currently as a crude random map maker. Will probably have this build a map from a .json or two 
     void Start()
     {

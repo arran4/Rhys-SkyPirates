@@ -111,3 +111,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BaseSize: {fileID: 0}
   Position: {fileID: 0}
+  Stats: {fileID: 0}

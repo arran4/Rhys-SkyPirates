@@ -55,6 +55,30 @@ PrefabInstance:
       propertyPath: m_Name
       value: Cap3
       objectReference: {fileID: 0}
+    - target: {fileID: 6745325327332332579, guid: da38419b5c34795418ff734a515d517e, type: 3}
+      propertyPath: Grit
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6745325327332332579, guid: da38419b5c34795418ff734a515d517e, type: 3}
+      propertyPath: Grace
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 6745325327332332579, guid: da38419b5c34795418ff734a515d517e, type: 3}
+      propertyPath: Swagger
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6745325327332332579, guid: da38419b5c34795418ff734a515d517e, type: 3}
+      propertyPath: Chutzpah
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6745325327332332579, guid: da38419b5c34795418ff734a515d517e, type: 3}
+      propertyPath: Cadishness
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 6745325327332332579, guid: da38419b5c34795418ff734a515d517e, type: 3}
+      propertyPath: Serendipity
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 6901811920060945794, guid: da38419b5c34795418ff734a515d517e, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 

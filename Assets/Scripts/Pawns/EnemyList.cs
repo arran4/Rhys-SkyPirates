@@ -2,6 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum EType
+{
+    Corrsair,
+    Cannoneir,
+    Rifleman
+}
+
 public class EnemyList : MonoBehaviour
 {
 

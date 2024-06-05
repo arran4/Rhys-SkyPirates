@@ -25,6 +25,7 @@ public class HexSelection : MonoBehaviour, ISelectionResponce
         {
             SelectedObject = Selection;
             SelectedTile = SelectedObject.GetComponent<Tile>();
+            SelectedContents = SelectedTile.Contents;
             SelectedTile.Hex.meshupdate(selectedMat);
         }
         else if (Selection != null)
@@ -41,6 +42,7 @@ public class HexSelection : MonoBehaviour, ISelectionResponce
         {
             SelectedTile.Hex.meshupdate(SelectedTile.BaseMaterial);
             SelectedTile = null;
+            SelectedContents = null;
             SelectedObject = null;
         }
     }

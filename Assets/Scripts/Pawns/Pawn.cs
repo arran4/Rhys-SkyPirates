@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(CapsuleCollider))]
+[RequireComponent(typeof(Attributes))]
 public abstract class Pawn : MonoBehaviour
 {
     public CapsuleCollider BaseSize;
     public Tile Position;
-
+    public Attributes Stats;
     public void Awake()
     {
         BaseSize = GetComponent<CapsuleCollider>();

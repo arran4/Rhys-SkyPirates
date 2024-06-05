@@ -7,6 +7,30 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -4021612439355023452, guid: 7eefb4495470b17418373713af653483, type: 3}
+      propertyPath: Grit
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: -4021612439355023452, guid: 7eefb4495470b17418373713af653483, type: 3}
+      propertyPath: Grace
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: -4021612439355023452, guid: 7eefb4495470b17418373713af653483, type: 3}
+      propertyPath: Swagger
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: -4021612439355023452, guid: 7eefb4495470b17418373713af653483, type: 3}
+      propertyPath: Chutzpah
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: -4021612439355023452, guid: 7eefb4495470b17418373713af653483, type: 3}
+      propertyPath: Cadishness
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: -4021612439355023452, guid: 7eefb4495470b17418373713af653483, type: 3}
+      propertyPath: Serendipity
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 4193185677717993086, guid: 7eefb4495470b17418373713af653483, type: 3}
       propertyPath: m_RootOrder
       value: 0
