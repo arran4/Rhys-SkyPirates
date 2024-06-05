@@ -49,7 +49,7 @@ public class HexRenderer : MonoBehaviour
     public void DrawMesh()
     {
         DrawFaces();
-        CombineFaces();       
+        CombineFaces();
     }
 
     //Builds all of the faces for the mesh
@@ -170,5 +170,6 @@ public class HexRenderer : MonoBehaviour
         H_ColiderMesh.triangles = tris.ToArray();
         H_ColiderMesh.uv = uvs.ToArray();
         H_ColiderMesh.RecalculateNormals();
+
     }
 }

@@ -8,6 +8,10 @@ public class Tile : MonoBehaviour
 {
     public int Column { get; private set; }
     public int Row { get; private set; }
+
+    public int QAxis;
+    public int RAxis;
+    public int SAxis { get { return -QAxis - RAxis; } }
     public float Height { get; private set; }
     public HexRenderer Hex { get; private set; }
     public MeshCollider HexCollider { get; private set; }
@@ -44,9 +48,25 @@ public class Tile : MonoBehaviour
         Row = coords.y;
     }
 
+    public void SetQUSPosition(int q, int s)
+    {
+        QAxis = q;
+        RAxis = s;
+    }
+
     public void SetHeight(float height)
     {
         Height = height;
+    }
+
+    public void SetPositionAndHeight(Vector2Int coords, int q, int r, float height)
+    {
+        Column = coords.x;
+        Row = coords.y;
+        QAxis = q;
+        RAxis = r;
+        Height = height;
+        transform.position = new Vector3(transform.position.x, Height / 2f, transform.position.z);
     }
 
     public Tile CheckNeighbours(Vector2 direction)
@@ -97,5 +117,39 @@ public class Tile : MonoBehaviour
         }
 
         return forward;
+    }
+    public override int GetHashCode()
+    {
+        int hashCodeQ = QAxis.GetHashCode();
+        int hashCodeR = RAxis.GetHashCode();
+        return hashCodeQ ^ (hashCodeR + unchecked((int)0x9e3779b9) + (hashCodeQ << 6) + (hashCodeQ >> 2));
+    }
+
+    public override bool Equals(object obj)
+    {
+        if (obj == null || GetType() != obj.GetType())
+        {
+            return false;
+        }
+
+        Tile other = (Tile)obj;
+        return Column == other.QAxis && Row == other.RAxis && SAxis == other.SAxis;
+    }
+
+    public override string ToString()
+    {
+        return $"Hex(Q: {QAxis}, R: {RAxis}, S: {SAxis})";
+    }
+
+    public void SetupHexRenderer(float innerSize, float outerSize, bool isFlatTopped)
+    {
+        Hex.H_Mat = Data.BaseMat;
+        Hex.innerSize = innerSize;
+        Hex.outerSize = outerSize;
+        Hex.height = Height;
+        Hex.isFlatTopped = isFlatTopped;
+        BaseMaterial = Data.BaseMat;
+        Hex.H_Mat = Data.BaseMat;
+        Hex.meshupdate(Data.BaseMat);
     }
 }

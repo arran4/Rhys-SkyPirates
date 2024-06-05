@@ -20,39 +20,30 @@ public class Map : MonoBehaviour
     {
         PlayArea = new Board(MapSize);
         int nuberofenemies = PawnManager.PawnManagerInstance.GetAllEnemies().Count -1;
+        int qStart = -MapSize.x / 2;
+        int rStart = -MapSize.y / 2;
         for (int x = 0; x < MapSize.x; x++)
         {
             for (int y = 0; y < MapSize.y; y++)
             {
-                GameObject Holder = new GameObject($"Hex {x},{y}", typeof(Tile));
-                Holder.transform.position = GetHexPositionFromCoordinate(new Vector2Int(x, y));
-                Tile ToAdd = Holder.GetComponent<Tile>();
-                ToAdd.Data = TileTypes[Random.Range(0,TileTypes.Count)];
-                ToAdd.BaseMaterial = ToAdd.Data.BaseMat;
-                ToAdd.Hex.H_Mat = ToAdd.Data.BaseMat;
-                ToAdd.Hex.innerSize = innerSize;
-                ToAdd.Hex.outerSize = outerSize;
-                if(ToAdd.Data == TileTypes[0])
+                int q = qStart + x;
+                int r = rStart + y;
+                GameObject holder = new GameObject($"Hex {x},{y}", typeof(Tile));
+                Tile tile = holder.GetComponent<Tile>();
+                tile.Data = TileTypes[Random.Range(0, TileTypes.Count)];
+                tile.SetPositionAndHeight(new Vector2Int(x, y), q, r, tile.Data == TileTypes[0] ? 5 : Random.Range(1, 7) * 5);
+                Vector3 tilePosition = GetHexPositionFromCoordinate(new Vector2Int(x, y));
+                tilePosition.y = tilePosition.y + tile.Height / 2;
+                holder.transform.position = tilePosition;
+                holder.transform.SetParent(transform);
+                Instantiate(tile.Data.TilePrefab, holder.transform).transform.position += new Vector3(0, tile.Height / 2 -1, 0);
+                tile.SetupHexRenderer(innerSize, outerSize, isFlatTopped);
+                tile.SetPosition(new Vector2Int(x, y));
+                PlayArea.set_Tile(x, y, tile);
+
+                if (tile.Data.BaseMat == TileTypes[1].BaseMat && nuberofenemies >= 0)
                 {
-                    ToAdd.SetHeight(5);
-                }
-                else 
-                { 
-                    ToAdd.SetHeight(Random.Range(1, 7) * 5); 
-                }             
-                ToAdd.Hex.height = ToAdd.Height;
-                ToAdd.Hex.isFlatTopped = isFlatTopped;
-                ToAdd.Hex.meshupdate(ToAdd.Data.BaseMat);
-                Holder.transform.position = new Vector3(Holder.transform.position.x, ToAdd.Height / 2f, Holder.transform.position.z);
-                ToAdd.transform.SetParent(this.transform);
-                GameObject Prefab = Instantiate(ToAdd.Data.TilePrefab, Holder.transform);
-                Prefab.transform.position = new Vector3( ToAdd.transform.position.x, ToAdd.transform.position.y + (ToAdd.Height / 2) - 1, ToAdd.transform.position.z);
-                
-                ToAdd.SetPosition(new Vector2Int(x, y));
-                PlayArea.set_Tile(x, y, ToAdd);
-                if (ToAdd.Data.BaseMat == TileTypes[1].BaseMat && nuberofenemies >= 0)
-                {
-                    PawnManager.PawnManagerInstance.EnemyPawns[nuberofenemies].SetPosition(ToAdd);
+                    PawnManager.PawnManagerInstance.EnemyPawns[nuberofenemies].SetPosition(tile);
                     nuberofenemies--;
                 }
             }
@@ -158,5 +149,26 @@ public class Map : MonoBehaviour
         {
             EventManager.TileHoverTrigger(PlayArea.get_Tile(closest.Column, closest.Row).transform.gameObject);
         }
+    }
+    private Tile tile_add(Tile hex, int QAxis, int RAxis, int SAxis)
+    {
+        return PlayArea.SearchTileByCubeCoordinates(hex.QAxis + QAxis, RAxis + RAxis, hex.SAxis + SAxis);
+    }
+    public List<Tile> HexRing(Tile center, int radius)
+    {
+        List<Tile> results = new List<Tile>();
+
+        for (int q = -radius; q <= radius; q++)
+        {
+            int r1 = Mathf.Max(-radius, -q - radius);
+            int r2 = Mathf.Min(radius, -q + radius);
+            for (int r = r1; r <= r2; r++)
+            {
+                int s = -q - r;
+                results.Add(tile_add(center, q, r, s));
+            }
+        }
+
+        return results;
     }
 }

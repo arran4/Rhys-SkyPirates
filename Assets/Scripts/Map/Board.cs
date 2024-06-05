@@ -64,4 +64,21 @@ public class Board
         }
         return Neighbours;
     }
+    public Tile SearchTileByCubeCoordinates(int q, int r, int s)
+    {
+        // Offset the center of the board by the cube coordinates to find the corresponding tile
+        int x = q + (_size_X - 1) / 2;
+        int y = r + (_size_Y - 1) / 2;
+
+        // Check if the calculated indices are within bounds
+        if (x >= 0 && x < _size_X && y >= 0 && y < _size_Y)
+        {
+            return _board_Contents[x, y];
+        }
+        else
+        {
+            // If the indices are out of bounds, return null (no tile found)
+            return null;
+        }
+    }
 }
