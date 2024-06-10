@@ -14,6 +14,8 @@ public class EventManager : MonoBehaviour
     public delegate void TileSelect();
     public static event TileDeselect OnTileDeselect;
     public delegate void TileDeselect();
+    public static event PawnSelect OnPawnSelect;
+    public delegate void PawnSelect(Pawn Selected);
 
     public static void TileSelectTrigger()
     {
@@ -26,6 +28,11 @@ public class EventManager : MonoBehaviour
     public static void TileHoverTrigger(GameObject Selected)
     {
         OnTileHover?.Invoke(Selected);
+    }
+
+    public static void PawnSelectTrigger(Pawn Selected)
+    {
+        OnPawnSelect?.Invoke(Selected);
     }
 
     private void Awake()

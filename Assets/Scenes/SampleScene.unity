@@ -133,6 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 211503250}
   - component: {fileID: 211503249}
+  - component: {fileID: 211503251}
   m_Layer: 0
   m_Name: EventManager
   m_TagString: Untagged
@@ -166,6 +167,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &211503251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 211503248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87d0008734d60bc45a8998681d13947c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AllEnemies:
+  - {fileID: 4908709550377585353, guid: 7eefb4495470b17418373713af653483, type: 3}
+  - {fileID: 2990983727608788409, guid: ff3e086efd7c5264fb647af3e00a652e, type: 3}
+  - {fileID: 5887141749045297486, guid: da38419b5c34795418ff734a515d517e, type: 3}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -352,6 +369,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1137514811}
   - component: {fileID: 1137514810}
+  - component: {fileID: 1137514812}
   m_Layer: 0
   m_Name: Map
   m_TagString: Untagged
@@ -371,7 +389,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 077e4ba4eb0f3f64981bc6526facd004, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MapSize: {x: 20, y: 20}
+  MapSize: {x: 10, y: 10}
   innerSize: 9
   outerSize: 10.5
   height: 1
@@ -379,6 +397,7 @@ MonoBehaviour:
   TileTypes:
   - {fileID: 11400000, guid: 13d612b77ee3c0741861b8fb4bf84678, type: 2}
   - {fileID: 11400000, guid: f339a3a7c010af341877bf70c612f264, type: 2}
+  HighlightMaterial: {fileID: 2100000, guid: 954e95ba543aa78468d8f9bbdeedc99a, type: 2}
 --- !u!4 &1137514811
 Transform:
   m_ObjectHideFlags: 0
@@ -393,6 +412,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1137514812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1137514809}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 739599e72a0ac754da50294aa433e214, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ToSpawn: {fileID: 11400000, guid: 88282f17907fefb4e9a3a39923fb73f2, type: 2}
 --- !u!1 &1258532742
 GameObject:
   m_ObjectHideFlags: 0
@@ -446,6 +478,8 @@ MonoBehaviour:
   movementSpeedFast: 8
   movementTime: 5
   rotationAmount: 1
+  minimumZoom: 75
+  maximumZoom: 300
   zoomAmount: {x: 0, y: -10, z: 10}
 --- !u!114 &1258532745
 MonoBehaviour:
@@ -497,3 +531,48 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8b454c6f876eeb4b9051d003da6ab31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Sensitivity: 1
+--- !u!1 &1277025363
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1277025365}
+  - component: {fileID: 1277025364}
+  m_Layer: 0
+  m_Name: Pawnmanager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1277025364
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1277025363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4aa56e67742b8524fabd1a877fd774a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  EnemyPawns: []
+--- !u!4 &1277025365
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1277025363}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -21.848291, y: -1.2721481, z: -28.149626}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

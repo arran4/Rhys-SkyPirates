@@ -11,7 +11,7 @@ public class Tile : MonoBehaviour
 
     public int QAxis;
     public int RAxis;
-    public int SAxis { get { return -QAxis - RAxis; } }
+    public int SAxis;
     public float Height { get; private set; }
     public HexRenderer Hex { get; private set; }
     public MeshCollider HexCollider { get; private set; }
@@ -48,10 +48,11 @@ public class Tile : MonoBehaviour
         Row = coords.y;
     }
 
-    public void SetQUSPosition(int q, int s)
+    public void SetQUSPosition(int q, int r)
     {
         QAxis = q;
-        RAxis = s;
+        RAxis = r;
+        SAxis = -QAxis - RAxis;
     }
 
     public void SetHeight(float height)
@@ -65,6 +66,7 @@ public class Tile : MonoBehaviour
         Row = coords.y;
         QAxis = q;
         RAxis = r;
+        SAxis = -QAxis - RAxis;
         Height = height;
         transform.position = new Vector3(transform.position.x, Height / 2f, transform.position.z);
     }

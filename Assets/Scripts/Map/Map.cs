@@ -15,9 +15,12 @@ public class Map : MonoBehaviour
 
     private Board PlayArea;
 
+    public Material HighlightMaterial;
+
     //Using currently as a crude random map maker. Will probably have this build a map from a .json or two 
     void Start()
     {
+        EventManager.OnPawnSelect += GetMovementRange;
         PlayArea = new Board(MapSize);
         int nuberofenemies = PawnManager.PawnManagerInstance.GetAllEnemies().Count -1;
         int qStart = -MapSize.x / 2;
@@ -30,8 +33,8 @@ public class Map : MonoBehaviour
                 int r = rStart + y;
                 GameObject holder = new GameObject($"Hex {x},{y}", typeof(Tile));
                 Tile tile = holder.GetComponent<Tile>();
-                tile.Data = TileTypes[Random.Range(0, TileTypes.Count)];
-                tile.SetPositionAndHeight(new Vector2Int(x, y), q, r, tile.Data == TileTypes[0] ? 5 : Random.Range(1, 7) * 5);
+                tile.Data = TileTypes[1];
+                tile.SetPositionAndHeight(new Vector2Int(x, y), q, r, tile.Data == TileTypes[0] ? 5 : 20);
                 Vector3 tilePosition = GetHexPositionFromCoordinate(new Vector2Int(x, y));
                 tilePosition.y = tilePosition.y + tile.Height / 2;
                 holder.transform.position = tilePosition;
@@ -41,7 +44,7 @@ public class Map : MonoBehaviour
                 tile.SetPosition(new Vector2Int(x, y));
                 PlayArea.set_Tile(x, y, tile);
 
-                if (tile.Data.BaseMat == TileTypes[1].BaseMat && nuberofenemies >= 0)
+                if (tile.Data.BaseMat == TileTypes[1].BaseMat && nuberofenemies >= 0 && x > 4 && y > 2)
                 {
                     PawnManager.PawnManagerInstance.EnemyPawns[nuberofenemies].SetPosition(tile);
                     nuberofenemies--;
@@ -62,46 +65,24 @@ public class Map : MonoBehaviour
     }
 
     //Sets a hexes possition in world coords from its x,y values
-    public Vector3 GetHexPositionFromCoordinate(Vector2Int Coordinates)
+    public Vector3 GetHexPositionFromCoordinate(Vector2Int coordinates)
     {
-        int column = Coordinates.x;
-        int row = Coordinates.y;
-        float width, height, xposition, yposition, horizontalDistance, VerticalDistance, offset;
+        int q = coordinates.x;
+        int r = coordinates.y;
         float size = outerSize;
-        bool shouldOffset;
 
-        if(!isFlatTopped)
-        {
-            shouldOffset = (row % 2) == 0;
-            width = Mathf.Sqrt(3) * size;
-            height = 2f * size;
+        // Calculate the horizontal and vertical spacing between hexagons
+        float width = Mathf.Sqrt(3) * size;
+        float height = 2f * size;
 
-            horizontalDistance = width;
-            VerticalDistance = height * (3f / 4f);
+        // Determine the horizontal offset based on the grid type
+        float offset = isFlatTopped ? width / 2f : 0f;
 
-            offset = (shouldOffset) ? width / 2 : 0;
+        // Calculate the x and y positions based on axial coordinates
+        float xPosition = (q * width) + offset;
+        float yPosition = -((r + q / 2f) * height * 0.75f);
 
-            xposition = (column * (horizontalDistance)) + offset;
-            yposition = (row * VerticalDistance);
-
-        }
-        else
-        {
-            shouldOffset = (column % 2) == 0;
-            height = Mathf.Sqrt(3) * size;
-            width = 2f * size;
-
-            VerticalDistance = height;
-            horizontalDistance = width * (3f / 4f);
-
-            offset = (shouldOffset) ? height / 2 : 0;
-
-            xposition = (column * horizontalDistance);
-            yposition = (row * (VerticalDistance)) - offset;
-
-        }
-
-        return new Vector3(xposition,0,-yposition);
+        return new Vector3(xPosition, 0f, yPosition);
     }
 
     //If for any reason the board needs to be entirely redrawn
@@ -152,7 +133,16 @@ public class Map : MonoBehaviour
     }
     private Tile tile_add(Tile hex, int QAxis, int RAxis, int SAxis)
     {
-        return PlayArea.SearchTileByCubeCoordinates(hex.QAxis + QAxis, RAxis + RAxis, hex.SAxis + SAxis);
+        return PlayArea.SearchTileByCubeCoordinates(hex.QAxis + QAxis, hex.RAxis + RAxis, hex.SAxis + SAxis);
+    }
+
+    public void GetMovementRange(Pawn center)
+    {
+        List<Tile> MoveRange = HexRing(center.Position, center.Stats.Movement);
+        foreach(Tile a in MoveRange)
+        {
+            a.Hex.meshupdate(HighlightMaterial);
+        }
     }
     public List<Tile> HexRing(Tile center, int radius)
     {
@@ -165,10 +155,24 @@ public class Map : MonoBehaviour
             for (int r = r1; r <= r2; r++)
             {
                 int s = -q - r;
-                results.Add(tile_add(center, q, r, s));
+                Tile add = tile_add(center, q, r, s);
+                if (add != null && add.Data.MovementCost != 0)
+                {
+                    results.Add(add);
+                }
             }
         }
 
+        foreach (Tile a in results)
+        {
+            Debug.Log(a.ToString());
+        }
+
         return results;
+    }
+
+    public void OnDestroy()
+    {
+         EventManager.OnPawnSelect += GetMovementRange;
     }
 }

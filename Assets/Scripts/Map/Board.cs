@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Board 
+public class Board
 {
     public int _size_X { get; private set; }
     public int _size_Y { get; private set; }
@@ -17,7 +17,7 @@ public class Board
     {
         _size_Y = coordinates.y;
         _size_X = coordinates.x;
-        _board_Contents = new Tile[_size_X,_size_Y]; 
+        _board_Contents = new Tile[_size_X, _size_Y];
     }
 
     public Tile get_Tile(int x, int y)
@@ -42,9 +42,9 @@ public class Board
     public List<Tile> GetNeighbours(Vector2Int centerTile)
     {
         List<Tile> Neighbours = new List<Tile>();
-        if(centerTile.x % 2 == 0)
+        if (centerTile.x % 2 == 0)
         {
-            foreach(Vector2Int neighbour in EvenNeighbours)
+            foreach (Vector2Int neighbour in EvenNeighbours)
             {
                 if ((centerTile.x + neighbour.x >= 0 && centerTile.x + neighbour.x < _size_X) && (centerTile.y + neighbour.y >= 0 && centerTile.y + neighbour.y < _size_Y))
                 {
@@ -66,18 +66,22 @@ public class Board
     }
     public Tile SearchTileByCubeCoordinates(int q, int r, int s)
     {
-        // Offset the center of the board by the cube coordinates to find the corresponding tile
-        int x = q + (_size_X - 1) / 2;
-        int y = r + (_size_Y - 1) / 2;
+        int centerX = _size_X / 2;
+        int centerY = _size_Y / 2;
+
+        // Convert cube coordinates (q, r, s) to array indices (x, y)
+        // This conversion depends on how your array and cube coordinates are related
+        int x = q + centerX;
+        int y = r + centerY;
 
         // Check if the calculated indices are within bounds
-        if (x >= 0 && x < _size_X && y >= 0 && y < _size_Y)
+        if (x >= 0 && x < _board_Contents.GetLength(0) && y >= 0 && y < _board_Contents.GetLength(1))
         {
             return _board_Contents[x, y];
         }
         else
         {
-            // If the indices are out of bounds, return null (no tile found)
+            // If the indices are out of bounds, return null
             return null;
         }
     }

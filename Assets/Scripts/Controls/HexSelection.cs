@@ -26,6 +26,10 @@ public class HexSelection : MonoBehaviour, ISelectionResponce
             SelectedObject = Selection;
             SelectedTile = SelectedObject.GetComponent<Tile>();
             SelectedContents = SelectedTile.Contents;
+            if (SelectedContents != null)
+            {
+                EventManager.PawnSelectTrigger(SelectedContents);
+            }
             SelectedTile.Hex.meshupdate(selectedMat);
         }
         else if (Selection != null)

@@ -17,7 +17,7 @@ public class Attributes : MonoBehaviour
 
     public int Defence { get { return Grit * 2; } } 
 
-    public int Movement { get { return Grace * 2 / 3;  } }
+    public int Movement { get { return Grace / 2;  } }
 
     public void Attack()
     {
