@@ -5,7 +5,7 @@ using UnityEngine;
 public class PawnManager : MonoBehaviour
 {
     public static PawnManager PawnManagerInstance { get; private set; }
-    private List<GameObject> PlayerPawns;
+    public List<PlayerPawns> PlayerPawns;
     public List<EnemyPawn> EnemyPawns;
 
     public List<EnemyPawn> GetAllEnemies()
@@ -16,7 +16,7 @@ public class PawnManager : MonoBehaviour
     public int getPlayerPawnPosition(GameObject Pawn)
     {
         int count = 0;
-        foreach(GameObject n in PlayerPawns)
+        foreach(PlayerPawns n in PlayerPawns)
         {
             if(n == Pawn)
             {
@@ -43,7 +43,7 @@ public class PawnManager : MonoBehaviour
         return -1;
     }
 
-    public GameObject getPlayerPawn(int Index)
+    public PlayerPawns getPlayerPawn(int Index)
     {
         return PlayerPawns[Index];
     }
@@ -55,7 +55,7 @@ public class PawnManager : MonoBehaviour
 
     public Pawn getPawn(GameObject Pawn)
     {
-        foreach(GameObject n in PlayerPawns)
+        foreach(PlayerPawns n in PlayerPawns)
         {
             if(n == Pawn)
             {
@@ -76,7 +76,7 @@ public class PawnManager : MonoBehaviour
     public int GetNextPlayerPawnByObject(GameObject Index)
     {
         int count = 0;
-        foreach(GameObject n in PlayerPawns)
+        foreach(PlayerPawns n in PlayerPawns)
         {
             if (n == Index)
             {
@@ -105,7 +105,6 @@ public class PawnManager : MonoBehaviour
         {
             PawnManagerInstance = this;
         }
-        PlayerPawns = new List<GameObject>();
         EnemyPawns = new List<EnemyPawn>();
     }
 
@@ -117,9 +116,9 @@ public class PawnManager : MonoBehaviour
         }
     }
 
-    public void populatePlayer(List<GameObject> Player)
+    public void populatePlayer(List<PlayerPawns> Player)
     {
-        foreach(GameObject n in Player)
+        foreach(PlayerPawns n in Player)
         {
             PlayerPawns.Add(n);
         }

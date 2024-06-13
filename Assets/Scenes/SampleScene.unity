@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 211503250}
   - component: {fileID: 211503249}
   - component: {fileID: 211503251}
+  - component: {fileID: 211503252}
   m_Layer: 0
   m_Name: EventManager
   m_TagString: Untagged
@@ -183,6 +184,21 @@ MonoBehaviour:
   - {fileID: 4908709550377585353, guid: 7eefb4495470b17418373713af653483, type: 3}
   - {fileID: 2990983727608788409, guid: ff3e086efd7c5264fb647af3e00a652e, type: 3}
   - {fileID: 5887141749045297486, guid: da38419b5c34795418ff734a515d517e, type: 3}
+--- !u!114 &211503252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 211503248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ce2df2fc37668f4497545a9be6790ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AllPlayerPawns:
+  - {fileID: 1604925891674580916, guid: 7a358c16b676947429f5287f1be1b8bb, type: 3}
+  - {fileID: 4151340956710062085, guid: 0a42e010195da574b84b1a91c7684236, type: 3}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -370,6 +386,7 @@ GameObject:
   - component: {fileID: 1137514811}
   - component: {fileID: 1137514810}
   - component: {fileID: 1137514812}
+  - component: {fileID: 1137514813}
   m_Layer: 0
   m_Name: Map
   m_TagString: Untagged
@@ -425,6 +442,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ToSpawn: {fileID: 11400000, guid: 88282f17907fefb4e9a3a39923fb73f2, type: 2}
+--- !u!114 &1137514813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1137514809}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70e5dbabe69f285458ec239b10e49000, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1258532742
 GameObject:
   m_ObjectHideFlags: 0
@@ -561,6 +590,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4aa56e67742b8524fabd1a877fd774a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayerPawns: []
   EnemyPawns: []
 --- !u!4 &1277025365
 Transform:

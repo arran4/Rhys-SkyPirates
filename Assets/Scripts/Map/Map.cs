@@ -33,7 +33,7 @@ public class Map : MonoBehaviour
                 int r = rStart + y;
                 GameObject holder = new GameObject($"Hex {x},{y}", typeof(Tile));
                 Tile tile = holder.GetComponent<Tile>();
-                tile.Data = TileTypes[1];
+                tile.Data = TileTypes[Random.Range(0,2)];
                 tile.SetPositionAndHeight(new Vector2Int(x, y), q, r, tile.Data == TileTypes[0] ? 5 : 20);
                 Vector3 tilePosition = GetHexPositionFromCoordinate(new Vector2Int(x, y));
                 tilePosition.y = tilePosition.y + tile.Height / 2;
@@ -49,6 +49,17 @@ public class Map : MonoBehaviour
                     PawnManager.PawnManagerInstance.EnemyPawns[nuberofenemies].SetPosition(tile);
                     nuberofenemies--;
                 }
+            }
+        }
+
+        int count = PlayerList.ListInstance.AllPlayerPawns.Count;
+        while (count > 0)
+        {
+            Tile playerPos = PlayArea.get_Tile(Random.Range(0, MapSize.x), Random.Range(0, MapSize.y));
+            if (playerPos.Data != TileTypes[0] && playerPos.Contents == null)
+            {
+                PawnManager.PawnManagerInstance.PlayerPawns[count - 1].SetPosition(playerPos);
+                count--;
             }
         }
 
@@ -79,8 +90,8 @@ public class Map : MonoBehaviour
         float offset = isFlatTopped ? width / 2f : 0f;
 
         // Calculate the x and y positions based on axial coordinates
-        float xPosition = (q * width) + offset;
-        float yPosition = -((r + q / 2f) * height * 0.75f);
+        float xPosition = (q * (width *0.90f) + offset);
+        float yPosition = -((r + q / 2f) * height * 0.90f);
 
         return new Vector3(xPosition, 0f, yPosition);
     }

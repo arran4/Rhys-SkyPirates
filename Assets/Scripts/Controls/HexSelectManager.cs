@@ -12,43 +12,50 @@ public class HexSelectManager : MonoBehaviour
     public ISelectionResponce Responce;
     public IHighlightResponce Highlight;
 
-    void Awake()
+    private HexSelectState currentState;
+    private DefaultSelectState defaultState;
+    private MoveSelectState moveSelectState;
+
+    public void Awake()
     {
-        Responce = GetComponent<ISelectionResponce>();
-        Highlight = GetComponent<IHighlightResponce>();
+        defaultState = new DefaultSelectState();
+        moveSelectState = new MoveSelectState();
+        currentState = defaultState;
+        currentState.EnterState(this);
+    }
+
+    void Start()
+    {
         EventManager.OnTileSelect += Select;
         EventManager.OnTileDeselect += Responce.Deselect;
         EventManager.OnTileHover += Highlight.SetHighlight;
         inputActions = EventManager.EventInstance.inputActions;
+
+
     }
 
     void Update()
     {
-        //If possible need to move most of this to a player controls script. This should honestly be assigning events to the highlight and select scripts.
-        //It may also call specific methods based on the type of highlighter or selector.
-        Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
-
-        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
-        {
-            Highlight.SetHighlight(hit.transform.gameObject);
-        }
-        if (inputActions.Battle.MoveSelection.triggered)
-        {
-            Highlight.MoveHighlight(inputActions.Battle.MoveSelection.ReadValue<Vector2>());
-        }
-        if (inputActions.Battle.Select.triggered)
-        {
-            Select();
-        }
-        if (inputActions.Battle.Deselect.triggered)
-        {
-            Responce.Deselect();
-        }
+        currentState.UpdateState(this);
     }
 
-    private void Select()
+    public void Select()
     {
         Responce.Select(Highlight.ReturnHighlight());
+    }
+
+    public void SwitchToMoveSelectState()
+    {
+        currentState.ExitState(this);
+        currentState = moveSelectState;
+        currentState.EnterState(this);
+    }
+
+    public void SwitchToDefaultState()
+    {
+        currentState.ExitState(this);
+        currentState = defaultState;
+        currentState.EnterState(this);
     }
 
     private void OnDestroy()
