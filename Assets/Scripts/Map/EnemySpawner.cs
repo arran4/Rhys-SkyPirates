@@ -8,7 +8,7 @@ public class EnemySpawner : MonoBehaviour
     public EnemyPackSO ToSpawn;
 
     // Start is called before the first frame update
-    void Start()
+    public void Start()
     {
         SpawnEnemies();
     }

@@ -16,7 +16,7 @@ public class MoveSelectState : HexSelectState
     public override void UpdateState(HexSelectManager manager)
     {
         // Movement selection update logic
-        // Similar logic but using moveSelect and moveHighlight instead
+        // Similar logic but using moveSelect
         Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
 
         if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))

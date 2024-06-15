@@ -27,11 +27,9 @@ public class HexSelectManager : MonoBehaviour
     void Start()
     {
         EventManager.OnTileSelect += Select;
-        EventManager.OnTileDeselect += Responce.Deselect;
-        EventManager.OnTileHover += Highlight.SetHighlight;
+        EventManager.OnTileDeselect += Deselcet;
+        EventManager.OnTileHover += SetHighlight;
         inputActions = EventManager.EventInstance.inputActions;
-
-
     }
 
     void Update()
@@ -42,6 +40,16 @@ public class HexSelectManager : MonoBehaviour
     public void Select()
     {
         Responce.Select(Highlight.ReturnHighlight());
+    }
+    
+    public void Deselcet()
+    {
+        Responce.Deselect();
+    }
+
+    public void SetHighlight(GameObject ToHighlight)
+    {
+        Highlight.SetHighlight(ToHighlight);
     }
 
     public void SwitchToMoveSelectState()
@@ -61,7 +69,7 @@ public class HexSelectManager : MonoBehaviour
     private void OnDestroy()
     {
         EventManager.OnTileSelect -= Select;
-        EventManager.OnTileDeselect -= Responce.Deselect;
-        EventManager.OnTileHover -= Highlight.SetHighlight;
+        EventManager.OnTileDeselect -= Deselcet;
+        EventManager.OnTileHover -= SetHighlight;
     }
 }
