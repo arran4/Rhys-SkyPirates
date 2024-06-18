@@ -4,10 +4,13 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 public class DefaultSelectState : HexSelectState
 {
+    private HexSelection HexState;
     public override void EnterState(HexSelectManager manager)
     {
-        manager.Responce = manager.GetComponent<ISelectionResponce>();
-        manager.Highlight = manager.GetComponent<IHighlightResponce>();
+        HexState = manager.GetComponent<HexSelection>();
+        manager.Responce = HexState;
+        manager.Highlight = manager.GetComponent<HexHighlight>();
+        manager.Responce.Deselect();
     }
 
     public override void UpdateState(HexSelectManager manager)
@@ -30,6 +33,10 @@ public class DefaultSelectState : HexSelectState
         if (manager.inputActions.Battle.Deselect.triggered)
         {
             manager.Responce.Deselect();
+        }
+        foreach (Tile tile in ((HexSelection)manager.Responce).movementRangeEnemy)
+        {
+            tile.Hex.meshupdate(HexState.selectedMat);
         }
     }
 

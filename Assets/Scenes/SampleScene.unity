@@ -468,6 +468,8 @@ GameObject:
   - component: {fileID: 1258532745}
   - component: {fileID: 1258532746}
   - component: {fileID: 1258532747}
+  - component: {fileID: 1258532749}
+  - component: {fileID: 1258532750}
   m_Layer: 0
   m_Name: CameraContainer
   m_TagString: Untagged
@@ -522,6 +524,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f323530933c2cca47952c864de641afc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  HighlightFinder: {fileID: 0}
 --- !u!114 &1258532746
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -535,6 +538,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectedMat: {fileID: 2100000, guid: d7806e505ddf59d418ec93becf72d829, type: 2}
+  movementRangeEnemy: []
 --- !u!114 &1258532747
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -561,6 +565,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Sensitivity: 1
+--- !u!114 &1258532749
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1258532742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d4474d575f79e0479972751a628700b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1258532750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1258532742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fca3b2c7e9ef41644b1475fbf91feb3f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HighlightMat: {fileID: 2100000, guid: 954e95ba543aa78468d8f9bbdeedc99a, type: 2}
 --- !u!1 &1277025363
 GameObject:
   m_ObjectHideFlags: 0

@@ -2,16 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MoveSelect : ISelectionResponce
+public class MoveSelect : MonoBehaviour, ISelectionResponce
 {
+    public Material HighlightMat;
+    public GameObject SelectedObject { get; private set; } = null;
     public GameObject CurrentSelection()
     {
-        throw new System.NotImplementedException();
+        return SelectedObject;
     }
 
     public void Deselect()
     {
-        throw new System.NotImplementedException();
+        HexSelectManager.HexSelectManagerInstance.SwitchToDefaultState();
     }
 
     public void Select(GameObject Selection)

@@ -6,11 +6,22 @@ using UnityEngine.InputSystem;
 public class MoveSelectState : HexSelectState
 {
     private MoveSelect moveSelect;
+    private List<Tile> movementRange;
 
     public override void EnterState(HexSelectManager manager)
     {
-        moveSelect = new MoveSelect();
+        GameObject Game = manager.Responce.CurrentSelection();
+        Tile Hex = Game.GetComponent<Tile>();
+        Pawn Center = Hex.Contents;
+
+        movementRange = manager.HighlightFinder.GetMovementRange(Center);
+        moveSelect = manager.GetComponent<MoveSelect>();
         manager.Responce = moveSelect;
+        
+        foreach (Tile tile in movementRange)
+        {
+            tile.Hex.meshupdate(moveSelect.HighlightMat);
+        }
     }
 
     public override void UpdateState(HexSelectManager manager)
@@ -35,10 +46,18 @@ public class MoveSelectState : HexSelectState
         {
             manager.Responce.Deselect();
         }
+        foreach (Tile tile in movementRange)
+        {
+            tile.Hex.meshupdate(moveSelect.HighlightMat);
+        }
     }
 
     public override void ExitState(HexSelectManager manager)
     {
-        // Clean up if necessary
+        foreach (Tile tile in movementRange)
+        {
+            tile.Hex.meshupdate(tile.BaseMaterial);
+        }
+        movementRange.Clear();
     }
 }

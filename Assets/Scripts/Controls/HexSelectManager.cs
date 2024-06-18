@@ -5,12 +5,15 @@ using UnityEngine.InputSystem;
 
 //Manager for the selection and highlight of hexes. Informs the current IHighlightResponce and ISelectionResponce when to
 //act with given inputs.
+[RequireComponent(typeof(RangeFinder))]
 public class HexSelectManager : MonoBehaviour
 {
+    public static HexSelectManager HexSelectManagerInstance { get; private set; }
     public GameObject HighLightSelect { get; private set; } = null;
     public BasicControls inputActions;
     public ISelectionResponce Responce;
     public IHighlightResponce Highlight;
+    public RangeFinder HighlightFinder;
 
     private HexSelectState currentState;
     private DefaultSelectState defaultState;
@@ -18,6 +21,14 @@ public class HexSelectManager : MonoBehaviour
 
     public void Awake()
     {
+        if (HexSelectManagerInstance != null && HexSelectManagerInstance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            HexSelectManagerInstance = this;
+        }
         defaultState = new DefaultSelectState();
         moveSelectState = new MoveSelectState();
         currentState = defaultState;
@@ -30,6 +41,7 @@ public class HexSelectManager : MonoBehaviour
         EventManager.OnTileDeselect += Deselcet;
         EventManager.OnTileHover += SetHighlight;
         inputActions = EventManager.EventInstance.inputActions;
+        HighlightFinder = GetComponent<RangeFinder>();
     }
 
     void Update()

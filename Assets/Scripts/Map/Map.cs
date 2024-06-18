@@ -13,14 +13,14 @@ public class Map : MonoBehaviour
     [SerializeField]
     public List<TileDataSO> TileTypes;
 
-    private Board PlayArea;
+    public Board PlayArea;
 
     public Material HighlightMaterial;
 
     //Using currently as a crude random map maker. Will probably have this build a map from a .json or two 
     void Start()
     {
-        EventManager.OnPawnSelect += GetMovementRange;
+    
         PlayArea = new Board(MapSize);
         int nuberofenemies = PawnManager.PawnManagerInstance.GetAllEnemies().Count -1;
         int qStart = -MapSize.x / 2;
@@ -142,48 +142,5 @@ public class Map : MonoBehaviour
             EventManager.TileHoverTrigger(PlayArea.get_Tile(closest.Column, closest.Row).transform.gameObject);
         }
     }
-    private Tile tile_add(Tile hex, int QAxis, int RAxis, int SAxis)
-    {
-        return PlayArea.SearchTileByCubeCoordinates(hex.QAxis + QAxis, hex.RAxis + RAxis, hex.SAxis + SAxis);
-    }
 
-    public void GetMovementRange(Pawn center)
-    {
-        List<Tile> MoveRange = HexRing(center.Position, center.Stats.Movement);
-        foreach(Tile a in MoveRange)
-        {
-            a.Hex.meshupdate(HighlightMaterial);
-        }
-    }
-    public List<Tile> HexRing(Tile center, int radius)
-    {
-        List<Tile> results = new List<Tile>();
-
-        for (int q = -radius; q <= radius; q++)
-        {
-            int r1 = Mathf.Max(-radius, -q - radius);
-            int r2 = Mathf.Min(radius, -q + radius);
-            for (int r = r1; r <= r2; r++)
-            {
-                int s = -q - r;
-                Tile add = tile_add(center, q, r, s);
-                if (add != null && add.Data.MovementCost != 0)
-                {
-                    results.Add(add);
-                }
-            }
-        }
-
-        foreach (Tile a in results)
-        {
-            Debug.Log(a.ToString());
-        }
-
-        return results;
-    }
-
-    public void OnDestroy()
-    {
-         EventManager.OnPawnSelect += GetMovementRange;
-    }
 }

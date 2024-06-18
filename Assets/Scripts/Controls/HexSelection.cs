@@ -9,6 +9,8 @@ public class HexSelection : MonoBehaviour, ISelectionResponce
     public Tile SelectedTile { get; private set; } = null;
     public Pawn SelectedContents { get; private set; } = null;
 
+    public List<Tile> movementRangeEnemy;
+
 
     public void Update()
     {
@@ -29,6 +31,14 @@ public class HexSelection : MonoBehaviour, ISelectionResponce
             if (SelectedContents != null)
             {
                 EventManager.PawnSelectTrigger(SelectedContents);
+                if (SelectedContents is PlayerPawns)
+                {
+                    HexSelectManager.HexSelectManagerInstance.SwitchToMoveSelectState();
+                }
+                else
+                {
+                    movementRangeEnemy = HexSelectManager.HexSelectManagerInstance.HighlightFinder.GetMovementRange(SelectedContents);
+                }
             }
             SelectedTile.Hex.meshupdate(selectedMat);
         }
@@ -44,6 +54,14 @@ public class HexSelection : MonoBehaviour, ISelectionResponce
     {
         if (SelectedObject != null)
         {
+            if (movementRangeEnemy != null)
+            {
+                foreach (Tile tile in movementRangeEnemy)
+                {
+                    tile.Hex.meshupdate(tile.BaseMaterial);
+                }
+                movementRangeEnemy.Clear();
+            }
             SelectedTile.Hex.meshupdate(SelectedTile.BaseMaterial);
             SelectedTile = null;
             SelectedContents = null;
