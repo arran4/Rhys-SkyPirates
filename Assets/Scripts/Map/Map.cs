@@ -63,14 +63,7 @@ public class Map : MonoBehaviour
             }
         }
 
-        for (int x = 0; x < MapSize.x; x++)
-        {
-            for (int y = 0; y < MapSize.y; y++)
-            {
-                Tile NeighbourGet = PlayArea.get_Tile(x, y);
-                NeighbourGet.Neighbours = PlayArea.GetNeighbours(new Vector2Int(NeighbourGet.Column, NeighbourGet.Row));
-            }
-        }
+        SetNeighbours();
         setFirstHex();
 
     }
@@ -143,4 +136,19 @@ public class Map : MonoBehaviour
         }
     }
 
+    void SetNeighbours()
+    {
+        for (int x = 0; x < MapSize.x; x++)
+        {
+            for (int y = 0; y < MapSize.y; y++)
+            {
+                Tile tile = PlayArea.get_Tile(x, y);
+                
+                foreach(Tile a in PlayArea.GetNeighbours(new Vector2Int(x, y)))
+                {
+                    tile.SetNeighbour(a);
+                }
+            }
+        }
+    }
 }

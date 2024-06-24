@@ -70,4 +70,40 @@ public class RangeFinder : MonoBehaviour
 
         return results;
     }
+
+    public List<Tile> HexReachable(Tile start, int movement)
+    {
+        HashSet<Tile> visited = new HashSet<Tile>();
+        Queue<(Tile tile, int cost)> fringes = new Queue<(Tile, int)>();
+
+        visited.Add(start);
+        fringes.Enqueue((start, 0));
+
+        while (fringes.Count > 0)
+        {
+            var (currentTile, currentCost) = fringes.Dequeue();
+
+            foreach (Tile neighbor in currentTile.Neighbours)
+            {
+                if (neighbor != null && !visited.Contains(neighbor) && !IsBlocked(neighbor))
+                {
+                    int newCost = currentCost + neighbor.Data.MovementCost;
+                    if (newCost <= movement)
+                    {
+                        visited.Add(neighbor);
+                        fringes.Enqueue((neighbor, newCost));
+                    }
+                }
+            }
+        }
+
+        return new List<Tile>(visited);
+    }
+
+    private bool IsBlocked(Tile tile)
+    {
+        // A tile is considered blocked if its movement cost is zero
+        return tile.Data.MovementCost == 0;
+    }
+
 }

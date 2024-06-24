@@ -27,6 +27,7 @@ public class Tile : MonoBehaviour
         Hex = GetComponent<HexRenderer>();
         HexCollider = GetComponent<MeshCollider>();
         cameraController = Camera.main.GetComponentInParent<CameraController>();
+        Neighbours = new List<Tile>();
     }
 
     private void Start()
@@ -34,6 +35,7 @@ public class Tile : MonoBehaviour
         Hex.DrawMesh();
         Hex.GetColliderMesh();
         SetColliderMesh();
+
     }
 
     public void SetColliderMesh()
@@ -153,5 +155,13 @@ public class Tile : MonoBehaviour
         BaseMaterial = Data.BaseMat;
         Hex.H_Mat = Data.BaseMat;
         Hex.meshupdate(Data.BaseMat);
+    }
+
+    public void SetNeighbour( Tile neighbour)
+    {
+        if (!Neighbours.Contains(neighbour))
+        {
+            Neighbours.Add(neighbour);
+        }
     }
 }

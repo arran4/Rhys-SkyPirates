@@ -14,7 +14,7 @@ public class MoveSelectState : HexSelectState
         Tile Hex = Game.GetComponent<Tile>();
         Pawn Center = Hex.Contents;
 
-        movementRange = manager.HighlightFinder.GetMovementRange(Center);
+        movementRange = manager.HighlightFinder.HexReachable(Hex, Center.Stats.Movement);
         moveSelect = manager.GetComponent<MoveSelect>();
         manager.Responce = moveSelect;
         

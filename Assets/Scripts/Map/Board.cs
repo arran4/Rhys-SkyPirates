@@ -10,9 +10,8 @@ public class Board
     private Tile[,] _board_Contents;
 
     //Additive vectors for assigning neighbours 
-    private Vector2Int[] EvenNeighbours = new Vector2Int[6] { new Vector2Int(1, 0), new Vector2Int(1, -1), new Vector2Int(0, -1), new Vector2Int(-1, -1), new Vector2Int(-1, 0), new Vector2Int(0, 1) };
-    private Vector2Int[] OddNeighbours = new Vector2Int[6] { new Vector2Int(1, 1), new Vector2Int(1, 0), new Vector2Int(0, -1), new Vector2Int(-1, 0), new Vector2Int(-1, 1), new Vector2Int(0, 1) };
-
+    private Vector3Int[] directions = new Vector3Int[6] { new Vector3Int(1, -1, 0), new Vector3Int(1, 0, -1), new Vector3Int(0, 1, -1),new Vector3Int(-1, 1, 0), new Vector3Int(-1, 0, 1), new Vector3Int(0, -1, 1) };
+   
     public Board(Vector2Int coordinates)
     {
         _size_Y = coordinates.y;
@@ -42,26 +41,19 @@ public class Board
     public List<Tile> GetNeighbours(Vector2Int centerTile)
     {
         List<Tile> Neighbours = new List<Tile>();
-        if (centerTile.x % 2 == 0)
+
+        Tile tile = get_Tile(centerTile.x, centerTile.y);
+
+        for (int i = 0; i < 6; i++)
         {
-            foreach (Vector2Int neighbour in EvenNeighbours)
+            Vector3Int neighborPos = new Vector3Int(tile.QAxis + directions[i].x, tile.RAxis + directions[i].y, tile.SAxis + directions[i].z);
+            Tile neighbour = SearchTileByCubeCoordinates(neighborPos.x, neighborPos.y, neighborPos.z);
+            if (neighbour != null)
             {
-                if ((centerTile.x + neighbour.x >= 0 && centerTile.x + neighbour.x < _size_X) && (centerTile.y + neighbour.y >= 0 && centerTile.y + neighbour.y < _size_Y))
-                {
-                    Neighbours.Add(get_Tile(centerTile.x + neighbour.x, centerTile.y + neighbour.y));
-                }
+                Neighbours.Add(neighbour);
             }
         }
-        else
-        {
-            foreach (Vector2Int neighbour in OddNeighbours)
-            {
-                if ((centerTile.x + neighbour.x >= 0 && centerTile.x + neighbour.x < _size_X) && (centerTile.y + neighbour.y >= 0 && centerTile.y + neighbour.y < _size_Y))
-                {
-                    Neighbours.Add(get_Tile(centerTile.x + neighbour.x, centerTile.y + neighbour.y));
-                }
-            }
-        }
+
         return Neighbours;
     }
     public Tile SearchTileByCubeCoordinates(int q, int r, int s)
