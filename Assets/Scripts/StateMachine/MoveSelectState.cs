@@ -6,18 +6,27 @@ using UnityEngine.InputSystem;
 public class MoveSelectState : HexSelectState
 {
     private MoveSelect moveSelect;
+    private MovementHighlight moveHighlight;
     private List<Tile> movementRange;
+    private Pawn pawn;
 
     public override void EnterState(HexSelectManager manager)
     {
-        GameObject Game = manager.Responce.CurrentSelection();
-        Tile Hex = Game.GetComponent<Tile>();
-        Pawn Center = Hex.Contents;
-
-        movementRange = manager.HighlightFinder.HexReachable(Hex, Center.Stats.Movement);
         moveSelect = manager.GetComponent<MoveSelect>();
+        moveHighlight = manager.GetComponent<MovementHighlight>();
+        GameObject selectedObject = manager.Responce.CurrentSelection();
+        Tile hex = selectedObject.GetComponent<Tile>();
+        pawn = hex.Contents;
+
+        moveSelect.SelectedCharater = pawn;
+        movementRange = manager.HighlightFinder.HexReachable(hex, pawn.Stats.Movement);
+        moveSelect.Selections.Add(hex);
+        moveSelect.Area = movementRange;
+        moveHighlight.Area = movementRange;
+        moveHighlight.Starthighlight(selectedObject);
         manager.Responce = moveSelect;
-        
+        manager.Highlight = moveHighlight;
+
         foreach (Tile tile in movementRange)
         {
             tile.Hex.meshupdate(moveSelect.HighlightMat);
@@ -26,29 +35,23 @@ public class MoveSelectState : HexSelectState
 
     public override void UpdateState(HexSelectManager manager)
     {
-        // Movement selection update logic
-        // Similar logic but using moveSelect
         Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
 
         if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
         {
             manager.Highlight.SetHighlight(hit.transform.gameObject);
         }
-        if (manager.inputActions.Battle.MoveSelection.triggered)
+        if (manager.InputActions.Battle.MoveSelection.triggered)
         {
-            manager.Highlight.MoveHighlight(manager.inputActions.Battle.MoveSelection.ReadValue<Vector2>());
+            manager.Highlight.MoveHighlight(manager.InputActions.Battle.MoveSelection.ReadValue<Vector2>());
         }
-        if (manager.inputActions.Battle.Select.triggered)
+        if (manager.InputActions.Battle.Select.triggered)
         {
             manager.Select();
         }
-        if (manager.inputActions.Battle.Deselect.triggered)
+        if (manager.InputActions.Battle.Deselect.triggered)
         {
             manager.Responce.Deselect();
-        }
-        foreach (Tile tile in movementRange)
-        {
-            tile.Hex.meshupdate(moveSelect.HighlightMat);
         }
     }
 
@@ -58,6 +61,9 @@ public class MoveSelectState : HexSelectState
         {
             tile.Hex.meshupdate(tile.BaseMaterial);
         }
+        moveHighlight.CleanUp();
+        moveSelect.CleanUP();
         movementRange.Clear();
+        pawn = null;
     }
 }

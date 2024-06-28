@@ -16,6 +16,8 @@ public class EventManager : MonoBehaviour
     public delegate void TileDeselect();
     public static event PawnSelect OnPawnSelect;
     public delegate void PawnSelect(Pawn Selected);
+    public static event MovementChange OnMovementChange;
+    public delegate void MovementChange(List<Vector3Int> Points);
 
     public static void TileSelectTrigger()
     {
@@ -35,6 +37,10 @@ public class EventManager : MonoBehaviour
         OnPawnSelect?.Invoke(Selected);
     }
 
+    public static void MovementChangeTrigger(List<Vector3Int> Points)
+    {
+        OnMovementChange?.Invoke(Points);
+    }
     private void Awake()
     {
         // If there is an instance, and it's not me, delete myself.

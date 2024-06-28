@@ -137,7 +137,7 @@ public class Tile : MonoBehaviour
         }
 
         Tile other = (Tile)obj;
-        return Column == other.QAxis && Row == other.RAxis && SAxis == other.SAxis;
+        return QAxis == other.QAxis && RAxis == other.RAxis && SAxis == other.SAxis;
     }
 
     public override string ToString()
@@ -163,5 +163,10 @@ public class Tile : MonoBehaviour
         {
             Neighbours.Add(neighbour);
         }
+    }
+
+    public Vector3Int ReturnSquareCoOrds()
+    {
+        return new Vector3Int(QAxis, RAxis, SAxis);
     }
 }

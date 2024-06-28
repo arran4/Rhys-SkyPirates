@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class RangeFinder : MonoBehaviour
 {
-    private Map _GameBoard;
+    public Map _GameBoard;
     // Start is called before the first frame update
     void Start()
     {
@@ -88,7 +88,7 @@ public class RangeFinder : MonoBehaviour
                 if (neighbor != null && !visited.Contains(neighbor) && !IsBlocked(neighbor))
                 {
                     int newCost = currentCost + neighbor.Data.MovementCost;
-                    if (newCost <= movement)
+                    if (newCost <= movement && neighbor.Contents == null)
                     {
                         visited.Add(neighbor);
                         fringes.Enqueue((neighbor, newCost));

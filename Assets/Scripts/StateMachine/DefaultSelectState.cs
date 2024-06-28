@@ -22,22 +22,19 @@ public class DefaultSelectState : HexSelectState
         {
             manager.Highlight.SetHighlight(hit.transform.gameObject);
         }
-        if (manager.inputActions.Battle.MoveSelection.triggered)
+        if (manager.InputActions.Battle.MoveSelection.triggered)
         {
-            manager.Highlight.MoveHighlight(manager.inputActions.Battle.MoveSelection.ReadValue<Vector2>());
+            manager.Highlight.MoveHighlight(manager.InputActions.Battle.MoveSelection.ReadValue<Vector2>());
         }
-        if (manager.inputActions.Battle.Select.triggered)
+        if (manager.InputActions.Battle.Select.triggered)
         {
             manager.Select();
         }
-        if (manager.inputActions.Battle.Deselect.triggered)
+        if (manager.InputActions.Battle.Deselect.triggered)
         {
             manager.Responce.Deselect();
         }
-        foreach (Tile tile in ((HexSelection)manager.Responce).movementRangeEnemy)
-        {
-            tile.Hex.meshupdate(HexState.selectedMat);
-        }
+
     }
 
     public override void ExitState(HexSelectManager manager)

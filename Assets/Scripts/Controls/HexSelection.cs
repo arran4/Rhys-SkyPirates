@@ -33,11 +33,11 @@ public class HexSelection : MonoBehaviour, ISelectionResponce
                 EventManager.PawnSelectTrigger(SelectedContents);
                 if (SelectedContents is PlayerPawns)
                 {
-                    HexSelectManager.HexSelectManagerInstance.SwitchToMoveSelectState();
+                    HexSelectManager.Instance.SwitchToMoveSelectState();
                 }
                 else
                 {
-                    movementRangeEnemy = HexSelectManager.HexSelectManagerInstance.HighlightFinder.GetMovementRange(SelectedContents);
+                    movementRangeEnemy = HexSelectManager.Instance.HighlightFinder.GetMovementRange(SelectedContents);
                 }
             }
             SelectedTile.Hex.meshupdate(selectedMat);

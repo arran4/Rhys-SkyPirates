@@ -127,7 +127,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Chutzpah: 4
   Cadishness: 4
-  Grace: 4
+  Grace: 10
   Grit: 4
   Serendipity: 4
   Swagger: 4

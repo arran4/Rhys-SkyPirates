@@ -17,10 +17,12 @@ public class Map : MonoBehaviour
 
     public Material HighlightMaterial;
 
+    private MovementLine Arrow;
+
     //Using currently as a crude random map maker. Will probably have this build a map from a .json or two 
     void Start()
     {
-    
+        Arrow = GetComponent<MovementLine>();
         PlayArea = new Board(MapSize);
         int nuberofenemies = PawnManager.PawnManagerInstance.GetAllEnemies().Count -1;
         int qStart = -MapSize.x / 2;
@@ -63,6 +65,7 @@ public class Map : MonoBehaviour
             }
         }
 
+        Arrow.SetMap(PlayArea);
         SetNeighbours();
         setFirstHex();
 

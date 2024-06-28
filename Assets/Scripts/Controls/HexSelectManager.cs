@@ -8,43 +8,41 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(RangeFinder))]
 public class HexSelectManager : MonoBehaviour
 {
-    public static HexSelectManager HexSelectManagerInstance { get; private set; }
-    public GameObject HighLightSelect { get; private set; } = null;
-    public BasicControls inputActions;
-    public ISelectionResponce Responce;
-    public IHighlightResponce Highlight;
-    public RangeFinder HighlightFinder;
+    public static HexSelectManager Instance { get; private set; }
+    public BasicControls InputActions { get; private set; }
+    public ISelectionResponce Responce { get; set; }
+    public IHighlightResponce Highlight { get; set; }
+    public RangeFinder HighlightFinder { get; private set; }
 
     private HexSelectState currentState;
-    private DefaultSelectState defaultState;
-    private MoveSelectState moveSelectState;
+    private readonly HexSelectState defaultState = new DefaultSelectState();
+    private readonly HexSelectState moveSelectState = new MoveSelectState();
 
-    public void Awake()
+    private void Awake()
     {
-        if (HexSelectManagerInstance != null && HexSelectManagerInstance != this)
+        if (Instance != null && Instance != this)
         {
             Destroy(this);
         }
         else
         {
-            HexSelectManagerInstance = this;
+            Instance = this;
         }
-        defaultState = new DefaultSelectState();
-        moveSelectState = new MoveSelectState();
+
         currentState = defaultState;
         currentState.EnterState(this);
     }
 
-    void Start()
+    private void Start()
     {
         EventManager.OnTileSelect += Select;
-        EventManager.OnTileDeselect += Deselcet;
+        EventManager.OnTileDeselect += Deselect;
         EventManager.OnTileHover += SetHighlight;
-        inputActions = EventManager.EventInstance.inputActions;
+        InputActions = EventManager.EventInstance.inputActions;
         HighlightFinder = GetComponent<RangeFinder>();
     }
 
-    void Update()
+    private void Update()
     {
         currentState.UpdateState(this);
     }
@@ -53,15 +51,15 @@ public class HexSelectManager : MonoBehaviour
     {
         Responce.Select(Highlight.ReturnHighlight());
     }
-    
-    public void Deselcet()
+
+    public void Deselect()
     {
         Responce.Deselect();
     }
 
-    public void SetHighlight(GameObject ToHighlight)
+    public void SetHighlight(GameObject toHighlight)
     {
-        Highlight.SetHighlight(ToHighlight);
+        Highlight.SetHighlight(toHighlight);
     }
 
     public void SwitchToMoveSelectState()
@@ -81,7 +79,36 @@ public class HexSelectManager : MonoBehaviour
     private void OnDestroy()
     {
         EventManager.OnTileSelect -= Select;
-        EventManager.OnTileDeselect -= Deselcet;
+        EventManager.OnTileDeselect -= Deselect;
         EventManager.OnTileHover -= SetHighlight;
+    }
+
+    public void UpdateMovementRange(List<Tile> Area, Tile Selection)
+    {
+        if (((MoveSelect)Responce).Selections.Count > 0)
+        {
+            Tile lastSelectedTile = Selection;
+            List<Tile> movementRange = Area;
+            PathfinderSelections Paths = ((MovementHighlight)Highlight).UpdateSelection();
+            int remainingMovement = ((MoveSelect)Responce).SelectedCharater.Stats.Movement;
+            foreach (List<Vector3Int> a in Paths.Paths)
+            {
+                remainingMovement -= a.Count;
+            }
+            remainingMovement += 1;
+            foreach (Tile tile in movementRange)
+            {
+                tile.Hex.meshupdate(tile.BaseMaterial);
+            }
+            movementRange = HexSelectManager.Instance.HighlightFinder.HexReachable(lastSelectedTile, remainingMovement);
+            ((MoveSelect)Responce).SetPaths(Paths);
+            ((MoveSelect)Responce).Area = movementRange;
+            ((MovementHighlight)Highlight).Area = movementRange;
+
+            foreach (Tile tile in movementRange)
+            {
+                tile.Hex.meshupdate(((MoveSelect)Responce).HighlightMat);
+            }
+        }
     }
 }
