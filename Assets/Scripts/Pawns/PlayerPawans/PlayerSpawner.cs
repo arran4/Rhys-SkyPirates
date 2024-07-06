@@ -15,7 +15,7 @@ public class PlayerSpawner : MonoBehaviour
         foreach (GameObject n in PlayerList.ListInstance.AllPlayerPawns)
         {
                 GameObject Holder = Instantiate(n);
-                PlayerPawns ToAdd = Holder.GetComponent<PlayerPawns>();
+                PlayerPawns ToAdd = Holder.GetComponentInChildren<PlayerPawns>();
                 Players.Add(ToAdd);            
         }
         PawnManager.PawnManagerInstance.populatePlayer(Players);

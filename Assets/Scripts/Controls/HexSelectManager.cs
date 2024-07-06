@@ -95,7 +95,7 @@ public class HexSelectManager : MonoBehaviour
             {
                 remainingMovement -= a.Count;
             }
-            remainingMovement += 1;
+            remainingMovement += Paths.Paths.Count;
             foreach (Tile tile in movementRange)
             {
                 tile.Hex.meshupdate(tile.BaseMaterial);

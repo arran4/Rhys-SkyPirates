@@ -44,6 +44,7 @@ public class Map : MonoBehaviour
                 Instantiate(tile.Data.TilePrefab, holder.transform).transform.position += new Vector3(0, tile.Height / 2 -1, 0);
                 tile.SetupHexRenderer(innerSize, outerSize, isFlatTopped);
                 tile.SetPosition(new Vector2Int(x, y));
+                tile.SetPawnPos();
                 PlayArea.set_Tile(x, y, tile);
 
                 if (tile.Data.BaseMat == TileTypes[1].BaseMat && nuberofenemies >= 0 && x > 4 && y > 2)

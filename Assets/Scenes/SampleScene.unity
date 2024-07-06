@@ -197,8 +197,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AllPlayerPawns:
-  - {fileID: 1604925891674580916, guid: 7a358c16b676947429f5287f1be1b8bb, type: 3}
-  - {fileID: 4151340956710062085, guid: 0a42e010195da574b84b1a91c7684236, type: 3}
+  - {fileID: 6485819626143360739, guid: 7a358c16b676947429f5287f1be1b8bb, type: 3}
+  - {fileID: 8492403051794319698, guid: 0a42e010195da574b84b1a91c7684236, type: 3}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -706,6 +706,7 @@ MonoBehaviour:
   SelectedCharater: {fileID: 0}
   Area: []
   Selections: []
+  range: {fileID: 0}
 --- !u!114 &1258532751
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -720,6 +721,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HighlightMat: {fileID: 2100000, guid: 1bfb50ba18d140840a1beb1a042e91f6, type: 2}
   Area: []
+  CurrentPath: []
 --- !u!1 &1277025363
 GameObject:
   m_ObjectHideFlags: 0

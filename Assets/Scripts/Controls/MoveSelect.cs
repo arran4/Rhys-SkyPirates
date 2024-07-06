@@ -56,13 +56,13 @@ public class MoveSelect : MonoBehaviour, ISelectionResponce
             {
                 SelectedObject = Selections[Selections.Count - 1].gameObject;
                 int remainingMovement = SelectedCharater.Stats.Movement;
+                if (Selections.Count != 1)
+                {
+                    remainingMovement += 1;
+                }
                 foreach (List<Vector3Int> a in PathfinderSelections.Paths)
                 {
                     remainingMovement -= a.Count;
-                }
-                if(Selections.Count != 1)
-                {
-                    remainingMovement += 1;
                 }
                 Area = range.HexReachable(SelectedObject.GetComponent<Tile>(), remainingMovement);
                 ((MovementHighlight)HexSelectManager.Instance.Highlight).Area = Area;
@@ -84,7 +84,9 @@ public class MoveSelect : MonoBehaviour, ISelectionResponce
                 SelectedCharater.Position = tile;
                 tile.Contents = SelectedCharater;
                 Selections[0].Contents = null;
-                SelectedCharater.gameObject.transform.position = tile.gameObject.transform.position;
+                //Currently hard coded hight change for test cubes, not 100% sure why the diffrence in hight is 4.5. Investigate and set dynamicly 
+                Vector3 Position = new Vector3(tile.PawnPosition.transform.position.x, tile.PawnPosition.transform.position.y + 4.5f, tile.PawnPosition.transform.position.z);
+                SelectedCharater.gameObject.transform.position = Position;
                 HexSelectManager.Instance.SwitchToDefaultState();
                 EventManager.MovementChangeTrigger(null);
                 return;

@@ -19,6 +19,8 @@ public class Tile : MonoBehaviour
     public List<Tile> Neighbours;
     public Material BaseMaterial;
     public Pawn Contents = null;
+    public GameObject PawnPosition;
+
 
     private CameraController cameraController;
 
@@ -28,14 +30,16 @@ public class Tile : MonoBehaviour
         HexCollider = GetComponent<MeshCollider>();
         cameraController = Camera.main.GetComponentInParent<CameraController>();
         Neighbours = new List<Tile>();
+        PawnPosition = new GameObject("PawnPosition");
+        PawnPosition.transform.position = this.transform.position;
+        PawnPosition.transform.parent = this.transform;
     }
 
     private void Start()
     {
         Hex.DrawMesh();
         Hex.GetColliderMesh();
-        SetColliderMesh();
-
+        SetColliderMesh();      
     }
 
     public void SetColliderMesh()
@@ -64,15 +68,19 @@ public class Tile : MonoBehaviour
 
     public void SetPositionAndHeight(Vector2Int coords, int q, int r, float height)
     {
-        Column = coords.x;
-        Row = coords.y;
-        QAxis = q;
-        RAxis = r;
-        SAxis = -QAxis - RAxis;
-        Height = height;
+        SetPosition(coords);
+        SetQUSPosition(q, r);
+        SetHeight(height);      
         transform.position = new Vector3(transform.position.x, Height / 2f, transform.position.z);
+        
     }
 
+    public void SetPawnPos()
+    {
+        PawnPosition.transform.localPosition = new Vector3(PawnPosition.transform.localPosition.x, PawnPosition.transform.localPosition.y + Height / 2f, PawnPosition.transform.localPosition.z);
+    }
+
+    //Might find somewhere else for this code to sit, don't like the idea of every single hex having a copy of the camera.
     public Tile CheckNeighbours(Vector2 direction)
     {
         Vector3 forward = CalculateForwardVector(direction);
