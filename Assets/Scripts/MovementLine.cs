@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -47,7 +46,7 @@ public class MovementLine : MonoBehaviour
     {
         for (int x = 0; x < Wpoint.Count; x++)
         {
-            Movement.SetPosition(x, (Wpoint[x].position + new Vector3(0,15,0)));
+            Movement.SetPosition(x, (Wpoint[x].position + new Vector3(0, 15, 0)));
         }
     }
 

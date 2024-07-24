@@ -14,9 +14,12 @@ public class HexSelectManager : MonoBehaviour
     public IHighlightResponce Highlight { get; set; }
     public RangeFinder HighlightFinder { get; private set; }
 
+    public Canvas UI { get; private set; }
+
     private HexSelectState currentState;
     private readonly HexSelectState defaultState = new DefaultSelectState();
     private readonly HexSelectState moveSelectState = new MoveSelectState();
+    private readonly HexSelectState actionSelectState = new ActionSelectState();
 
     private void Awake()
     {
@@ -40,6 +43,8 @@ public class HexSelectManager : MonoBehaviour
         EventManager.OnTileHover += SetHighlight;
         InputActions = EventManager.EventInstance.inputActions;
         HighlightFinder = GetComponent<RangeFinder>();
+        UI = FindObjectOfType<Canvas>();
+        UI.enabled = false;
     }
 
     private void Update()
@@ -73,6 +78,13 @@ public class HexSelectManager : MonoBehaviour
     {
         currentState.ExitState(this);
         currentState = defaultState;
+        currentState.EnterState(this);
+    }
+
+    public void SwitchToActionSelectState()
+    {
+        currentState.ExitState(this);
+        currentState = actionSelectState;
         currentState.EnterState(this);
     }
 

@@ -39,7 +39,7 @@ public class MoveSelect : MonoBehaviour, ISelectionResponce
         }
         else
         {
-            HexSelectManager.Instance.SwitchToDefaultState();
+            HexSelectManager.Instance.SwitchToActionSelectState();
             EventManager.MovementChangeTrigger(null);
         }
         if (SLTile != null)
@@ -49,7 +49,7 @@ public class MoveSelect : MonoBehaviour, ISelectionResponce
             ((MovementHighlight)HexSelectManager.Instance.Highlight).PathfinderSelections = PathfinderSelections;
             if (Selections.Count == 0)
             {
-                HexSelectManager.Instance.SwitchToDefaultState();
+                HexSelectManager.Instance.SwitchToActionSelectState();
                 EventManager.MovementChangeTrigger(null);
             }
             else

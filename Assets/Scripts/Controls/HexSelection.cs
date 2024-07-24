@@ -33,7 +33,7 @@ public class HexSelection : MonoBehaviour, ISelectionResponce
                 EventManager.PawnSelectTrigger(SelectedContents);
                 if (SelectedContents is PlayerPawns)
                 {
-                    HexSelectManager.Instance.SwitchToMoveSelectState();
+                    HexSelectManager.Instance.SwitchToActionSelectState();
                 }
                 else
                 {
