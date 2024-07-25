@@ -11,10 +11,13 @@ public class MenuSelect : MonoBehaviour, ISelectionResponce
 
     public int CharaterNo;
 
+    private bool isReselecting = false;
+
     public void Start()
     {
         CharaterNo = -1;
     }
+
     public GameObject CurrentSelection()
     {
         return SelectedObject;
@@ -29,7 +32,7 @@ public class MenuSelect : MonoBehaviour, ISelectionResponce
             SelectedContents = null;
             SelectedObject = null;
         }
-        if (CharaterNo == -1)
+        if (CharaterNo == -1 && !isReselecting)
         {
             HexSelectManager.Instance.SwitchToDefaultState();
         }
@@ -52,25 +55,31 @@ public class MenuSelect : MonoBehaviour, ISelectionResponce
         {
             SelectedTile = SelectedObject.GetComponent<Tile>();
             SelectedContents = SelectedTile.Contents;
-            if(SelectedContents == null || !(SelectedContents is PlayerPawns))
+            if (SelectedContents == null || !(SelectedContents is PlayerPawns))
             {
                 CharaterNo = -1;
             }
             else
             {
                 int index = 0;
-                foreach(PlayerPawns a in PawnManager.PawnManagerInstance.PlayerPawns)
+                foreach (PlayerPawns a in PawnManager.PawnManagerInstance.PlayerPawns)
                 {
-                    if(a == SelectedContents)
+                    if (a == SelectedContents)
                     {
                         CharaterNo = index;
                     }
+                    index++;
                 }
             }
+
+            // Set the reselecting flag to true before deselecting
+            isReselecting = true;
             Deselect();
+            // Set the reselecting flag back to false after deselecting
+            isReselecting = false;
+
             Select(Selection);
             CharaterNo = -1;
         }
     }
-
 }
