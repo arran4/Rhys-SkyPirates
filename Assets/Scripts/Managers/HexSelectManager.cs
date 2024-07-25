@@ -72,6 +72,7 @@ public class HexSelectManager : MonoBehaviour
         currentState.ExitState(this);
         currentState = moveSelectState;
         currentState.EnterState(this);
+        Debug.Log("MoveState");
     }
 
     public void SwitchToDefaultState()
@@ -79,6 +80,7 @@ public class HexSelectManager : MonoBehaviour
         currentState.ExitState(this);
         currentState = defaultState;
         currentState.EnterState(this);
+        Debug.Log("DefultState");
     }
 
     public void SwitchToActionSelectState()
@@ -86,6 +88,7 @@ public class HexSelectManager : MonoBehaviour
         currentState.ExitState(this);
         currentState = actionSelectState;
         currentState.EnterState(this);
+        Debug.Log("ActionState");
     }
 
     private void OnDestroy()
