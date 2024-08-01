@@ -31,6 +31,10 @@ PrefabInstance:
       propertyPath: Serendipity
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 3958775268115383871, guid: 7eefb4495470b17418373713af653483, type: 3}
+      propertyPath: BaseHealth
+      value: 80
+      objectReference: {fileID: 0}
     - target: {fileID: 4193185677717993086, guid: 7eefb4495470b17418373713af653483, type: 3}
       propertyPath: m_RootOrder
       value: 0
