@@ -7,7 +7,7 @@ public class KaiHealth : MonoBehaviour, IHealth
     public int BaseHealth;
     private int ExtraHealth;
     private int TotalHealth;
-    private int CurrentHealth;
+    public int CurrentHealth;
 
     public void Start()
     {
@@ -19,23 +19,35 @@ public class KaiHealth : MonoBehaviour, IHealth
 
     public void Heal(int healing)
     {
-        throw new System.NotImplementedException();
+        CurrentHealth += healing;
+        if (CurrentHealth > TotalHealth)
+        {
+            CurrentHealth = TotalHealth;
+        }
     }
 
     public void HealPercent(double healing)
     {
-        throw new System.NotImplementedException();
+        double percent = TotalHealth * healing;
+        CurrentHealth += (int)percent;
+        if (CurrentHealth > TotalHealth)
+        {
+            CurrentHealth = TotalHealth;
+        }
     }
 
     public int ReturnHealth()
     {
-        throw new System.NotImplementedException();
+        return CurrentHealth;
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damage, DamageType Element)
     {
         CurrentHealth -= damage;
-        throw new System.NotImplementedException();
     }
 
+    public int ReturnBaseHealth()
+    {
+        return TotalHealth;
+    }
 }
