@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83b481ba647aa8e48ac9bbe0481b33d7, type: 3}
   m_Name: StandardMeeleAttack
   m_EditorClassIdentifier: 
-  Name: 
-  Range: 0
+  Name: BasicMeeleAttack
+  Range: 1
   Personal: 0
-  TotalArea: 
-  Action: 
-  HealthChange: 
+  TotalArea: 00000000
+  Action: 00000000
+  HealthChange: 0f000000
   BoardChange: 
   PawnChange: 
