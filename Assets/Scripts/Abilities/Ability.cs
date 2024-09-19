@@ -5,6 +5,7 @@ using UnityEngine;
 
 public enum RangeType
 {
+    Single,
     Diagonal,
     Ring,
     Area,
@@ -19,6 +20,13 @@ public enum Affects
     Bounce
 }
 
+public enum ActionTypes
+{
+    Damage,
+    Heal,
+    Nutral
+}
+
 public enum Effects
 {
     Levitate,
@@ -26,10 +34,15 @@ public enum Effects
     Paralize
 }
 
+[CreateAssetMenu(fileName = "Ability", menuName = "ScriptableObject/Ability")]
 public class Ability : ScriptableObject
 {
+    public string Name;
+    public int Range;
+    public bool Personal;
     public List<RangeType> TotalArea;
-    public List<int> Damage;
+    public List<ActionTypes> Action;
+    public List<int> HealthChange;
     public List<Affects> BoardChange;
     public List<Effects> PawnChange;
 
