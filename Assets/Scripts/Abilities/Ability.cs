@@ -39,8 +39,8 @@ public class Ability : ScriptableObject
 {
     public string Name;
     public int Range;
-    public bool Personal;
     public List<RangeType> TotalArea;
+    public List<int> Size;
     public List<ActionTypes> Action;
     public List<int> HealthChange;
     public List<Affects> BoardChange;
