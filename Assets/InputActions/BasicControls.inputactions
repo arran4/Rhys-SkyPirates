@@ -779,6 +779,33 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Menu",
+            "id": "d78f1702-3265-400e-b11f-b442b1d64b0b",
+            "actions": [
+                {
+                    "name": "New action",
+                    "type": "Button",
+                    "id": "68d1123c-665e-40fe-9643-57c44a77fa20",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "545d03b5-37fb-444d-986e-c0338dda2d42",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "New action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []

@@ -792,6 +792,33 @@ public class @BasicControls : IInputActionCollection, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Menu"",
+            ""id"": ""d78f1702-3265-400e-b11f-b442b1d64b0b"",
+            ""actions"": [
+                {
+                    ""name"": ""New action"",
+                    ""type"": ""Button"",
+                    ""id"": ""68d1123c-665e-40fe-9643-57c44a77fa20"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""545d03b5-37fb-444d-986e-c0338dda2d42"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""New action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -805,6 +832,9 @@ public class @BasicControls : IInputActionCollection, IDisposable
         m_Battle_Select = m_Battle.FindAction("Select", throwIfNotFound: true);
         m_Battle_Deselect = m_Battle.FindAction("Deselect", throwIfNotFound: true);
         m_Battle_SceneSwitch = m_Battle.FindAction("SceneSwitch", throwIfNotFound: true);
+        // Menu
+        m_Menu = asset.FindActionMap("Menu", throwIfNotFound: true);
+        m_Menu_Newaction = m_Menu.FindAction("New action", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -931,6 +961,39 @@ public class @BasicControls : IInputActionCollection, IDisposable
         }
     }
     public BattleActions @Battle => new BattleActions(this);
+
+    // Menu
+    private readonly InputActionMap m_Menu;
+    private IMenuActions m_MenuActionsCallbackInterface;
+    private readonly InputAction m_Menu_Newaction;
+    public struct MenuActions
+    {
+        private @BasicControls m_Wrapper;
+        public MenuActions(@BasicControls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Newaction => m_Wrapper.m_Menu_Newaction;
+        public InputActionMap Get() { return m_Wrapper.m_Menu; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(MenuActions set) { return set.Get(); }
+        public void SetCallbacks(IMenuActions instance)
+        {
+            if (m_Wrapper.m_MenuActionsCallbackInterface != null)
+            {
+                @Newaction.started -= m_Wrapper.m_MenuActionsCallbackInterface.OnNewaction;
+                @Newaction.performed -= m_Wrapper.m_MenuActionsCallbackInterface.OnNewaction;
+                @Newaction.canceled -= m_Wrapper.m_MenuActionsCallbackInterface.OnNewaction;
+            }
+            m_Wrapper.m_MenuActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @Newaction.started += instance.OnNewaction;
+                @Newaction.performed += instance.OnNewaction;
+                @Newaction.canceled += instance.OnNewaction;
+            }
+        }
+    }
+    public MenuActions @Menu => new MenuActions(this);
     public interface IBattleActions
     {
         void OnMoveCamera(InputAction.CallbackContext context);
@@ -940,5 +1003,9 @@ public class @BasicControls : IInputActionCollection, IDisposable
         void OnSelect(InputAction.CallbackContext context);
         void OnDeselect(InputAction.CallbackContext context);
         void OnSceneSwitch(InputAction.CallbackContext context);
+    }
+    public interface IMenuActions
+    {
+        void OnNewaction(InputAction.CallbackContext context);
     }
 }
