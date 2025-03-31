@@ -65,6 +65,14 @@ public class @BasicControls : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""SceneSwitch"",
+                    ""type"": ""Button"",
+                    ""id"": ""07fc4624-02a4-4a88-8a92-87fa893610a7"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -771,6 +779,17 @@ public class @BasicControls : IInputActionCollection, IDisposable
                     ""action"": ""Deselect"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""08160d50-07dd-4cf2-8413-147795eba469"",
+                    ""path"": ""<Keyboard>/numpad0"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SceneSwitch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -785,6 +804,7 @@ public class @BasicControls : IInputActionCollection, IDisposable
         m_Battle_MoveSelection = m_Battle.FindAction("MoveSelection", throwIfNotFound: true);
         m_Battle_Select = m_Battle.FindAction("Select", throwIfNotFound: true);
         m_Battle_Deselect = m_Battle.FindAction("Deselect", throwIfNotFound: true);
+        m_Battle_SceneSwitch = m_Battle.FindAction("SceneSwitch", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -840,6 +860,7 @@ public class @BasicControls : IInputActionCollection, IDisposable
     private readonly InputAction m_Battle_MoveSelection;
     private readonly InputAction m_Battle_Select;
     private readonly InputAction m_Battle_Deselect;
+    private readonly InputAction m_Battle_SceneSwitch;
     public struct BattleActions
     {
         private @BasicControls m_Wrapper;
@@ -850,6 +871,7 @@ public class @BasicControls : IInputActionCollection, IDisposable
         public InputAction @MoveSelection => m_Wrapper.m_Battle_MoveSelection;
         public InputAction @Select => m_Wrapper.m_Battle_Select;
         public InputAction @Deselect => m_Wrapper.m_Battle_Deselect;
+        public InputAction @SceneSwitch => m_Wrapper.m_Battle_SceneSwitch;
         public InputActionMap Get() { return m_Wrapper.m_Battle; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -877,6 +899,9 @@ public class @BasicControls : IInputActionCollection, IDisposable
                 @Deselect.started -= m_Wrapper.m_BattleActionsCallbackInterface.OnDeselect;
                 @Deselect.performed -= m_Wrapper.m_BattleActionsCallbackInterface.OnDeselect;
                 @Deselect.canceled -= m_Wrapper.m_BattleActionsCallbackInterface.OnDeselect;
+                @SceneSwitch.started -= m_Wrapper.m_BattleActionsCallbackInterface.OnSceneSwitch;
+                @SceneSwitch.performed -= m_Wrapper.m_BattleActionsCallbackInterface.OnSceneSwitch;
+                @SceneSwitch.canceled -= m_Wrapper.m_BattleActionsCallbackInterface.OnSceneSwitch;
             }
             m_Wrapper.m_BattleActionsCallbackInterface = instance;
             if (instance != null)
@@ -899,6 +924,9 @@ public class @BasicControls : IInputActionCollection, IDisposable
                 @Deselect.started += instance.OnDeselect;
                 @Deselect.performed += instance.OnDeselect;
                 @Deselect.canceled += instance.OnDeselect;
+                @SceneSwitch.started += instance.OnSceneSwitch;
+                @SceneSwitch.performed += instance.OnSceneSwitch;
+                @SceneSwitch.canceled += instance.OnSceneSwitch;
             }
         }
     }
@@ -911,5 +939,6 @@ public class @BasicControls : IInputActionCollection, IDisposable
         void OnMoveSelection(InputAction.CallbackContext context);
         void OnSelect(InputAction.CallbackContext context);
         void OnDeselect(InputAction.CallbackContext context);
+        void OnSceneSwitch(InputAction.CallbackContext context);
     }
 }

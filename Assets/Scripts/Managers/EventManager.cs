@@ -47,7 +47,7 @@ public class EventManager : MonoBehaviour
 
         if (EventInstance != null && EventInstance != this)
         {
-            Destroy(this);
+            Destroy(this.gameObject);
         }
         else
         {
