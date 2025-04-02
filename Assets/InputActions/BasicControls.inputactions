@@ -785,9 +785,17 @@
             "id": "d78f1702-3265-400e-b11f-b442b1d64b0b",
             "actions": [
                 {
-                    "name": "New action",
-                    "type": "Button",
+                    "name": "SwitchCharater",
+                    "type": "Value",
                     "id": "68d1123c-665e-40fe-9643-57c44a77fa20",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "SceneSwitch",
+                    "type": "Button",
+                    "id": "d9d7eac3-dc3a-4096-8fd3-cf82d5cc3a75",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
@@ -795,13 +803,46 @@
             ],
             "bindings": [
                 {
-                    "name": "",
-                    "id": "545d03b5-37fb-444d-986e-c0338dda2d42",
-                    "path": "",
+                    "name": "1D Axis",
+                    "id": "872b26c7-d478-4518-8ff5-ccb18e828927",
+                    "path": "1DAxis",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "New action",
+                    "action": "SwitchCharater",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "06412d19-8c02-4d15-93d3-77e9dd5c29d0",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SwitchCharater",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "7797e30c-e494-4540-ba33-aabeeeb6e9d9",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SwitchCharater",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "478bfd6b-4f1b-487b-aea9-484b18d1c8b9",
+                    "path": "<Keyboard>/numpad0",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SceneSwitch",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

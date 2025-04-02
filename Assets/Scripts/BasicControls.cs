@@ -798,9 +798,17 @@ public class @BasicControls : IInputActionCollection, IDisposable
             ""id"": ""d78f1702-3265-400e-b11f-b442b1d64b0b"",
             ""actions"": [
                 {
-                    ""name"": ""New action"",
-                    ""type"": ""Button"",
+                    ""name"": ""SwitchCharater"",
+                    ""type"": ""Value"",
                     ""id"": ""68d1123c-665e-40fe-9643-57c44a77fa20"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""SceneSwitch"",
+                    ""type"": ""Button"",
+                    ""id"": ""d9d7eac3-dc3a-4096-8fd3-cf82d5cc3a75"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
@@ -808,13 +816,46 @@ public class @BasicControls : IInputActionCollection, IDisposable
             ],
             ""bindings"": [
                 {
-                    ""name"": """",
-                    ""id"": ""545d03b5-37fb-444d-986e-c0338dda2d42"",
-                    ""path"": """",
+                    ""name"": ""1D Axis"",
+                    ""id"": ""872b26c7-d478-4518-8ff5-ccb18e828927"",
+                    ""path"": ""1DAxis"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""New action"",
+                    ""action"": ""SwitchCharater"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""06412d19-8c02-4d15-93d3-77e9dd5c29d0"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SwitchCharater"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""7797e30c-e494-4540-ba33-aabeeeb6e9d9"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SwitchCharater"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""478bfd6b-4f1b-487b-aea9-484b18d1c8b9"",
+                    ""path"": ""<Keyboard>/numpad0"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SceneSwitch"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -834,7 +875,8 @@ public class @BasicControls : IInputActionCollection, IDisposable
         m_Battle_SceneSwitch = m_Battle.FindAction("SceneSwitch", throwIfNotFound: true);
         // Menu
         m_Menu = asset.FindActionMap("Menu", throwIfNotFound: true);
-        m_Menu_Newaction = m_Menu.FindAction("New action", throwIfNotFound: true);
+        m_Menu_SwitchCharater = m_Menu.FindAction("SwitchCharater", throwIfNotFound: true);
+        m_Menu_SceneSwitch = m_Menu.FindAction("SceneSwitch", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -965,12 +1007,14 @@ public class @BasicControls : IInputActionCollection, IDisposable
     // Menu
     private readonly InputActionMap m_Menu;
     private IMenuActions m_MenuActionsCallbackInterface;
-    private readonly InputAction m_Menu_Newaction;
+    private readonly InputAction m_Menu_SwitchCharater;
+    private readonly InputAction m_Menu_SceneSwitch;
     public struct MenuActions
     {
         private @BasicControls m_Wrapper;
         public MenuActions(@BasicControls wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Newaction => m_Wrapper.m_Menu_Newaction;
+        public InputAction @SwitchCharater => m_Wrapper.m_Menu_SwitchCharater;
+        public InputAction @SceneSwitch => m_Wrapper.m_Menu_SceneSwitch;
         public InputActionMap Get() { return m_Wrapper.m_Menu; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -980,16 +1024,22 @@ public class @BasicControls : IInputActionCollection, IDisposable
         {
             if (m_Wrapper.m_MenuActionsCallbackInterface != null)
             {
-                @Newaction.started -= m_Wrapper.m_MenuActionsCallbackInterface.OnNewaction;
-                @Newaction.performed -= m_Wrapper.m_MenuActionsCallbackInterface.OnNewaction;
-                @Newaction.canceled -= m_Wrapper.m_MenuActionsCallbackInterface.OnNewaction;
+                @SwitchCharater.started -= m_Wrapper.m_MenuActionsCallbackInterface.OnSwitchCharater;
+                @SwitchCharater.performed -= m_Wrapper.m_MenuActionsCallbackInterface.OnSwitchCharater;
+                @SwitchCharater.canceled -= m_Wrapper.m_MenuActionsCallbackInterface.OnSwitchCharater;
+                @SceneSwitch.started -= m_Wrapper.m_MenuActionsCallbackInterface.OnSceneSwitch;
+                @SceneSwitch.performed -= m_Wrapper.m_MenuActionsCallbackInterface.OnSceneSwitch;
+                @SceneSwitch.canceled -= m_Wrapper.m_MenuActionsCallbackInterface.OnSceneSwitch;
             }
             m_Wrapper.m_MenuActionsCallbackInterface = instance;
             if (instance != null)
             {
-                @Newaction.started += instance.OnNewaction;
-                @Newaction.performed += instance.OnNewaction;
-                @Newaction.canceled += instance.OnNewaction;
+                @SwitchCharater.started += instance.OnSwitchCharater;
+                @SwitchCharater.performed += instance.OnSwitchCharater;
+                @SwitchCharater.canceled += instance.OnSwitchCharater;
+                @SceneSwitch.started += instance.OnSceneSwitch;
+                @SceneSwitch.performed += instance.OnSceneSwitch;
+                @SceneSwitch.canceled += instance.OnSceneSwitch;
             }
         }
     }
@@ -1006,6 +1056,7 @@ public class @BasicControls : IInputActionCollection, IDisposable
     }
     public interface IMenuActions
     {
-        void OnNewaction(InputAction.CallbackContext context);
+        void OnSwitchCharater(InputAction.CallbackContext context);
+        void OnSceneSwitch(InputAction.CallbackContext context);
     }
 }
