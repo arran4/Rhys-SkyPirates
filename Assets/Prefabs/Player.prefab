@@ -126,12 +126,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76e4131a32653ff459e3cfb0149e8bd4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Chutzpah: 4
+  Chutzpah: 6
   Cadishness: 4
   Grace: 10
-  Grit: 4
-  Serendipity: 4
-  Swagger: 4
+  Grit: 5
+  Serendipity: 11
+  Swagger: 18
 --- !u!114 &8414588264972968474
 MonoBehaviour:
   m_ObjectHideFlags: 0

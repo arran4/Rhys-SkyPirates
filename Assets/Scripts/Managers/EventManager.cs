@@ -18,6 +18,8 @@ public class EventManager : MonoBehaviour
     public delegate void PawnSelect(Pawn Selected);
     public static event MovementChange OnMovementChange;
     public delegate void MovementChange(List<Vector3Int> Points);
+    public static event CharaterChange OnCharaterChange;
+    public delegate void CharaterChange(Pawn OnScreen);
 
     public static void TileSelectTrigger()
     {
@@ -40,6 +42,11 @@ public class EventManager : MonoBehaviour
     public static void MovementChangeTrigger(List<Vector3Int> Points)
     {
         OnMovementChange?.Invoke(Points);
+    }
+
+    public static void CharaterChangeTrigger(Pawn OnScreen)
+    {
+        OnCharaterChange?.Invoke(OnScreen);
     }
     private void Awake()
     {

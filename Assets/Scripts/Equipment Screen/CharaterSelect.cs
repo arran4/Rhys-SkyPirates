@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CharaterSelect : MonoBehaviour
 {
-
+    private int load = 0;
     public Transform OnScreen;
     public Transform Storage;
     public List<PlayerPawns> PlayerPawnsList;
@@ -23,6 +23,7 @@ public class CharaterSelect : MonoBehaviour
 
         PlayerPawnsList[0].gameObject.transform.position = OnScreen.position;
         PawnOnScreen = 0;
+        EventManager.CharaterChangeTrigger(PlayerPawnsList[PawnOnScreen]);
     }
 
     // Update is called once per frame
@@ -49,6 +50,12 @@ public class CharaterSelect : MonoBehaviour
             }
 
             PlayerPawnsList[PawnOnScreen].gameObject.transform.position = OnScreen.position;
+            EventManager.CharaterChangeTrigger(PlayerPawnsList[PawnOnScreen]);
+        }
+        if (load == 0)
+        {
+            EventManager.CharaterChangeTrigger(PlayerPawnsList[PawnOnScreen]);
+            load = 1;
         }
     }
 }

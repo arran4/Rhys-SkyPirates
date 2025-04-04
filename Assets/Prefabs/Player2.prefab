@@ -23,6 +23,22 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 954e95ba543aa78468d8f9bbdeedc99a, type: 2}
+    - target: {fileID: 4972761456387815880, guid: 7a358c16b676947429f5287f1be1b8bb, type: 3}
+      propertyPath: Grit
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4972761456387815880, guid: 7a358c16b676947429f5287f1be1b8bb, type: 3}
+      propertyPath: Swagger
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4972761456387815880, guid: 7a358c16b676947429f5287f1be1b8bb, type: 3}
+      propertyPath: Chutzpah
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4972761456387815880, guid: 7a358c16b676947429f5287f1be1b8bb, type: 3}
+      propertyPath: Serendipity
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 5612532265818723416, guid: 7a358c16b676947429f5287f1be1b8bb, type: 3}
       propertyPath: Grace
       value: 8
