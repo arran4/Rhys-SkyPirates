@@ -9,10 +9,12 @@ public abstract class Pawn : MonoBehaviour
     public CapsuleCollider BaseSize;
     public Tile Position;
     public Attributes Stats;
+    public EquipedItems Equiped;
     public void Awake()
     {
         BaseSize = GetComponent<CapsuleCollider>();
         Stats = GetComponent<Attributes>();
+        Equiped = GetComponent<EquipedItems>();
     }
 
     public void SetPosition(Tile Set)

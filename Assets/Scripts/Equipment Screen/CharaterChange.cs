@@ -12,6 +12,8 @@ public class CharaterChange : MonoBehaviour
     public Text Serendipity;
     public Text Swagger;
 
+    public Text Equipment;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -26,6 +28,14 @@ public class CharaterChange : MonoBehaviour
         Grit.text = OnScreeen.Stats.Grit.ToString();
         Serendipity.text = OnScreeen.Stats.Serendipity.ToString();
         Swagger.text = OnScreeen.Stats.Swagger.ToString();
+
+        Equipment.text = "";
+
+        foreach(Item x in OnScreeen.Equiped.Equipment)
+        {
+            Equipment.text += x.Name + System.Environment.NewLine;
+        }
+
     }
 
     public void OnDestroy()
