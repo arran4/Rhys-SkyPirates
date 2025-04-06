@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Type: 4
   Name: Cutlass
-  StatChanges: 000000000000000000000000000000000000000000000000
+  StatChanges: 020000000000000000000000010000000000000000000000
   ExtraAbilies: []
   WhoCanEquip: 

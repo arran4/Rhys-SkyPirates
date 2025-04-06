@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Type: 2
   Name: Leather Boots
-  StatChanges: 000000000000000000000000000000000000000000000000
+  StatChanges: 00000000000000000200000002000000ffffffff00000000
   ExtraAbilies: []
   WhoCanEquip: 

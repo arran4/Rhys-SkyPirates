@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Type: 1
   Name: Leather Jacket
-  StatChanges: 000000000000000000000000000000000000000000000000
+  StatChanges: 030000000000000001000000000000000000000000000000
   ExtraAbilies: []
   WhoCanEquip: 
