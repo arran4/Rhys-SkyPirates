@@ -24,7 +24,7 @@ public enum PawnNames
 
 public class Inventory : MonoBehaviour
 {
-    List<Item> InInventory;
+    public List<Item> InInventory;
     // Start is called before the first frame update
 
     public void Add(Item toAdd)
