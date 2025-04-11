@@ -10,6 +10,20 @@ public class SceneChange : MonoBehaviour
     void Start()
     {
         inputActions = EventManager.EventInstance.inputActions;
+        string name = SceneManager.GetActiveScene().name;
+        if (name == "BattleScene")
+        {
+            inputActions.Battle.Disable();
+            inputActions.Menu.Enable();
+            SceneManager.LoadScene("CharaterScene");
+
+        }
+        if (name == "CharaterScene")
+        {
+            inputActions.Battle.Enable();
+            inputActions.Menu.Disable();
+            SceneManager.LoadScene("BattleScene");
+        }
     }
 
     // Update is called once per frame

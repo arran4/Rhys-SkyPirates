@@ -22,6 +22,9 @@ public class EventManager : MonoBehaviour
     public delegate void CharaterChange(Pawn OnScreen);
     public static event ItemSelect OnItemSelect;
     public delegate void ItemSelect(ItemType Selection);
+    public static event EquipmentChange OnEquipmentChange;
+    public delegate void EquipmentChange(ItemType WhatToChange, Item ToChange);
+    
 
     public static void TileSelectTrigger()
     {
@@ -54,6 +57,11 @@ public class EventManager : MonoBehaviour
     public static void ItemSelectTrigger(ItemType Selection)
     {
         OnItemSelect?.Invoke(Selection);
+    }
+
+    public static void EquipmentChangeTrigger(ItemType WhatToChange, Item ToChange)
+    {
+        OnEquipmentChange?.Invoke(WhatToChange, ToChange);
     }
     private void Awake()
     {

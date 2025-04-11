@@ -1,18 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CharaterSelect : MonoBehaviour
 {
-    private int load = 0;
     public Transform OnScreen;
     public Transform Storage;
     public List<PlayerPawns> PlayerPawnsList;
     public int PawnOnScreen = 0;
     private BasicControls inputActions;
+    private bool SceneLoad = false;
     // Start is called before the first frame update
     void Start()
     {
+        SceneManager.sceneUnloaded += OnSceneLoaded;
         inputActions = EventManager.EventInstance.inputActions;
         PlayerPawnsList = new List<PlayerPawns>();
         foreach (PlayerPawns x in PawnManager.PawnManagerInstance.PlayerPawns)
@@ -23,12 +25,19 @@ public class CharaterSelect : MonoBehaviour
 
         PlayerPawnsList[0].gameObject.transform.position = OnScreen.position;
         PawnOnScreen = 0;
+        EventManager.OnEquipmentChange += UpdateEquipement;
         EventManager.CharaterChangeTrigger(PlayerPawnsList[PawnOnScreen]);
     }
+
 
     // Update is called once per frame
     void Update()
     {
+        if(SceneLoad == false)
+        {
+            EventManager.CharaterChangeTrigger(PlayerPawnsList[PawnOnScreen]);
+            SceneLoad = true;
+        }
         CharaterSwitch();
     }
 
@@ -52,10 +61,24 @@ public class CharaterSelect : MonoBehaviour
             PlayerPawnsList[PawnOnScreen].gameObject.transform.position = OnScreen.position;
             EventManager.CharaterChangeTrigger(PlayerPawnsList[PawnOnScreen]);
         }
-        if (load == 0)
-        {
-            EventManager.CharaterChangeTrigger(PlayerPawnsList[PawnOnScreen]);
-            load = 1;
-        }
+    }
+    public void UpdateEquipement(ItemType TypeToGChange, Item ToChange)
+    {
+        PlayerPawnsList[PawnOnScreen].Equiped.UpdateEquipment(TypeToGChange, ToChange);
+        PlayerList.ListInstance.AllPlayerPawns[PawnOnScreen].GetComponent<PlayerPawns>().Equiped.UpdateEquipment(TypeToGChange, ToChange);
+        EventManager.CharaterChangeTrigger(PlayerPawnsList[PawnOnScreen]);
+    }
+
+    void OnSceneLoaded(Scene scene)
+    {
+        SceneLoad = false;
+    }
+
+
+
+    public void OnDestroy()
+    {
+        EventManager.OnEquipmentChange -= UpdateEquipement;
+        SceneManager.sceneUnloaded -= OnSceneLoaded;
     }
 }

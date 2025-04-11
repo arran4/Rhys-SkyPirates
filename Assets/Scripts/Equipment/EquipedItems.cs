@@ -21,9 +21,35 @@ public class EquipedItems : MonoBehaviour
         Equipment.Add(Accessorie);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void UpdateEquipment(ItemType WhatToCahnge, Item newItem)
     {
-        
+        switch (WhatToCahnge)
+        {
+            case ItemType.Head:
+                Equipment.Remove(Head);
+                Head = (HeadItem)newItem;
+                Equipment.Add(Head);
+                break;
+            case ItemType.Body:
+                Equipment.Remove(Body);
+                Body = (BodyItem)newItem;
+                Equipment.Add(Body);
+                break;
+            case ItemType.Weapon:
+                Equipment.Remove(Weapon);
+                Weapon = (WeaponItem)newItem;
+                Equipment.Add(Weapon);
+                break;
+            case ItemType.Feet:
+                Equipment.Remove(Feet);
+                Feet = (FeetItem)newItem;
+                Equipment.Add(Feet);
+                break;
+            case ItemType.Accessory:
+                Equipment.Remove(Accessorie);
+                Accessorie = (AccesoriesItem)newItem;
+                Equipment.Add(Accessorie);
+                break;
+        }
     }
 }
