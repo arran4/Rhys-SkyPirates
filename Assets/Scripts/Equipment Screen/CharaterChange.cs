@@ -29,12 +29,12 @@ public class CharaterChange : MonoBehaviour
 
     public void UpdateCanvas(Pawn OnScreeen)
     {
-        Chuzpah.text = OnScreeen.Stats.Chutzpah.ToString();
-        Cadishness.text = OnScreeen.Stats.Cadishness.ToString();
-        Grace.text = OnScreeen.Stats.Grace.ToString();
-        Grit.text = OnScreeen.Stats.Grit.ToString();
-        Serendipity.text = OnScreeen.Stats.Serendipity.ToString();
-        Swagger.text = OnScreeen.Stats.Swagger.ToString();
+        Chuzpah.text = (OnScreeen.Stats.Chutzpah + OnScreeen.Equiped.chuzpah).ToString();
+        Cadishness.text = (OnScreeen.Stats.Cadishness + OnScreeen.Equiped.cadishness).ToString();
+        Grace.text = (OnScreeen.Stats.Grace + OnScreeen.Equiped.grace).ToString();
+        Grit.text = (OnScreeen.Stats.Grit + OnScreeen.Equiped.grit).ToString();
+        Serendipity.text = (OnScreeen.Stats.Serendipity + OnScreeen.Equiped.serindipity).ToString();
+        Swagger.text = (OnScreeen.Stats.Swagger + OnScreeen.Equiped.swagger).ToString();
 
         Equipment.text = "";
 
@@ -46,18 +46,23 @@ public class CharaterChange : MonoBehaviour
             {
                 case ItemType.Head:
                     Head.GetComponentInChildren<Text>().text = x.Name;
+                    Head.GetComponentInChildren<ItemButton>().CurrentEquip = x;
                     break;
                 case ItemType.Body:
                     Body.GetComponentInChildren<Text>().text = x.Name;
+                    Body.GetComponentInChildren<ItemButton>().CurrentEquip = x;
                     break;
                 case ItemType.Weapon:
                     Weapon.GetComponentInChildren<Text>().text = x.Name;
+                    Weapon.GetComponentInChildren<ItemButton>().CurrentEquip = x;
                     break;
                 case ItemType.Feet:
                     Feet.GetComponentInChildren<Text>().text = x.Name;
+                    Feet.GetComponentInChildren<ItemButton>().CurrentEquip = x;
                     break;
                 case ItemType.Accessory:
                     Accessory.GetComponentInChildren<Text>().text = x.Name;
+                    Accessory.GetComponentInChildren<ItemButton>().CurrentEquip = x;
                     break;
             }
         }
@@ -67,5 +72,6 @@ public class CharaterChange : MonoBehaviour
     public void OnDestroy()
     {
         EventManager.OnCharaterChange -= UpdateCanvas;
+        
     }
 }

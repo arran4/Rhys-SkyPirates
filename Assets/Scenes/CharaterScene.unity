@@ -366,6 +366,30 @@ PrefabInstance:
       propertyPath: m_Name
       value: EventManager
       objectReference: {fileID: 0}
+    - target: {fileID: 5678787564393678470, guid: 4725de5ef8bb92d47a04acef63ef1eaf, type: 3}
+      propertyPath: PrefabPawns.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5678787564393678470, guid: 4725de5ef8bb92d47a04acef63ef1eaf, type: 3}
+      propertyPath: AllPlayerPawns.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5678787564393678470, guid: 4725de5ef8bb92d47a04acef63ef1eaf, type: 3}
+      propertyPath: PrefabPawns.Array.data[0]
+      value: 
+      objectReference: {fileID: 6485819626143360739, guid: 7a358c16b676947429f5287f1be1b8bb, type: 3}
+    - target: {fileID: 5678787564393678470, guid: 4725de5ef8bb92d47a04acef63ef1eaf, type: 3}
+      propertyPath: PrefabPawns.Array.data[1]
+      value: 
+      objectReference: {fileID: 8492403051794319698, guid: 0a42e010195da574b84b1a91c7684236, type: 3}
+    - target: {fileID: 5678787564393678470, guid: 4725de5ef8bb92d47a04acef63ef1eaf, type: 3}
+      propertyPath: AllPlayerPawns.Array.data[0]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5678787564393678470, guid: 4725de5ef8bb92d47a04acef63ef1eaf, type: 3}
+      propertyPath: AllPlayerPawns.Array.data[1]
+      value: 
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4725de5ef8bb92d47a04acef63ef1eaf, type: 3}
 --- !u!1 &249430844
@@ -674,6 +698,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ItemDysplay: {fileID: 224181705}
   SearchItem: 0
+  CurrentEquip: {fileID: 0}
 --- !u!1 &330115403
 GameObject:
   m_ObjectHideFlags: 0
@@ -1729,6 +1754,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ItemDysplay: {fileID: 224181705}
   SearchItem: 4
+  CurrentEquip: {fileID: 0}
 --- !u!1 &832211672
 GameObject:
   m_ObjectHideFlags: 0
@@ -1956,6 +1982,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ItemDysplay: {fileID: 224181705}
   SearchItem: 1
+  CurrentEquip: {fileID: 0}
 --- !u!1 &971769117
 GameObject:
   m_ObjectHideFlags: 0
@@ -3185,6 +3212,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ItemDysplay: {fileID: 224181705}
   SearchItem: 3
+  CurrentEquip: {fileID: 0}
 --- !u!1 &1648581965
 GameObject:
   m_ObjectHideFlags: 0
@@ -3558,6 +3586,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ItemDysplay: {fileID: 224181705}
   SearchItem: 2
+  CurrentEquip: {fileID: 0}
 --- !u!1 &1776941982
 GameObject:
   m_ObjectHideFlags: 0

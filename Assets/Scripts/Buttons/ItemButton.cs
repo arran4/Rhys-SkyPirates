@@ -2,15 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class ItemButton : MonoBehaviour
 {
     public ScrollRect ItemDysplay;
     public ItemType SearchItem;
+    public Item CurrentEquip;
 
-    public void Start()
+    public void Update()
     {
-        
+        if(EventSystem.current.currentSelectedGameObject == this.gameObject)
+        {
+            Debug.Log(SearchItem.ToString());
+        }
     }
 
     public void buttonPress()
@@ -19,6 +24,8 @@ public class ItemButton : MonoBehaviour
         EventManager.ItemSelectTrigger(SearchItem);
         Debug.Log("Test");
     }
+
+    
 
 
 }

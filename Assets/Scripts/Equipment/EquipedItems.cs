@@ -9,6 +9,12 @@ public class EquipedItems : MonoBehaviour
     public BodyItem Body;
     public AccesoriesItem Accessorie;
     public FeetItem Feet;
+    public int chuzpah;
+    public int cadishness;
+    public int grace;
+    public int grit;
+    public int serindipity;
+    public int swagger;
 
     public List<Item> Equipment = new List<Item>(5);
     // Start is called before the first frame update
@@ -59,5 +65,13 @@ public class EquipedItems : MonoBehaviour
                 Equipment.Add(Accessorie);
                 break;
         }
+
+        chuzpah = Head.StatChanges[0] + Body.StatChanges[0] + Weapon.StatChanges[0] + Feet.StatChanges[0] + Accessorie.StatChanges[0];
+        cadishness = Head.StatChanges[1] + Body.StatChanges[1] + Weapon.StatChanges[1] + Feet.StatChanges[1] + Accessorie.StatChanges[1];
+        grace = Head.StatChanges[2] + Body.StatChanges[2] + Weapon.StatChanges[2] + Feet.StatChanges[2] + Accessorie.StatChanges[2];
+        grit = Head.StatChanges[3] + Body.StatChanges[3] + Weapon.StatChanges[3] + Feet.StatChanges[3] + Accessorie.StatChanges[3];
+        serindipity = Head.StatChanges[4] + Body.StatChanges[4] + Weapon.StatChanges[4] + Feet.StatChanges[4] + Accessorie.StatChanges[4];
+        swagger = Head.StatChanges[5] + Body.StatChanges[5] + Weapon.StatChanges[5] + Feet.StatChanges[5] + Accessorie.StatChanges[5];
+
     }
 }
