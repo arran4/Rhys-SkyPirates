@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class CharaterChange : MonoBehaviour
 {
@@ -24,6 +25,7 @@ public class CharaterChange : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        EventSystem.current.firstSelectedGameObject = Head.gameObject;
         EventManager.OnCharaterChange += UpdateCanvas;
     }
 
