@@ -10,15 +10,23 @@ public class EquipedItems : MonoBehaviour
     public AccesoriesItem Accessorie;
     public FeetItem Feet;
 
-    public List<Item> Equipment;
+    public List<Item> Equipment = new List<Item>(5);
     // Start is called before the first frame update
     void Start()
     {
-        Equipment.Add(Head);
-        Equipment.Add(Body);
-        Equipment.Add(Weapon);
-        Equipment.Add(Feet);
-        Equipment.Add(Accessorie);
+        populateEquipment();
+    }
+
+    public void populateEquipment()
+    {
+        if (Equipment.Count < 5)
+        {
+            Equipment.Add(Head);
+            Equipment.Add(Body);
+            Equipment.Add(Weapon);
+            Equipment.Add(Feet);
+            Equipment.Add(Accessorie);
+        }
     }
 
     public void UpdateEquipment(ItemType WhatToCahnge, Item newItem)

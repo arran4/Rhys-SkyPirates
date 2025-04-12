@@ -214,7 +214,6 @@ GameObject:
   - component: {fileID: 224181708}
   - component: {fileID: 224181707}
   - component: {fileID: 224181705}
-  - component: {fileID: 224181709}
   m_Layer: 5
   m_Name: Scroll View
   m_TagString: Untagged
@@ -312,21 +311,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 224181704}
   m_CullTransparentMesh: 1
---- !u!114 &224181709
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 224181704}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef6d1b2e085375b4a88f5f0ca0bbe419, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Viewport: {fileID: 1569852473}
-  PublicItems: {fileID: 1919409465}
-  Prefab: {fileID: 6233922288830257939, guid: 59fa178a2669f2044941733f7a32e29e, type: 3}
 --- !u!1001 &244910226
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1023,6 +1007,7 @@ GameObject:
   - component: {fileID: 493642077}
   - component: {fileID: 493642076}
   - component: {fileID: 493642075}
+  - component: {fileID: 493642078}
   m_Layer: 5
   m_Name: Equipment
   m_TagString: Untagged
@@ -1091,6 +1076,22 @@ RectTransform:
   m_AnchoredPosition: {x: 83.7, y: 54}
   m_SizeDelta: {x: 160, y: 160.56}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &493642078
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 493642074}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef6d1b2e085375b4a88f5f0ca0bbe419, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScrollSpace: {fileID: 224181706}
+  Viewport: {fileID: 2014151529}
+  PublicItems: {fileID: 1919409465}
+  Prefab: {fileID: 6233922288830257939, guid: 59fa178a2669f2044941733f7a32e29e, type: 3}
 --- !u!1 &498755310
 GameObject:
   m_ObjectHideFlags: 0

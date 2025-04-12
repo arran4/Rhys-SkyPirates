@@ -14,7 +14,6 @@ public class CharaterSelect : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        SceneManager.sceneUnloaded += OnSceneLoaded;
         inputActions = EventManager.EventInstance.inputActions;
         PlayerPawnsList = new List<PlayerPawns>();
         foreach (PlayerPawns x in PawnManager.PawnManagerInstance.PlayerPawns)
@@ -69,7 +68,7 @@ public class CharaterSelect : MonoBehaviour
         EventManager.CharaterChangeTrigger(PlayerPawnsList[PawnOnScreen]);
     }
 
-    void OnSceneLoaded(Scene scene)
+    public void OnEnable()
     {
         SceneLoad = false;
     }
@@ -79,6 +78,5 @@ public class CharaterSelect : MonoBehaviour
     public void OnDestroy()
     {
         EventManager.OnEquipmentChange -= UpdateEquipement;
-        SceneManager.sceneUnloaded -= OnSceneLoaded;
     }
 }
