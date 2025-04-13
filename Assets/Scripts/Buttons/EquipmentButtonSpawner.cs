@@ -53,8 +53,8 @@ public class EquipmentButtonSpawner : MonoBehaviour
         var button = Object.Instantiate(Prefab, Vector3.zero, Quaternion.identity) as Button;
         RectTransform rectTransform = button.GetComponent<RectTransform>();
         rectTransform.SetParent(Viewport.transform);
-        rectTransform.anchorMax = ScrollSpace.anchorMax;
-        rectTransform.anchorMin = ScrollSpace.anchorMin;
+        rectTransform.anchorMax = this.GetComponent<RectTransform>().anchorMax;
+        rectTransform.anchorMin = this.GetComponent<RectTransform>().anchorMin;
         rectTransform.offsetMax = Vector2.zero;
         rectTransform.offsetMin = Vector2.zero;
         InventroyItemButton newScript = button.gameObject.AddComponent<InventroyItemButton>();

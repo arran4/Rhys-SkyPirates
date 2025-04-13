@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Type: 3
   Name: Necklace
+  Info: A necklace that is overly bright, showy, and potentially tacky in appearance,
+    often characterized by excessive decoration or clashing colors.
   StatChanges: 000000000000000000000000000000000000000000000000
   ExtraAbilies: []
   WhoCanEquip: 

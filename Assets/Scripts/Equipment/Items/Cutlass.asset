@@ -14,6 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Type: 4
   Name: Cutlass
+  Info: A cutlass is a short, broad sabre or slashing sword with a straight or slightly
+    curved blade sharpened on the cutting edge and a hilt often featuring a solid
+    cupped or basket-shaped guard.
   StatChanges: 020000000000000000000000010000000000000000000000
   ExtraAbilies: []
   WhoCanEquip: 

@@ -14,6 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Type: 0
   Name: Helmet
+  Info: 'In its simplest form, the great helm was a flat-topped cylinder of steel
+    that completely covered the head and had only very small openings for ventilation
+    and vision. '
   StatChanges: 0000000002000000000000000000000000000000ffffffff
   ExtraAbilies: []
   WhoCanEquip: 

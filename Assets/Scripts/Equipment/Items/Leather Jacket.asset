@@ -14,6 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Type: 1
   Name: Leather Jacket
+  Info: The jacket was often part of an overall uniform ensemble meant to protect
+    bomber pilots from exposure to the extreme climate conditions found at high altitudes
+    and often incorporated sheepskin, using the intact fleece on the inside for warmth.
   StatChanges: 030000000000000001000000000000000000000000000000
   ExtraAbilies: []
   WhoCanEquip: 

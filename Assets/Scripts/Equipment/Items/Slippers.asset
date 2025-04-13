@@ -14,6 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Type: 2
   Name: Slippers
+  Info: Slippers are a type of shoes falling under the broader category of light
+    footwear, that are easy to put on and off and are intended to be worn indoors,
+    particularly at home.[1] They provide comfort and protection for the feet when
+    walking indoors.
   StatChanges: 000000000000000000000000000000000000000000000000
   ExtraAbilies: []
   WhoCanEquip: 

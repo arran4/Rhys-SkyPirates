@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Type: 3
   Name: Ice Ring
+  Info: A Ring usually for engagement or fashion, that are fully covered or heavily
+    embellished with diamonds or other sparkling gemstones.
   StatChanges: 00000000ffffffff00000000000000000300000000000000
   ExtraAbilies: []
   WhoCanEquip: 

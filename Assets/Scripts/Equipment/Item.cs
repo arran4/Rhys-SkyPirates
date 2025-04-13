@@ -7,6 +7,7 @@ public class Item : ScriptableObject
 {
     public ItemType Type;
     public string Name;
+    public string Info;
     public int[] StatChanges = new int[6];
     public List<Ability> ExtraAbilies;
     public List<PawnNames> WhoCanEquip;

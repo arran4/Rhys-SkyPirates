@@ -24,7 +24,11 @@ public class EventManager : MonoBehaviour
     public delegate void ItemSelect(ItemType Selection);
     public static event EquipmentChange OnEquipmentChange;
     public delegate void EquipmentChange(ItemType WhatToChange, Item ToChange);
-    
+    public static event InfoChange OnInfoChange;
+    public delegate void InfoChange(Item Info);
+    public static event InfoReset OnInfoReset;
+    public delegate void InfoReset();
+
 
     public static void TileSelectTrigger()
     {
@@ -62,6 +66,16 @@ public class EventManager : MonoBehaviour
     public static void EquipmentChangeTrigger(ItemType WhatToChange, Item ToChange)
     {
         OnEquipmentChange?.Invoke(WhatToChange, ToChange);
+    }
+
+    public static void InfoChangeTrigger(Item Info)
+    {
+        OnInfoChange?.Invoke(Info);
+    }
+
+    public static void InfoResetTrigger()
+    {
+        OnInfoReset?.Invoke();
     }
     private void Awake()
     {

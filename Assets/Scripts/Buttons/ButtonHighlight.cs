@@ -5,34 +5,39 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
-public class ButtonHighlight : MonoBehaviour, IPointerEnterHandler, ISelectHandler
+public class ButtonHighlight : Selectable, IPointerEnterHandler, ISelectHandler
 {
+    public override void OnPointerExit(PointerEventData eventData)
+    {
+        EventManager.InfoResetTrigger();
+    }
 
-    public void OnPointerEnter(PointerEventData eventData)
+    public override void OnPointerEnter(PointerEventData eventData)
     {
         var button = eventData.pointerEnter.GetComponentInParent<ItemButton>();
         if (button != null)
         {
-            Debug.Log(button.CurrentEquip.name);
+            EventManager.InfoChangeTrigger(button.CurrentEquip);
             return;
         }
         var button2 = eventData.pointerEnter.GetComponentInParent<InventroyItemButton>();
         if (button2 != null)
         {
-            Debug.Log(button2.Equip.name);
+            EventManager.InfoChangeTrigger(button2.Equip);
             return;
         }
 
     }
 
-    public void OnSelect(BaseEventData eventData)
+    public override void OnSelect(BaseEventData eventData)
     {
+        EventManager.InfoResetTrigger();
         var button = eventData.selectedObject.GetComponent<ItemButton>();
         if (button != null)
         {
             if (button.CurrentEquip != null)
             {
-                Debug.Log(button.CurrentEquip.name);
+                EventManager.InfoChangeTrigger(button.CurrentEquip);
             }
             return;
         }
@@ -41,7 +46,7 @@ public class ButtonHighlight : MonoBehaviour, IPointerEnterHandler, ISelectHandl
         {
             if (button2.Equip != null)
             {
-                Debug.Log(button2.Equip.name);
+                EventManager.InfoChangeTrigger(button2.Equip);
             }
             return;
         }

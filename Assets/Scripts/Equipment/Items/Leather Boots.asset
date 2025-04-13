@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Type: 2
   Name: Leather Boots
+  Info: They are soft knee-high leather boots typically made of brown calfskin. Thigh
+    high riding boots were first worn with buff coats by gentlemen and soldiers.
   StatChanges: 00000000000000000200000002000000ffffffff00000000
   ExtraAbilies: []
   WhoCanEquip: 
