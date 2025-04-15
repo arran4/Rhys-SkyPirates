@@ -17,12 +17,7 @@ public class EquipmentButtonSpawner : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    public void SpawnButtons(ItemType Search)
+    public void SpawnButtons(Item Search)
     {
         for (int x = 0; x < Inventorylist.Count; x++)
         {
@@ -32,7 +27,7 @@ public class EquipmentButtonSpawner : MonoBehaviour
         Inventorylist = new List<Button>();
         foreach(Item x in PublicItems.InInventory)
         {
-            if(x.Type == Search)
+            if(x.Type == Search.Type)
             {
                 SearchResults.Add(x);
             }
@@ -40,7 +35,7 @@ public class EquipmentButtonSpawner : MonoBehaviour
 
         for (int x = 0; x < SearchResults.Count; x++)
         {
-            Button Generated = CreateButton(SearchResults[x]);
+            Button Generated = CreateButton(SearchResults[x], Search);
             Generated.GetComponentInChildren<Text>().text = SearchResults[x].Name;
             Generated.gameObject.transform.position = new Vector3(Generated.gameObject.transform.position.x, ScrollSpace.rect.height - (x *(ScrollSpace.rect.height /6)), 0);
             Inventorylist.Add(Generated);
@@ -48,7 +43,7 @@ public class EquipmentButtonSpawner : MonoBehaviour
     }
 
 
-    public Button CreateButton(Item item)
+    public Button CreateButton(Item item, Item Equipment)
     {
         var button = Object.Instantiate(Prefab, Vector3.zero, Quaternion.identity) as Button;
         RectTransform rectTransform = button.GetComponent<RectTransform>();

@@ -20,6 +20,7 @@ public class EquipedItems : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        EventManager.OnInfoCompare += Compare;
         populateEquipment();
     }
 
@@ -73,5 +74,113 @@ public class EquipedItems : MonoBehaviour
         serindipity = Head.StatChanges[4] + Body.StatChanges[4] + Weapon.StatChanges[4] + Feet.StatChanges[4] + Accessorie.StatChanges[4];
         swagger = Head.StatChanges[5] + Body.StatChanges[5] + Weapon.StatChanges[5] + Feet.StatChanges[5] + Accessorie.StatChanges[5];
 
+    }
+
+    public void Compare(Item toCompare)
+    {
+        Item inventoryItem = new Item();
+        if(toCompare.Type == Head.Type)
+        {
+            inventoryItem = Head;
+        }
+        else if (toCompare.Type == Body.Type)
+        {
+            inventoryItem = Body;
+        }
+        if (toCompare.Type == Weapon.Type)
+        {
+            inventoryItem = Weapon;
+        }
+        if (toCompare.Type == Feet.Type)
+        {
+            inventoryItem = Feet;
+        }
+        if (toCompare.Type == Accessorie.Type)
+        {
+            inventoryItem = Accessorie;
+        }
+
+        int[] compareStats = new int[6];
+
+        for(int x = 0; x < compareStats.Length; x++)
+        {
+            compareStats[x] = 0;
+        }
+
+        int count = 0;
+        foreach (int x in toCompare.StatChanges)
+        {
+            switch (count)
+            {
+                case 0:
+                    if (x > inventoryItem.StatChanges[0])
+                    {
+                        compareStats[0] = 1;
+                    }
+                    else if (x < inventoryItem.StatChanges[0])
+                    {
+                        compareStats[0] = -1;
+                    }
+                    break;
+                case 1:
+                    if (x > inventoryItem.StatChanges[1])
+                    {
+                        compareStats[1] = 1;
+                    }
+                    else if (x < inventoryItem.StatChanges[1])
+                    {
+                        compareStats[1] = -1;
+                    }
+                    break;
+                case 2:
+                    if (x > inventoryItem.StatChanges[2])
+                    {
+                        compareStats[2] = 1;
+                    }
+                    else if (x < inventoryItem.StatChanges[2])
+                    {
+                        compareStats[2] = -1;
+                    }
+                    break;
+                case 3:
+                    if (x > inventoryItem.StatChanges[3])
+                    {
+                        compareStats[3] = 1;
+                    }
+                    else if (x < inventoryItem.StatChanges[3])
+                    {
+                        compareStats[3] = -1;
+                    }
+                    break;
+                case 4:
+                    if (x > inventoryItem.StatChanges[4])
+                    {
+                        compareStats[4] = 1;
+                    }
+                    else if (x < inventoryItem.StatChanges[4])
+                    {
+                        compareStats[4] = -1;
+                    }
+                    break;
+                case 5:
+                    if (x > inventoryItem.StatChanges[5])
+                    {
+                        compareStats[5] = 1;
+                    }
+                    else if (x < inventoryItem.StatChanges[5])
+                    {
+                        compareStats[5] = -1;
+                    }
+                    break;
+            }
+            count++;
+        }
+
+        EventManager.InfoCompareChangeTrigger(toCompare, compareStats);
+    }
+
+    public void OnDestroy()
+    {
+        EventManager.OnInfoCompare -= Compare;
     }
 }

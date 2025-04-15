@@ -21,13 +21,17 @@ public class EventManager : MonoBehaviour
     public static event CharaterChange OnCharaterChange;
     public delegate void CharaterChange(Pawn OnScreen);
     public static event ItemSelect OnItemSelect;
-    public delegate void ItemSelect(ItemType Selection);
+    public delegate void ItemSelect(Item Selection);
     public static event EquipmentChange OnEquipmentChange;
     public delegate void EquipmentChange(ItemType WhatToChange, Item ToChange);
     public static event InfoChange OnInfoChange;
     public delegate void InfoChange(Item Info);
     public static event InfoReset OnInfoReset;
     public delegate void InfoReset();
+    public static event InfoCompare OnInfoCompare;
+    public delegate void InfoCompare(Item Equiped);
+    public static event InfoCompareChange OnInfoCompareChange;
+    public delegate void InfoCompareChange(Item Info, int[] ComparisonArray);
 
 
     public static void TileSelectTrigger()
@@ -58,7 +62,7 @@ public class EventManager : MonoBehaviour
         OnCharaterChange?.Invoke(OnScreen);
     }
 
-    public static void ItemSelectTrigger(ItemType Selection)
+    public static void ItemSelectTrigger(Item Selection)
     {
         OnItemSelect?.Invoke(Selection);
     }
@@ -73,9 +77,19 @@ public class EventManager : MonoBehaviour
         OnInfoChange?.Invoke(Info);
     }
 
+    public static void InfoCompareChangeTrigger(Item Info, int[] ComparisonArray)
+    {
+        OnInfoCompareChange?.Invoke(Info, ComparisonArray);
+    }
+
     public static void InfoResetTrigger()
     {
         OnInfoReset?.Invoke();
+    }
+
+    public static void InfoCompareTrigger(Item Equiped)
+    {
+        OnInfoCompare?.Invoke(Equiped);
     }
     private void Awake()
     {

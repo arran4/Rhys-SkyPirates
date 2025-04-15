@@ -17,13 +17,14 @@ public class ButtonHighlight : Selectable, IPointerEnterHandler, ISelectHandler
         var button = eventData.pointerEnter.GetComponentInParent<ItemButton>();
         if (button != null)
         {
+            
             EventManager.InfoChangeTrigger(button.CurrentEquip);
             return;
         }
         var button2 = eventData.pointerEnter.GetComponentInParent<InventroyItemButton>();
         if (button2 != null)
         {
-            EventManager.InfoChangeTrigger(button2.Equip);
+            EventManager.InfoCompareTrigger(button2.Equip);
             return;
         }
 
@@ -46,7 +47,7 @@ public class ButtonHighlight : Selectable, IPointerEnterHandler, ISelectHandler
         {
             if (button2.Equip != null)
             {
-                EventManager.InfoChangeTrigger(button2.Equip);
+                EventManager.InfoCompareTrigger(button2.Equip);
             }
             return;
         }

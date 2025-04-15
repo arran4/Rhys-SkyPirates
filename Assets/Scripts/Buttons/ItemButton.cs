@@ -23,7 +23,7 @@ public class ItemButton : MonoBehaviour
     public void buttonPress()
     {
         ItemDysplay.gameObject.SetActive(true);
-        EventManager.ItemSelectTrigger(SearchItem);
+        EventManager.ItemSelectTrigger(CurrentEquip);
         Debug.Log("Test");
     }
 

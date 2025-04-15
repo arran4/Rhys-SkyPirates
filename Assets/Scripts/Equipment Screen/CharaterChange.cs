@@ -13,6 +13,8 @@ public class CharaterChange : MonoBehaviour
     public Text Serendipity;
     public Text Swagger;
 
+
+
     public Text Equipment;
 
     public Button Head;
