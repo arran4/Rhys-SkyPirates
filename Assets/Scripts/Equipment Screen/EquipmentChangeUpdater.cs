@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,13 +10,6 @@ public class EquipmentChangeUpdater : MonoBehaviour
     public GameObject GritPanel;
     public GameObject SerindipityPanel;
     public GameObject SwaggerPanel;
-
-    private Image Chuzpah;
-    private Image Cadishness;
-    private Image Grace;
-    private Image Grit;
-    private Image Serindipity;
-    private Image Swagger;
 
     private Image[] statImages;
 
@@ -34,46 +26,45 @@ public class EquipmentChangeUpdater : MonoBehaviour
 
     public void GetImage()
     {
-        Chuzpah = ChuzpahPanel.GetComponent<Image>();
-        Cadishness = CadishnessPanel.GetComponent<Image>();
-        Grace = GracePanel.GetComponent<Image>();
-        Grit = GritPanel.GetComponent<Image>();
-        Serindipity = SerindipityPanel.GetComponent<Image>();
-        Swagger = SwaggerPanel.GetComponent<Image>();
-
-        statImages = new Image[] { Chuzpah, Cadishness, Grace, Grit, Serindipity, Swagger };
+        statImages = new Image[6];
+        statImages[0] = ChuzpahPanel.GetComponent<Image>();
+        statImages[1] = CadishnessPanel.GetComponent<Image>();
+        statImages[2] = GracePanel.GetComponent<Image>();
+        statImages[3] = GritPanel.GetComponent<Image>();
+        statImages[4] = SerindipityPanel.GetComponent<Image>();
+        statImages[5] = SwaggerPanel.GetComponent<Image>();
     }
 
     public void PanelChange(int[] Colors)
     {
-        if (statImages == null || statImages.Length == 0)
-            GetImage();
+        EnsureStatImagesInitialized();
 
-        for (int i = 0; i < Colors.Length && i < statImages.Length; i++)
+        for (int i = 0; i < statImages.Length && i < Colors.Length; i++)
         {
             if (Colors[i] > 0)
                 statImages[i].color = Color.green;
             else if (Colors[i] < 0)
                 statImages[i].color = Color.red;
+            else
+                statImages[i].color = Color.gray; // Explicitly reset to neutral
         }
     }
 
     public void InfoChange(Item Info)
     {
         PanelChange(Info.StatChanges);
-        InfoText.text = Info.Info + System.Environment.NewLine + string.Join(" ", Info.StatChanges);
+        InfoText.text = $"{Info.Info}{System.Environment.NewLine}{string.Join(" ", Info.StatChanges)}";
     }
 
     public void InfoChangeCompare(Item Info, int[] StatChanges)
     {
         PanelChange(StatChanges);
-        InfoText.text = Info.Info + System.Environment.NewLine + string.Join(" ", Info.StatChanges);
+        InfoText.text = $"{Info.Info}{System.Environment.NewLine}{string.Join(" ", Info.StatChanges)}";
     }
 
     public void ResetPanels()
     {
-        if (statImages == null || statImages.Length == 0)
-            GetImage();
+        EnsureStatImagesInitialized();
 
         foreach (var img in statImages)
         {
@@ -86,5 +77,13 @@ public class EquipmentChangeUpdater : MonoBehaviour
         EventManager.OnInfoChange -= InfoChange;
         EventManager.OnInfoReset -= ResetPanels;
         EventManager.OnInfoCompareChange -= InfoChangeCompare;
+    }
+
+    private void EnsureStatImagesInitialized()
+    {
+        if (statImages == null || statImages.Length == 0)
+        {
+            GetImage();
+        }
     }
 }

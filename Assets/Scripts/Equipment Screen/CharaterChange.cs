@@ -59,11 +59,25 @@ public class CharaterChange : MonoBehaviour
                 var textComp = button.GetComponentInChildren<Text>();
                 var itemButton = button.GetComponentInChildren<ItemButton>();
 
-                if (textComp != null) textComp.text = item.Name;
-                if (itemButton != null) itemButton.CurrentEquip = item;
+                if (textComp != null)
+                    textComp.text = item.Name;
+
+                if (itemButton != null)
+                {
+                    itemButton.CurrentEquip = item;                  
+                }
+                else
+                {
+                    Debug.LogWarning($"ItemButton for {item.Name} not found on button: {button.gameObject.name}");
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"No button found for item type: {item.Type}");
             }
         }
     }
+
 
     public void OnDestroy()
     {

@@ -14,30 +14,73 @@ public class ButtonHighlight : Selectable, IPointerEnterHandler, ISelectHandler
 
     public override void OnPointerEnter(PointerEventData eventData)
     {
-        HandleHoverOrSelect(eventData.pointerEnter);
+        GameObject hoveredObject = eventData.pointerEnter;
+
+        var button = hoveredObject.GetComponentInParent<ItemButton>();
+        if (button != null)
+        {
+            if (button.CurrentEquip != null)
+            {
+                EventManager.InfoChangeTrigger(button.CurrentEquip);
+            }
+            else
+            {
+                Debug.LogWarning("[PointerEnter] ItemButton found but CurrentEquip is null.");
+            }
+            return;
+        }
+
+        var button2 = hoveredObject.GetComponentInParent<InventroyItemButton>();
+        if (button2 != null)
+        {
+            if (button2.Equip != null)
+            {
+                EventManager.InfoCompareTrigger(button2.Equip);
+            }
+            else
+            {
+                Debug.LogWarning("[PointerEnter] InventroyItemButton found but Equip is null.");
+            }
+            return;
+        }
+
+        Debug.LogWarning("[PointerEnter] No valid button found on pointer enter.");
     }
 
     public override void OnSelect(BaseEventData eventData)
     {
+        GameObject selectedObject = eventData.selectedObject;
+
         EventManager.InfoResetTrigger();
-        HandleHoverOrSelect(eventData.selectedObject);
-    }
 
-    private void HandleHoverOrSelect(GameObject obj)
-    {
-        if (obj == null) return;
-
-        var itemButton = obj.GetComponent<ItemButton>();
-        if (itemButton != null && itemButton.CurrentEquip != null)
+        var button = selectedObject.GetComponent<ItemButton>();
+        if (button != null)
         {
-            EventManager.InfoChangeTrigger(itemButton.CurrentEquip);
+            if (button.CurrentEquip != null)
+            {
+                EventManager.InfoChangeTrigger(button.CurrentEquip);
+            }
+            else
+            {
+                Debug.LogWarning("[Select] ItemButton found but CurrentEquip is null.");
+            }
             return;
         }
 
-        var inventoryButton = obj.GetComponent<InventroyItemButton>();
-        if (inventoryButton != null && inventoryButton.Equip != null)
+        var button2 = selectedObject.GetComponent<InventroyItemButton>();
+        if (button2 != null)
         {
-            EventManager.InfoCompareTrigger(inventoryButton.Equip);
+            if (button2.Equip != null)
+            {
+                EventManager.InfoCompareTrigger(button2.Equip);
+            }
+            else
+            {
+                Debug.LogWarning("[Select] InventroyItemButton found but Equip is null.");
+            }
+            return;
         }
+
+        Debug.LogWarning("[Select] No valid button component found.");
     }
 }

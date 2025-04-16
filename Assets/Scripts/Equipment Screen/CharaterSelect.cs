@@ -25,6 +25,7 @@ public class CharaterSelect : MonoBehaviour
         }
 
         PawnOnScreen = 0;
+        PlayerPawnsList[PawnOnScreen].Equiped.Onscreen = true;
         MovePawnTo(PlayerPawnsList[PawnOnScreen], OnScreen.position);
 
         EventManager.OnEquipmentChange += UpdateEquipement;
@@ -47,7 +48,7 @@ public class CharaterSelect : MonoBehaviour
         if (inputActions.Menu.SwitchCharater.triggered)
         {
             MovePawnTo(PlayerPawnsList[PawnOnScreen], Storage.position);
-
+            PlayerPawnsList[PawnOnScreen].Equiped.Onscreen = false;
             PawnOnScreen += (int)inputActions.Menu.SwitchCharater.ReadValue<float>();
 
             if (PawnOnScreen < 0)
@@ -56,6 +57,7 @@ public class CharaterSelect : MonoBehaviour
                 PawnOnScreen = 0;
 
             MovePawnTo(PlayerPawnsList[PawnOnScreen], OnScreen.position);
+            PlayerPawnsList[PawnOnScreen].Equiped.Onscreen = true;
             EventManager.CharaterChangeTrigger(PlayerPawnsList[PawnOnScreen]);
         }
     }
