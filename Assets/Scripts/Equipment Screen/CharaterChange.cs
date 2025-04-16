@@ -13,8 +13,6 @@ public class CharaterChange : MonoBehaviour
     public Text Serendipity;
     public Text Swagger;
 
-
-
     public Text Equipment;
 
     public Button Head;
@@ -23,12 +21,22 @@ public class CharaterChange : MonoBehaviour
     public Button Feet;
     public Button Accessory;
 
+    private Dictionary<ItemType, Button> equipmentButtons;
 
-    // Start is called before the first frame update
     void Start()
     {
         EventSystem.current.firstSelectedGameObject = Head.gameObject;
         EventManager.OnCharaterChange += UpdateCanvas;
+
+        // Setup dictionary for easier lookup
+        equipmentButtons = new Dictionary<ItemType, Button>
+        {
+            { ItemType.Head, Head },
+            { ItemType.Body, Body },
+            { ItemType.Weapon, Weapon },
+            { ItemType.Feet, Feet },
+            { ItemType.Accessory, Accessory }
+        };
     }
 
     public void UpdateCanvas(Pawn OnScreeen)
@@ -42,40 +50,23 @@ public class CharaterChange : MonoBehaviour
 
         Equipment.text = "";
 
-        foreach(Item x in OnScreeen.Equiped.Equipment)
+        foreach (var item in OnScreeen.Equiped.Equipment)
         {
-            Equipment.text += x.Name + System.Environment.NewLine;
+            Equipment.text += item.Name + System.Environment.NewLine;
 
-            switch(x.Type)
+            if (equipmentButtons.TryGetValue(item.Type, out Button button))
             {
-                case ItemType.Head:
-                    Head.GetComponentInChildren<Text>().text = x.Name;
-                    Head.GetComponentInChildren<ItemButton>().CurrentEquip = x;
-                    break;
-                case ItemType.Body:
-                    Body.GetComponentInChildren<Text>().text = x.Name;
-                    Body.GetComponentInChildren<ItemButton>().CurrentEquip = x;
-                    break;
-                case ItemType.Weapon:
-                    Weapon.GetComponentInChildren<Text>().text = x.Name;
-                    Weapon.GetComponentInChildren<ItemButton>().CurrentEquip = x;
-                    break;
-                case ItemType.Feet:
-                    Feet.GetComponentInChildren<Text>().text = x.Name;
-                    Feet.GetComponentInChildren<ItemButton>().CurrentEquip = x;
-                    break;
-                case ItemType.Accessory:
-                    Accessory.GetComponentInChildren<Text>().text = x.Name;
-                    Accessory.GetComponentInChildren<ItemButton>().CurrentEquip = x;
-                    break;
+                var textComp = button.GetComponentInChildren<Text>();
+                var itemButton = button.GetComponentInChildren<ItemButton>();
+
+                if (textComp != null) textComp.text = item.Name;
+                if (itemButton != null) itemButton.CurrentEquip = item;
             }
         }
-
     }
 
     public void OnDestroy()
     {
         EventManager.OnCharaterChange -= UpdateCanvas;
-        
     }
 }

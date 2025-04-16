@@ -9,63 +9,66 @@ public class CharaterSelect : MonoBehaviour
     public Transform Storage;
     public List<PlayerPawns> PlayerPawnsList;
     public int PawnOnScreen = 0;
+
     private BasicControls inputActions;
     private bool SceneLoad = false;
-    // Start is called before the first frame update
+
     void Start()
     {
         inputActions = EventManager.EventInstance.inputActions;
         PlayerPawnsList = new List<PlayerPawns>();
-        foreach (PlayerPawns x in PawnManager.PawnManagerInstance.PlayerPawns)
+
+        foreach (var pawn in PawnManager.PawnManagerInstance.PlayerPawns)
         {
-            x.gameObject.transform.position = Storage.position;
-            PlayerPawnsList.Add(x);
+            MovePawnTo(pawn, Storage.position);
+            PlayerPawnsList.Add(pawn);
         }
 
-        PlayerPawnsList[0].gameObject.transform.position = OnScreen.position;
         PawnOnScreen = 0;
+        MovePawnTo(PlayerPawnsList[PawnOnScreen], OnScreen.position);
+
         EventManager.OnEquipmentChange += UpdateEquipement;
         EventManager.CharaterChangeTrigger(PlayerPawnsList[PawnOnScreen]);
     }
 
-
-    // Update is called once per frame
     void Update()
     {
-        if(SceneLoad == false)
+        if (!SceneLoad)
         {
             EventManager.CharaterChangeTrigger(PlayerPawnsList[PawnOnScreen]);
             SceneLoad = true;
         }
+
         CharaterSwitch();
     }
 
     public void CharaterSwitch()
     {
-        if(inputActions.Menu.SwitchCharater.triggered)
+        if (inputActions.Menu.SwitchCharater.triggered)
         {
+            MovePawnTo(PlayerPawnsList[PawnOnScreen], Storage.position);
 
-            PlayerPawnsList[PawnOnScreen].gameObject.transform.position = Storage.position;
             PawnOnScreen += (int)inputActions.Menu.SwitchCharater.ReadValue<float>();
 
-            if(PawnOnScreen < 0)
-            {
+            if (PawnOnScreen < 0)
                 PawnOnScreen = PlayerPawnsList.Count - 1;
-            }
-            else if (PawnOnScreen > PlayerPawnsList.Count - 1)
-            {
+            else if (PawnOnScreen >= PlayerPawnsList.Count)
                 PawnOnScreen = 0;
-            }
 
-            PlayerPawnsList[PawnOnScreen].gameObject.transform.position = OnScreen.position;
+            MovePawnTo(PlayerPawnsList[PawnOnScreen], OnScreen.position);
             EventManager.CharaterChangeTrigger(PlayerPawnsList[PawnOnScreen]);
         }
     }
+
     public void UpdateEquipement(ItemType TypeToGChange, Item ToChange)
     {
-        PlayerPawnsList[PawnOnScreen].Equiped.UpdateEquipment(TypeToGChange, ToChange);
-        PlayerList.ListInstance.AllPlayerPawns[PawnOnScreen].GetComponent<PlayerPawns>().Equiped.UpdateEquipment(TypeToGChange, ToChange);
-        EventManager.CharaterChangeTrigger(PlayerPawnsList[PawnOnScreen]);
+        PlayerPawns currentPawn = PlayerPawnsList[PawnOnScreen];
+        currentPawn.Equiped.UpdateEquipment(TypeToGChange, ToChange);
+
+        PlayerList.ListInstance.AllPlayerPawns[PawnOnScreen]
+            .GetComponent<PlayerPawns>().Equiped.UpdateEquipment(TypeToGChange, ToChange);
+
+        EventManager.CharaterChangeTrigger(currentPawn);
     }
 
     public void OnEnable()
@@ -73,10 +76,13 @@ public class CharaterSelect : MonoBehaviour
         SceneLoad = false;
     }
 
-
-
     public void OnDestroy()
     {
         EventManager.OnEquipmentChange -= UpdateEquipement;
+    }
+
+    private void MovePawnTo(PlayerPawns pawn, Vector3 position)
+    {
+        pawn.gameObject.transform.position = position;
     }
 }

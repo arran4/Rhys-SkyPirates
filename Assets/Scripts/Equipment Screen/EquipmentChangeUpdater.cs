@@ -19,14 +19,16 @@ public class EquipmentChangeUpdater : MonoBehaviour
     private Image Serindipity;
     private Image Swagger;
 
+    private Image[] statImages;
+
     public Text InfoText;
 
     public void Start()
     {
         EventManager.OnInfoChange += InfoChange;
         EventManager.OnInfoReset += ResetPanels;
-        //EventManager.OnInfoCompare += InfoCompare;
         EventManager.OnInfoCompareChange += InfoChangeCompare;
+
         GetImage();
     }
 
@@ -38,121 +40,51 @@ public class EquipmentChangeUpdater : MonoBehaviour
         Grit = GritPanel.GetComponent<Image>();
         Serindipity = SerindipityPanel.GetComponent<Image>();
         Swagger = SwaggerPanel.GetComponent<Image>();
+
+        statImages = new Image[] { Chuzpah, Cadishness, Grace, Grit, Serindipity, Swagger };
     }
 
     public void PanelChange(int[] Colors)
     {
-        GetImage();
-        int count = 0;
-        foreach (int x in Colors)
+        if (statImages == null || statImages.Length == 0)
+            GetImage();
+
+        for (int i = 0; i < Colors.Length && i < statImages.Length; i++)
         {
-            switch (count)
-            {
-                case 0:
-                    if (x > 0)
-                    {
-                        Chuzpah.color = Color.green;
-                    }
-                    else if (x < 0)
-                    {
-                        Chuzpah.color = Color.red;
-                    }
-                    break;
-                case 1:
-                    if (x > 0)
-                    {
-                        Cadishness.color = Color.green;
-                    }
-                    else if (x < 0)
-                    {
-                        Cadishness.color = Color.red;
-                    }
-                    break;
-                case 2:
-                    if (x > 0)
-                    {
-                        Grace.color = Color.green;
-                    }
-                    else if (x < 0)
-                    {
-                        Grace.color = Color.red;
-                    }
-                    break;
-                case 3:
-                    if (x > 0)
-                    {
-                        Grit.color = Color.green;
-                    }
-                    else if (x < 0)
-                    {
-                        Grit.color = Color.red;
-                    }
-                    break;
-                case 4:
-                    if (x > 0)
-                    {
-                        Serindipity.color = Color.green;
-                    }
-                    else if (x < 0)
-                    {
-                        Serindipity.color = Color.red;
-                    }
-                    break;
-                case 5:
-                    if (x > 0)
-                    {
-                        Swagger.color = Color.green;
-                    }
-                    else if (x < 0)
-                    {
-                        Swagger.color = Color.red;
-                    }
-                    break;
-            }
-            count++;
+            if (Colors[i] > 0)
+                statImages[i].color = Color.green;
+            else if (Colors[i] < 0)
+                statImages[i].color = Color.red;
         }
     }
-    
+
     public void InfoChange(Item Info)
     {
-        string statchange = "";
-        int number = 0;
-        foreach(int x in Info.StatChanges)
-        {
-            statchange += x.ToString() + " ";
-            number++;
-        }
         PanelChange(Info.StatChanges);
-        InfoText.text = Info.Info + System.Environment.NewLine + statchange;
+        InfoText.text = Info.Info + System.Environment.NewLine + string.Join(" ", Info.StatChanges);
     }
 
     public void InfoChangeCompare(Item Info, int[] StatChanges)
     {
-        string statchange = "";
-        int number = 0;
-        foreach (int x in Info.StatChanges)
-        {
-            statchange += x.ToString() + " ";
-            number++;
-        }
         PanelChange(StatChanges);
-        InfoText.text = Info.Info + System.Environment.NewLine + statchange;
+        InfoText.text = Info.Info + System.Environment.NewLine + string.Join(" ", Info.StatChanges);
     }
 
     public void ResetPanels()
     {
-        ChuzpahPanel.GetComponent<Image>().color = Color.gray ;
-        CadishnessPanel.GetComponent<Image>().color = Color.gray;
-        GracePanel.GetComponent<Image>().color = Color.gray;
-        GritPanel.GetComponent<Image>().color = Color.gray;
-        SerindipityPanel.GetComponent<Image>().color = Color.gray;
-        SwaggerPanel.GetComponent<Image>().color = Color.gray;
+        if (statImages == null || statImages.Length == 0)
+            GetImage();
+
+        foreach (var img in statImages)
+        {
+            img.color = Color.gray;
+        }
     }
+
     public void OnDestroy()
     {
         EventManager.OnInfoChange -= InfoChange;
         EventManager.OnInfoReset -= ResetPanels;
-       // EventManager.OnInfoCompare -= InfoCompare;
         EventManager.OnInfoCompareChange -= InfoChangeCompare;
     }
 }

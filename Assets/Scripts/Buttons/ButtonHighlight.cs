@@ -14,42 +14,30 @@ public class ButtonHighlight : Selectable, IPointerEnterHandler, ISelectHandler
 
     public override void OnPointerEnter(PointerEventData eventData)
     {
-        var button = eventData.pointerEnter.GetComponentInParent<ItemButton>();
-        if (button != null)
-        {
-            
-            EventManager.InfoChangeTrigger(button.CurrentEquip);
-            return;
-        }
-        var button2 = eventData.pointerEnter.GetComponentInParent<InventroyItemButton>();
-        if (button2 != null)
-        {
-            EventManager.InfoCompareTrigger(button2.Equip);
-            return;
-        }
-
+        HandleHoverOrSelect(eventData.pointerEnter);
     }
 
     public override void OnSelect(BaseEventData eventData)
     {
         EventManager.InfoResetTrigger();
-        var button = eventData.selectedObject.GetComponent<ItemButton>();
-        if (button != null)
+        HandleHoverOrSelect(eventData.selectedObject);
+    }
+
+    private void HandleHoverOrSelect(GameObject obj)
+    {
+        if (obj == null) return;
+
+        var itemButton = obj.GetComponent<ItemButton>();
+        if (itemButton != null && itemButton.CurrentEquip != null)
         {
-            if (button.CurrentEquip != null)
-            {
-                EventManager.InfoChangeTrigger(button.CurrentEquip);
-            }
+            EventManager.InfoChangeTrigger(itemButton.CurrentEquip);
             return;
         }
-        var button2 = eventData.selectedObject.GetComponent<InventroyItemButton>();
-        if (button2 != null)
+
+        var inventoryButton = obj.GetComponent<InventroyItemButton>();
+        if (inventoryButton != null && inventoryButton.Equip != null)
         {
-            if (button2.Equip != null)
-            {
-                EventManager.InfoCompareTrigger(button2.Equip);
-            }
-            return;
+            EventManager.InfoCompareTrigger(inventoryButton.Equip);
         }
     }
 }
