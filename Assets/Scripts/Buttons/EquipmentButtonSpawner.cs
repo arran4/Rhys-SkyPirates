@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
+
 
 public class EquipmentButtonSpawner : MonoBehaviour
 {
@@ -14,6 +16,7 @@ public class EquipmentButtonSpawner : MonoBehaviour
     void Start()
     {
         EventManager.OnItemSelect += SpawnButtons;
+        EventManager.OnEquipmentChange += Equipmentchangebuttonpress;
     }
 
     public void SpawnButtons(Item Search)
@@ -39,6 +42,7 @@ public class EquipmentButtonSpawner : MonoBehaviour
 
             Inventorylist.Add(generatedButton);
         }
+        EventSystem.current.SetSelectedGameObject(Inventorylist[0].gameObject);
     }
 
     // Function to clear the list of existing buttons
@@ -87,8 +91,15 @@ public class EquipmentButtonSpawner : MonoBehaviour
         return button;
     }
 
+    public void Equipmentchangebuttonpress(ItemType item, Item item1)
+    {
+        ClearInventoryList();
+        ScrollSpace.gameObject.SetActive(false);
+    }
+
     public void OnDestroy()
     {
         EventManager.OnItemSelect -= SpawnButtons;
+        EventManager.OnEquipmentChange -= Equipmentchangebuttonpress;
     }
 }

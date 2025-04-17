@@ -27,6 +27,7 @@ public class CharaterChange : MonoBehaviour
     {
         EventSystem.current.firstSelectedGameObject = Head.gameObject;
         EventManager.OnCharaterChange += UpdateCanvas;
+        EventManager.OnEquipmentChange += UpdateButtonSelect;
 
         // Setup dictionary for easier lookup
         equipmentButtons = new Dictionary<ItemType, Button>
@@ -78,9 +79,18 @@ public class CharaterChange : MonoBehaviour
         }
     }
 
+    public void UpdateButtonSelect(ItemType type, Item item)
+    {
+        if (equipmentButtons.TryGetValue(item.Type, out Button button))
+        {
+            EventSystem.current.SetSelectedGameObject(button.gameObject);
+        }
+    }
+
 
     public void OnDestroy()
     {
         EventManager.OnCharaterChange -= UpdateCanvas;
+        EventManager.OnEquipmentChange -= UpdateButtonSelect;
     }
 }
