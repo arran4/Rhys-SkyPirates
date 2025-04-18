@@ -17,6 +17,6 @@ MonoBehaviour:
   Info: The long rifle is an early example of a firearm using rifling, which caused
     the projectile, commonly a round lead ball in the early firearm, to spin around
     the axis of its motion.
-  StatChanges: 000000000000000000000000000000000000000000000000
+  StatChanges: 000000000200000000000000000000000000000002000000
   ExtraAbilies: []
   WhoCanEquip: 

@@ -17,6 +17,6 @@ MonoBehaviour:
   Info: 'Welding goggles are protective eyewear designed to safeguard the eyes from
     intense heat, ultraviolet, and infrared light, as well as flying debris, during
     welding and cutting operations. '
-  StatChanges: 000000000000000000000000000000000000000000000000
+  StatChanges: 000000000200000000000000010000000000000001000000
   ExtraAbilies: []
   WhoCanEquip: 

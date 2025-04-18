@@ -18,6 +18,6 @@ MonoBehaviour:
     footwear, that are easy to put on and off and are intended to be worn indoors,
     particularly at home.[1] They provide comfort and protection for the feet when
     walking indoors.
-  StatChanges: 000000000000000000000000000000000000000000000000
+  StatChanges: 000000000000000003000000000000000200000002000000
   ExtraAbilies: []
   WhoCanEquip: 
