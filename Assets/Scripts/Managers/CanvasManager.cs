@@ -5,18 +5,36 @@ using UnityEngine.InputSystem;
 
 public class CanvasManager : MonoBehaviour
 {
+    public static CanvasManager CanvasInstance { get; private set; }
     public List<Canvas> Menues;
     public BasicControls inputActions;
     public int positon;
     // Start is called before the first frame update
+    private void Awake()
+    {
+        // If there is an instance, and it's not me, delete myself.
+
+        if (CanvasInstance != null && CanvasInstance != this)
+        {
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            CanvasInstance = this;
+        }
+    }
+
     public void Start()
     {
         positon = 0;
         inputActions = EventManager.EventInstance.inputActions;
         foreach (Canvas x in gameObject.GetComponentsInChildren<Canvas>())
         {
-            Menues.Add(x);
-            x.gameObject.SetActive(false);
+            if (!Menues.Contains(x))
+            {
+                Menues.Add(x);
+                x.gameObject.SetActive(false);
+            }
         }
         Menues[positon].gameObject.SetActive(true);
     }
