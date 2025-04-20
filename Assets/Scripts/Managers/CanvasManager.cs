@@ -9,6 +9,8 @@ public class CanvasManager : MonoBehaviour
     public List<Canvas> Menues;
     public BasicControls inputActions;
     public int positon;
+    public Transform CameraPosInventory;
+    public Transform CameraPosEquipment;
     // Start is called before the first frame update
     private void Awake()
     {
@@ -53,6 +55,14 @@ public class CanvasManager : MonoBehaviour
             else if (positon < 0)
             {
                 positon = Menues.Count - 1;
+            }
+            if(positon == 0)
+            {
+                Camera.main.transform.position = CameraPosEquipment.position;
+            }
+            else if(positon == 2)
+            {
+                Camera.main.transform.position = CameraPosInventory.position;
             }
             Menues[positon].gameObject.SetActive(true);
         }
