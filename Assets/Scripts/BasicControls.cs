@@ -812,6 +812,14 @@ public class @BasicControls : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""MenuSwap"",
+                    ""type"": ""Button"",
+                    ""id"": ""6ce51af1-c749-4701-a18c-7afc99842bea"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -858,6 +866,39 @@ public class @BasicControls : IInputActionCollection, IDisposable
                     ""action"": ""SceneSwitch"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""87d69125-b0f8-4afa-9834-8fbc8d18cd58"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MenuSwap"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""3bb52797-20af-4613-a338-48bb8196a485"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MenuSwap"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""4f0a44e3-6883-4535-9db8-fd3870743a9d"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MenuSwap"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -877,6 +918,7 @@ public class @BasicControls : IInputActionCollection, IDisposable
         m_Menu = asset.FindActionMap("Menu", throwIfNotFound: true);
         m_Menu_SwitchCharater = m_Menu.FindAction("SwitchCharater", throwIfNotFound: true);
         m_Menu_SceneSwitch = m_Menu.FindAction("SceneSwitch", throwIfNotFound: true);
+        m_Menu_MenuSwap = m_Menu.FindAction("MenuSwap", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1009,12 +1051,14 @@ public class @BasicControls : IInputActionCollection, IDisposable
     private IMenuActions m_MenuActionsCallbackInterface;
     private readonly InputAction m_Menu_SwitchCharater;
     private readonly InputAction m_Menu_SceneSwitch;
+    private readonly InputAction m_Menu_MenuSwap;
     public struct MenuActions
     {
         private @BasicControls m_Wrapper;
         public MenuActions(@BasicControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @SwitchCharater => m_Wrapper.m_Menu_SwitchCharater;
         public InputAction @SceneSwitch => m_Wrapper.m_Menu_SceneSwitch;
+        public InputAction @MenuSwap => m_Wrapper.m_Menu_MenuSwap;
         public InputActionMap Get() { return m_Wrapper.m_Menu; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1030,6 +1074,9 @@ public class @BasicControls : IInputActionCollection, IDisposable
                 @SceneSwitch.started -= m_Wrapper.m_MenuActionsCallbackInterface.OnSceneSwitch;
                 @SceneSwitch.performed -= m_Wrapper.m_MenuActionsCallbackInterface.OnSceneSwitch;
                 @SceneSwitch.canceled -= m_Wrapper.m_MenuActionsCallbackInterface.OnSceneSwitch;
+                @MenuSwap.started -= m_Wrapper.m_MenuActionsCallbackInterface.OnMenuSwap;
+                @MenuSwap.performed -= m_Wrapper.m_MenuActionsCallbackInterface.OnMenuSwap;
+                @MenuSwap.canceled -= m_Wrapper.m_MenuActionsCallbackInterface.OnMenuSwap;
             }
             m_Wrapper.m_MenuActionsCallbackInterface = instance;
             if (instance != null)
@@ -1040,6 +1087,9 @@ public class @BasicControls : IInputActionCollection, IDisposable
                 @SceneSwitch.started += instance.OnSceneSwitch;
                 @SceneSwitch.performed += instance.OnSceneSwitch;
                 @SceneSwitch.canceled += instance.OnSceneSwitch;
+                @MenuSwap.started += instance.OnMenuSwap;
+                @MenuSwap.performed += instance.OnMenuSwap;
+                @MenuSwap.canceled += instance.OnMenuSwap;
             }
         }
     }
@@ -1058,5 +1108,6 @@ public class @BasicControls : IInputActionCollection, IDisposable
     {
         void OnSwitchCharater(InputAction.CallbackContext context);
         void OnSceneSwitch(InputAction.CallbackContext context);
+        void OnMenuSwap(InputAction.CallbackContext context);
     }
 }
