@@ -11,6 +11,8 @@ public class CanvasManager : MonoBehaviour
     public int positon;
     public Transform CameraPosInventory;
     public Transform CameraPosEquipment;
+
+    private bool transition = false;
     // Start is called before the first frame update
     private void Awake()
     {
@@ -44,6 +46,10 @@ public class CanvasManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(transition)
+        {
+            return;
+        }
         if(inputActions.Menu.MenuSwap.triggered)
         {
             Menues[positon].gameObject.SetActive(false);
@@ -59,10 +65,12 @@ public class CanvasManager : MonoBehaviour
             if(positon == 0)
             {
                 StartCoroutine(CameraMove(Camera.main.transform.position, CameraPosEquipment.position));
+                transition = true;
             }
             else if(positon == 2)
             {
                 StartCoroutine(CameraMove( Camera.main.transform.position, CameraPosInventory.position));
+                transition = true;
             }
             Menues[positon].gameObject.SetActive(true);
         }
@@ -81,7 +89,7 @@ public class CanvasManager : MonoBehaviour
                 Camera.main.transform.position = currentlocation;
                 yield return null;
             }
-            
+            transition = false;
         }
     }
 }

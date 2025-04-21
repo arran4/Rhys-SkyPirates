@@ -27,7 +27,9 @@ public class InventoryGenerator : MonoBehaviour
 
     public void SpawnButtons()
     {
-
+        Viewport.GetComponent<RectTransform>().sizeDelta = new Vector2(
+    Viewport.GetComponent<RectTransform>().sizeDelta.x,
+    PublicItems.InInventory.Count * (ScrollSpace.rect.height / 6) + 150);
         // Create and position the buttons
         for (int x = 0; x < PublicItems.InInventory.Count; x++)
         {
@@ -37,12 +39,11 @@ public class InventoryGenerator : MonoBehaviour
             // Position buttons at the top of the scroll area
             generatedButton.transform.position = new Vector3(
                 generatedButton.transform.position.x,
-                ScrollSpace.rect.height - (x * (ScrollSpace.rect.height / 6)),
-                0
-            );
-
+                0 - (x * (ScrollSpace.rect.height / 6)),
+                0);
             Inventorylist.Add(generatedButton);
         }
+
         EventSystem.current.SetSelectedGameObject(Inventorylist[0].gameObject);
     }
 
