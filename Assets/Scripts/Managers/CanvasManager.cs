@@ -58,13 +58,30 @@ public class CanvasManager : MonoBehaviour
             }
             if(positon == 0)
             {
-                Camera.main.transform.position = CameraPosEquipment.position;
+                StartCoroutine(CameraMove(Camera.main.transform.position, CameraPosEquipment.position));
             }
             else if(positon == 2)
             {
-                Camera.main.transform.position = CameraPosInventory.position;
+                StartCoroutine(CameraMove( Camera.main.transform.position, CameraPosInventory.position));
             }
             Menues[positon].gameObject.SetActive(true);
+        }
+
+        IEnumerator CameraMove(Vector3 start, Vector3 end)
+        {
+            float time = 0;
+            Vector3 currentlocation = new Vector3();
+            while(currentlocation != end)
+            {
+                time += Time.deltaTime;
+                currentlocation.x = Mathf.Lerp(start.x, end.x, time);
+                currentlocation.y = Mathf.Lerp(start.y, end.y, time);
+                currentlocation.z = Mathf.Lerp(start.z, end.z, time);
+
+                Camera.main.transform.position = currentlocation;
+                yield return null;
+            }
+            
         }
     }
 }
