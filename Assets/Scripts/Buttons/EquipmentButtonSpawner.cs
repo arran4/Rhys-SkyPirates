@@ -37,8 +37,7 @@ public class EquipmentButtonSpawner : MonoBehaviour
             generatedButton.transform.position = new Vector3(
                 generatedButton.transform.position.x,
                 ScrollSpace.rect.height - (x * (ScrollSpace.rect.height / 6)),
-                0
-            );
+                0);
 
             Inventorylist.Add(generatedButton);
         }

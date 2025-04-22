@@ -8,6 +8,13 @@ public class InventroyItemButton : MonoBehaviour
 
     public void onClick()
     {
-        EventManager.EquipmentChangeTrigger(Equip.Type, Equip);
+        if (CanvasManager.CanvasInstance.positon == 0)
+        {
+            EventManager.EquipmentChangeTrigger(Equip.Type, Equip);
+        }
+        else if(CanvasManager.CanvasInstance.positon == 2)
+        {
+            EventManager.ShowInfoTrigger(Equip);
+        }
     }
 }

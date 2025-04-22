@@ -32,7 +32,14 @@ public class EventManager : MonoBehaviour
     public delegate void InfoCompare(Item Equiped);
     public static event InfoCompareChange OnInfoCompareChange;
     public delegate void InfoCompareChange(Item Info, int[] ComparisonArray);
+    public static event ShowInfo OnShowInfo;
+    public delegate void ShowInfo(Item item);
 
+
+    public static void ShowInfoTrigger(Item item)
+    {
+        OnShowInfo?.Invoke(item);
+    }
 
     public static void TileSelectTrigger()
     {

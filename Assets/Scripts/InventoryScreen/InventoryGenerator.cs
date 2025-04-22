@@ -37,9 +37,9 @@ public class InventoryGenerator : MonoBehaviour
             generatedButton.GetComponentInChildren<Text>().text = PublicItems.InInventory[x].Name;
 
             // Position buttons at the top of the scroll area
-            generatedButton.transform.position = new Vector3(
-                generatedButton.transform.position.x,
-                0 - (x * (ScrollSpace.rect.height / 6)),
+            generatedButton.transform.localPosition = new Vector3(
+                0 - (ScrollSpace.rect.width/2),
+                0 - (x * (ScrollSpace.rect.height / 6) + ScrollSpace.rect.height / 6),
                 0);
             Inventorylist.Add(generatedButton);
         }
