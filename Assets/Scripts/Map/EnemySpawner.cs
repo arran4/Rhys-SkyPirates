@@ -17,6 +17,10 @@ public class EnemySpawner : MonoBehaviour
     {
         List<EnemyPawn> Enemies = new List<EnemyPawn>();
         int count = 0;
+        if(ToSpawn == null)
+        {
+            return;
+        }
         foreach (EType n in ToSpawn.EnemyType)
         {
 

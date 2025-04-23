@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a1a451d7e8cbb94499cbf78a89d9dc7, type: 3}
   m_Name: WoodenDeck
   m_EditorClassIdentifier: 
+  UniqueID: 36c57b86-f224-4ca8-8be7-c98b1b306c42
   MovementCost: 1
   TilePrefab: {fileID: 5593367982649567413, guid: a169967b8a9aadd4c8c879dee0bff416, type: 3}
   Walkable: 0
