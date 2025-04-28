@@ -8,6 +8,7 @@ public class TempSave : MonoBehaviour
 
     public void Press()
     {
-        ToSave.SaveMapToJson(Application.persistentDataPath + "/" + "save.json");
+        
+        SaveLoadManager.SaveLoadInstance.SaveMapToJson(ToSave, Application.persistentDataPath + "/" + "save.json");
     }
 }
