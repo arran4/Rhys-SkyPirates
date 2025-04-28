@@ -29,7 +29,7 @@ public class ExportData
 public class Map : MonoBehaviour
 {
     [SerializeField]
-    private Vector2Int MapSize;
+    public Vector2Int MapSize;
 
     public float innerSize , outerSize, height;
     public bool isFlatTopped;
@@ -39,6 +39,8 @@ public class Map : MonoBehaviour
 
     public Board PlayArea;
 
+    public IGenerate generate;
+
     public Material HighlightMaterial;
 
     private MovementLine Arrow;
@@ -47,37 +49,8 @@ public class Map : MonoBehaviour
     public void Start()
     {
         Arrow = GetComponent<MovementLine>();
-        PlayArea = new Board(MapSize);
-        int nuberofenemies = PawnManager.PawnManagerInstance.GetAllEnemies().Count -1;
-        int qStart = -MapSize.x / 2;
-        int rStart = -MapSize.y / 2;
-        for (int x = 0; x < MapSize.x; x++)
-        {
-            for (int y = 0; y < MapSize.y; y++)
-            {
-                int q = qStart + x;
-                int r = rStart + y;
-                GameObject holder = new GameObject($"Hex {x},{y}", typeof(Tile));
-                Tile tile = holder.GetComponent<Tile>();
-                tile.Data = TileTypes[Random.Range(0,2)];
-                tile.SetPositionAndHeight(new Vector2Int(x, y), q, r, tile.Data == TileTypes[0] ? 5 : 20);
-                Vector3 tilePosition = GetHexPositionFromCoordinate(new Vector2Int(x, y));
-                tilePosition.y = tilePosition.y + tile.Height / 2;
-                holder.transform.position = tilePosition;
-                holder.transform.SetParent(transform);
-                Instantiate(tile.Data.TilePrefab, holder.transform).transform.position += new Vector3(0, tile.Height / 2 -1, 0);
-                tile.SetupHexRenderer(innerSize, outerSize, isFlatTopped);
-                tile.SetPosition(new Vector2Int(x, y));
-                tile.SetPawnPos();
-                PlayArea.set_Tile(x, y, tile);
-
-                if (tile.Data.BaseMat == TileTypes[1].BaseMat && nuberofenemies >= 0 && x > 4 && y > 2)
-                {
-                    PawnManager.PawnManagerInstance.EnemyPawns[nuberofenemies].SetPosition(tile);
-                    nuberofenemies--;
-                }
-            }
-        }
+        PlayArea = generate.Generate(this);
+        int nuberofenemies = PawnManager.PawnManagerInstance.GetAllEnemies().Count - 1;
 
         int count = PlayerList.ListInstance.AllPlayerPawns.Count;
         while (count > 0)
@@ -89,12 +62,23 @@ public class Map : MonoBehaviour
                 count--;
             }
         }
+        count = PawnManager.PawnManagerInstance.EnemyPawns.Count;
+        while (count > 0)
+        {
+            Tile EnemyPos = PlayArea.get_Tile(Random.Range(0, MapSize.x), Random.Range(0, MapSize.y));
+            if (EnemyPos.Data != TileTypes[0] && EnemyPos.Contents == null)
+            {
+                PawnManager.PawnManagerInstance.EnemyPawns[count - 1].SetPosition(EnemyPos);
+                count--;
+            }
+        }
 
         Arrow.SetMap(PlayArea);
         SetNeighbours();
         setFirstHex();
-
     }
+
+
 
     //Sets a hexes possition in world coords from its x,y values
     public Vector3 GetHexPositionFromCoordinate(Vector2Int coordinates)

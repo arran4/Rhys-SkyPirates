@@ -8,11 +8,15 @@ public class EventManager : MonoBehaviour
     public BasicControls inputActions { get; private set; }
 
     // --- EVENTS ---
+
+    // --- BATTLE TRIGGERS ---
     public static event Action<GameObject> OnTileHover;
     public static event Action OnTileSelect;
     public static event Action OnTileDeselect;
     public static event Action<Pawn> OnPawnSelect;
     public static event Action<List<Vector3Int>> OnMovementChange;
+
+    // --- UI TRIGGERS ---
     public static event Action<Pawn> OnCharacterChange;
     public static event Action<Item> OnItemSelect;
     public static event Action<ItemType, Item> OnEquipmentChange;
@@ -23,11 +27,15 @@ public class EventManager : MonoBehaviour
     public static event Action<Item> OnShowInfo;
 
     // --- TRIGGERS ---
+
+    // --- BATTLE TRIGGERS ---
     public static void TriggerTileHover(GameObject selected) => OnTileHover?.Invoke(selected);
     public static void TriggerTileSelect() => OnTileSelect?.Invoke();
     public static void TriggerTileDeselect() => OnTileDeselect?.Invoke();
     public static void TriggerPawnSelect(Pawn selectedPawn) => OnPawnSelect?.Invoke(selectedPawn);
     public static void TriggerMovementChange(List<Vector3Int> points) => OnMovementChange?.Invoke(points);
+
+    // --- UI TRIGGERS ---
     public static void TriggerCharacterChange(Pawn onscreenPawn) => OnCharacterChange?.Invoke(onscreenPawn);
     public static void TriggerItemSelect(Item selectedItem) => OnItemSelect?.Invoke(selectedItem);
     public static void TriggerEquipmentChange(ItemType itemType, Item item) => OnEquipmentChange?.Invoke(itemType, item);
