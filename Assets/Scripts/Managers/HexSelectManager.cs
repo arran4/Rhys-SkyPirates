@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-//Manager for the selection and highlight of hexes. Informs the current IHighlightResponce and ISelectionResponce when to
-//act with given inputs.
+// Manager for the selection and highlight of hexes. Informs the current IHighlightResponse and ISelectionResponse when to
+// act with given inputs.
 [RequireComponent(typeof(RangeFinder))]
 public class HexSelectManager : MonoBehaviour
 {
@@ -13,7 +13,6 @@ public class HexSelectManager : MonoBehaviour
     public ISelectionResponce Responce { get; set; }
     public IHighlightResponce Highlight { get; set; }
     public RangeFinder HighlightFinder { get; private set; }
-
     public Canvas UI { get; private set; }
 
     private HexSelectState currentState;
@@ -41,7 +40,8 @@ public class HexSelectManager : MonoBehaviour
         EventManager.OnTileSelect += Select;
         EventManager.OnTileDeselect += Deselect;
         EventManager.OnTileHover += SetHighlight;
-        InputActions = EventManager.EventInstance.inputActions;
+
+        InputActions = EventManager.EventInstance.inputActions; // Notice this matches your EventManager now
         HighlightFinder = GetComponent<RangeFinder>();
         UI = FindObjectOfType<Canvas>();
         UI.enabled = false;
@@ -52,19 +52,26 @@ public class HexSelectManager : MonoBehaviour
         currentState.UpdateState(this);
     }
 
+    private void OnDestroy()
+    {
+        EventManager.OnTileSelect -= Select;
+        EventManager.OnTileDeselect -= Deselect;
+        EventManager.OnTileHover -= SetHighlight;
+    }
+
     public void Select()
     {
-        Responce.Select(Highlight.ReturnHighlight());
+        Responce?.Select(Highlight?.ReturnHighlight());
     }
 
     public void Deselect()
     {
-        Responce.Deselect();
+        Responce?.Deselect();
     }
 
     public void SetHighlight(GameObject toHighlight)
     {
-        Highlight.SetHighlight(toHighlight);
+        Highlight?.SetHighlight(toHighlight);
     }
 
     public void SwitchToMoveSelectState()
@@ -80,7 +87,7 @@ public class HexSelectManager : MonoBehaviour
         currentState.ExitState(this);
         currentState = defaultState;
         currentState.EnterState(this);
-        Debug.Log("DefultState");
+        Debug.Log("DefaultState");
     }
 
     public void SwitchToActionSelectState()
@@ -91,32 +98,28 @@ public class HexSelectManager : MonoBehaviour
         Debug.Log("ActionState");
     }
 
-    private void OnDestroy()
-    {
-        EventManager.OnTileSelect -= Select;
-        EventManager.OnTileDeselect -= Deselect;
-        EventManager.OnTileHover -= SetHighlight;
-    }
-
-    public void UpdateMovementRange(List<Tile> Area, Tile Selection)
+    public void UpdateMovementRange(List<Tile> area, Tile selection)
     {
         if (((MoveSelect)Responce).Selections.Count > 0)
         {
-            Tile lastSelectedTile = Selection;
-            List<Tile> movementRange = Area;
-            PathfinderSelections Paths = ((MovementHighlight)Highlight).UpdateSelection();
+            Tile lastSelectedTile = selection;
+            List<Tile> movementRange = area;
+            PathfinderSelections paths = ((MovementHighlight)Highlight).UpdateSelection();
             int remainingMovement = ((MoveSelect)Responce).SelectedCharater.Stats.Movement;
-            foreach (List<Vector3Int> a in Paths.Paths)
+
+            foreach (List<Vector3Int> path in paths.Paths)
             {
-                remainingMovement -= a.Count;
+                remainingMovement -= path.Count;
             }
-            remainingMovement += Paths.Paths.Count;
+            remainingMovement += paths.Paths.Count;
+
             foreach (Tile tile in movementRange)
             {
                 tile.Hex.meshupdate(tile.BaseMaterial);
             }
-            movementRange = HexSelectManager.Instance.HighlightFinder.HexReachable(lastSelectedTile, remainingMovement);
-            ((MoveSelect)Responce).SetPaths(Paths);
+
+            movementRange = HighlightFinder.HexReachable(lastSelectedTile, remainingMovement);
+            ((MoveSelect)Responce).SetPaths(paths);
             ((MoveSelect)Responce).Area = movementRange;
             ((MovementHighlight)Highlight).Area = movementRange;
 

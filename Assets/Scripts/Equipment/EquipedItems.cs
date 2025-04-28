@@ -133,7 +133,7 @@ public class EquipedItems : MonoBehaviour
             // else leave as 0
         }
 
-        EventManager.InfoCompareChangeTrigger(toCompare, compareStats);
+        EventManager.TriggerInfoCompareChange(toCompare, compareStats);
     }
 
     public void OnDestroy()

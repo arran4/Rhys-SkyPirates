@@ -160,7 +160,7 @@ public class Map : MonoBehaviour
 
         if (closest != null)
         {
-            EventManager.TileHoverTrigger(PlayArea.get_Tile(closest.Column, closest.Row).transform.gameObject);
+            EventManager.TriggerTileHover(PlayArea.get_Tile(closest.Column, closest.Row).transform.gameObject);
         }
     }
 
@@ -288,6 +288,7 @@ public class Map : MonoBehaviour
         SetNeighbours();
         setFirstHex();
         Debug.Log("Map loaded from JSON.");
+        Debug.Log(filePath);
     }
 
 

@@ -52,7 +52,7 @@ public class MouseInputHandler : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(GetMouseRay(), out hit, 100000f))
             {
-                EventManager.TileSelectTrigger();
+                EventManager.TriggerTileSelect();
             }
         }
 
@@ -85,7 +85,7 @@ public class MouseInputHandler : MonoBehaviour
         }
         else if (Mouse.current.rightButton.wasReleasedThisFrame && holdTimer < 0.25f)
         {
-            EventManager.TileDeselectTrigger();
+            EventManager.TriggerTileDeselect();
         }
 
         if (Mouse.current.rightButton.wasReleasedThisFrame)

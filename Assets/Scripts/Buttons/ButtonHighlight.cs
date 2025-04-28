@@ -9,7 +9,7 @@ public class ButtonHighlight : Selectable, IPointerEnterHandler, ISelectHandler
 {
     public override void OnPointerExit(PointerEventData eventData)
     {
-        EventManager.InfoResetTrigger();
+        EventManager.TriggerInfoReset();
     }
 
     public override void OnPointerEnter(PointerEventData eventData)
@@ -21,7 +21,7 @@ public class ButtonHighlight : Selectable, IPointerEnterHandler, ISelectHandler
         {
             if (button.CurrentEquip != null)
             {
-                EventManager.InfoChangeTrigger(button.CurrentEquip);
+                EventManager.TriggerInfoChange(button.CurrentEquip);
             }
             else
             {
@@ -35,7 +35,7 @@ public class ButtonHighlight : Selectable, IPointerEnterHandler, ISelectHandler
         {
             if (button2.Equip != null)
             {
-                EventManager.InfoCompareTrigger(button2.Equip);
+                EventManager.TriggerInfoCompare(button2.Equip);
             }
             else
             {
@@ -51,14 +51,14 @@ public class ButtonHighlight : Selectable, IPointerEnterHandler, ISelectHandler
     {
         GameObject selectedObject = eventData.selectedObject;
 
-        EventManager.InfoResetTrigger();
+        EventManager.TriggerInfoReset();
 
         var button = selectedObject.GetComponent<ItemButton>();
         if (button != null)
         {
             if (button.CurrentEquip != null)
             {
-                EventManager.InfoChangeTrigger(button.CurrentEquip);
+                EventManager.TriggerInfoChange(button.CurrentEquip);
             }
             else
             {
@@ -72,7 +72,7 @@ public class ButtonHighlight : Selectable, IPointerEnterHandler, ISelectHandler
         {
             if (button2.Equip != null)
             {
-                EventManager.InfoCompareTrigger(button2.Equip);
+                EventManager.TriggerInfoCompare(button2.Equip);
             }
             else
             {

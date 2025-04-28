@@ -30,7 +30,7 @@ public class HexSelection : MonoBehaviour, ISelectionResponce
             SelectedContents = SelectedTile.Contents;
             if (SelectedContents != null)
             {
-                EventManager.PawnSelectTrigger(SelectedContents);
+                EventManager.TriggerPawnSelect(SelectedContents);
                 if (SelectedContents is PlayerPawns)
                 {
                     HexSelectManager.Instance.SwitchToActionSelectState();

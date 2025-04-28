@@ -26,7 +26,7 @@ public class CharaterChange : MonoBehaviour
     void Start()
     {
         EventSystem.current.firstSelectedGameObject = Head.gameObject;
-        EventManager.OnCharaterChange += UpdateCanvas;
+        EventManager.OnCharacterChange += UpdateCanvas;
         EventManager.OnEquipmentChange += UpdateButtonSelect;
 
         // Setup dictionary for easier lookup
@@ -90,7 +90,7 @@ public class CharaterChange : MonoBehaviour
 
     public void OnDestroy()
     {
-        EventManager.OnCharaterChange -= UpdateCanvas;
+        EventManager.OnCharacterChange -= UpdateCanvas;
         EventManager.OnEquipmentChange -= UpdateButtonSelect;
     }
 }

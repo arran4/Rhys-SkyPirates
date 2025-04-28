@@ -64,7 +64,7 @@ public class MovementHighlight : MonoBehaviour, IHighlightResponce
 
         CurrentPath = pathfinder.FindPath(route[route.Count - 1], highlightTile, areaArray);
         path.AddRange(CurrentPath);
-        EventManager.MovementChangeTrigger(path);
+        EventManager.TriggerMovementChange(path);
     }
 
     public PathfinderSelections UpdateSelection()

@@ -40,7 +40,7 @@ public class MoveSelect : MonoBehaviour, ISelectionResponce
         else
         {
             HexSelectManager.Instance.SwitchToActionSelectState();
-            EventManager.MovementChangeTrigger(null);
+            EventManager.TriggerMovementChange(null);
         }
         if (SLTile != null)
         {
@@ -50,7 +50,7 @@ public class MoveSelect : MonoBehaviour, ISelectionResponce
             if (Selections.Count == 0)
             {
                 HexSelectManager.Instance.SwitchToActionSelectState();
-                EventManager.MovementChangeTrigger(null);
+                EventManager.TriggerMovementChange(null);
             }
             else
             {
@@ -88,7 +88,7 @@ public class MoveSelect : MonoBehaviour, ISelectionResponce
                 Vector3 Position = new Vector3(tile.PawnPosition.transform.position.x, tile.PawnPosition.transform.position.y + 4.5f, tile.PawnPosition.transform.position.z);
                 SelectedCharater.gameObject.transform.position = Position;
                 HexSelectManager.Instance.SwitchToDefaultState();
-                EventManager.MovementChangeTrigger(null);
+                EventManager.TriggerMovementChange(null);
                 return;
             }
         }
