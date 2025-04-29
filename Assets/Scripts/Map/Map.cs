@@ -23,7 +23,7 @@ public class Map : MonoBehaviour
 
     private MovementLine Arrow;
 
-    //Using currently as a crude random map maker. Will probably have this build a map from a .json or two 
+    //Generation types iplemented,, still unsure how to build two ships in 1 map yet 
     public void Start()
     {
         generate = GetComponent<IGenerate>();

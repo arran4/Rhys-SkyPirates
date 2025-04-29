@@ -25,6 +25,7 @@ public class EventManager : MonoBehaviour
     public static event Action OnInfoReset;
     public static event Action<Item> OnInfoCompare;
     public static event Action<Item> OnShowInfo;
+    public static event Action<TileDataSO> OnTileChange;
 
     // --- TRIGGERS ---
 
@@ -44,6 +45,7 @@ public class EventManager : MonoBehaviour
     public static void TriggerInfoReset() => OnInfoReset?.Invoke();
     public static void TriggerInfoCompare(Item equippedItem) => OnInfoCompare?.Invoke(equippedItem);
     public static void TriggerShowInfo(Item itemInfo) => OnShowInfo?.Invoke(itemInfo);
+    public static void TriggerTileChange(TileDataSO TileInfo) => OnTileChange?.Invoke(TileInfo);
 
     private void Awake()
     {

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 // Manager for the selection and highlight of hexes. Informs the current IHighlightResponse and ISelectionResponse when to
 // act with given inputs.
@@ -19,6 +20,7 @@ public class HexSelectManager : MonoBehaviour
     private readonly HexSelectState defaultState = new DefaultSelectState();
     private readonly HexSelectState moveSelectState = new MoveSelectState();
     private readonly HexSelectState actionSelectState = new ActionSelectState();
+    private readonly HexSelectState editSelectState = new EditState();
 
     private void Awake()
     {
@@ -31,8 +33,17 @@ public class HexSelectManager : MonoBehaviour
             Instance = this;
         }
 
-        currentState = defaultState;
-        currentState.EnterState(this);
+        string name = SceneManager.GetActiveScene().name;
+        if (name == "BattleScene")
+        {
+            currentState = defaultState;
+            currentState.EnterState(this);
+        }
+        else if(name == "ShipBuildScreen")
+        {
+            currentState = editSelectState;
+            currentState.EnterState(this);
+        }
     }
 
     private void Start()
@@ -41,10 +52,14 @@ public class HexSelectManager : MonoBehaviour
         EventManager.OnTileDeselect += Deselect;
         EventManager.OnTileHover += SetHighlight;
 
-        InputActions = EventManager.EventInstance.inputActions; // Notice this matches your EventManager now
+        InputActions = EventManager.EventInstance.inputActions;
         HighlightFinder = GetComponent<RangeFinder>();
-        UI = FindObjectOfType<Canvas>();
-        UI.enabled = false;
+        string name = SceneManager.GetActiveScene().name;
+        if (name != "ShipBuildScreen")
+        {
+            UI = FindObjectOfType<Canvas>();
+            UI.enabled = false;
+        }
     }
 
     private void Update()
