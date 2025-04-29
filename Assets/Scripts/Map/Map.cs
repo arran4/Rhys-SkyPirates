@@ -29,8 +29,20 @@ public class Map : MonoBehaviour
         generate = GetComponent<IGenerate>();
         Arrow = GetComponent<MovementLine>();
         PlayArea = generate.Generate(this);
-        int nuberofenemies = PawnManager.PawnManagerInstance.GetAllEnemies().Count - 1;
+       // int nuberofenemies = PawnManager.PawnManagerInstance.GetAllEnemies().Count - 1;
 
+        Arrow.SetMap(PlayArea);
+        SetNeighbours();
+        setFirstHex();
+
+        if (typeof(GenerateEmptyAir).IsInstanceOfType(generate))
+        {
+            foreach(PlayerPawns x in PawnManager.PawnManagerInstance.PlayerPawns)
+            {
+                x.gameObject.SetActive(false);
+            }
+            return;
+        }
         int count = PlayerList.ListInstance.AllPlayerPawns.Count;
         while (count > 0)
         {
@@ -51,10 +63,6 @@ public class Map : MonoBehaviour
                 count--;
             }
         }
-
-        Arrow.SetMap(PlayArea);
-        SetNeighbours();
-        setFirstHex();
     }
 
 
