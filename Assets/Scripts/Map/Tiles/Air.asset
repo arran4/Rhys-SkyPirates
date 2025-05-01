@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Air
   m_EditorClassIdentifier: 
   UniqueID: 04c32722-2c72-4781-82db-d81d353cf471
+  Name: Air
   MovementCost: 0
   TilePrefab: {fileID: 4552495609819191121, guid: b427451bf60232947a418d2e778b9ba9, type: 3}
   Walkable: 0

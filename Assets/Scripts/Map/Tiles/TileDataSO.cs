@@ -30,6 +30,9 @@ public class BaseScriptableObject : ScriptableObject
 public class TileDataSO : BaseScriptableObject
 {
     [SerializeField]
+    public string Name;
+
+    [SerializeField]
     public int MovementCost;
 
     [SerializeField]
