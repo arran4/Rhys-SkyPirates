@@ -26,8 +26,27 @@ public class BuildSelect : MonoBehaviour, ISelectionResponce
 
             if (selectedTile != null)
             {
-                selectedTile.Hex.meshupdate(selectedEditMaterial);
-                selectedTile.BaseMaterial = selectedEditMaterial; // Make change permanent
+                Map playarea = FindObjectOfType<Map>();
+
+
+                GameObject holder = new GameObject($"Hex {selectedTile.Column},{selectedTile.Row}", typeof(Tile));
+                Tile tile = holder.GetComponent<Tile>();
+                tile.Data = EditTile;
+                tile.SetPositionAndHeight(
+                    new Vector2Int(
+                        selectedTile.Column, selectedTile.Row), selectedTile.QAxis, selectedTile.RAxis, 20);
+               
+                Vector3 tilePosition = playarea.GetHexPositionFromCoordinate(new Vector2Int(selectedTile.Column,selectedTile.Row ));
+                tilePosition.y = tilePosition.y + tile.Height / 2;
+                holder.transform.position = tilePosition;
+                holder.transform.SetParent(playarea.transform);
+                Instantiate(tile.Data.TilePrefab, holder.transform).transform.position += new Vector3(0, tile.Height / 2 - 1, 0);
+                tile.SetupHexRenderer(playarea.innerSize, playarea.outerSize, playarea.isFlatTopped);
+                tile.SetPosition(new Vector2Int(selectedTile.Column, selectedTile.Row));
+                tile.SetPawnPos();
+                playarea.PlayArea.set_Tile(selectedTile.Column, selectedTile.Row, tile);
+                playarea.setSingleNeighbour(selectedTile.Column, selectedTile.Row);
+                Destroy(selectedTile.gameObject);
             }
         }
     }

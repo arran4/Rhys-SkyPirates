@@ -141,14 +141,18 @@ public class Map : MonoBehaviour
         {
             for (int y = 0; y < MapSize.y; y++)
             {
-                Tile tile = PlayArea.get_Tile(x, y);
-                
-                foreach(Tile a in PlayArea.GetNeighbours(new Vector2Int(x, y)))
-                {
-                    tile.SetNeighbour(a);
-                }
+                setSingleNeighbour(x, y);
             }
         }
     }
 
+    public void setSingleNeighbour(int x, int y)
+    {
+        Tile tile = PlayArea.get_Tile(x, y);
+
+        foreach (Tile a in PlayArea.GetNeighbours(new Vector2Int(x, y)))
+        {
+            tile.SetNeighbour(a);
+        }
+    }
 }

@@ -841,9 +841,9 @@ GameObject:
   - component: {fileID: 1258532744}
   - component: {fileID: 1258532748}
   - component: {fileID: 1258532745}
-  - component: {fileID: 1258532746}
-  - component: {fileID: 1258532747}
   - component: {fileID: 1258532749}
+  - component: {fileID: 1258532747}
+  - component: {fileID: 1258532746}
   m_Layer: 0
   m_Name: CameraContainer
   m_TagString: Untagged
@@ -907,11 +907,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1258532742}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 24b6df36a22dc1344a47e445eb9f4470, type: 3}
+  m_Script: {fileID: 11500000, guid: 5201677b1b1a8194faed82c5084f0dfe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedMat: {fileID: 2100000, guid: d7806e505ddf59d418ec93becf72d829, type: 2}
-  movementRangeEnemy: []
+  selectedEditMaterial: {fileID: 0}
 --- !u!114 &1258532747
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -921,10 +920,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1258532742}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a1387650d8f1004fb0e37c9da14f8fa, type: 3}
+  m_Script: {fileID: 11500000, guid: b3232b73ad4b990429d64f1f1dc7cf0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HighlightMat: {fileID: 2100000, guid: 1bfb50ba18d140840a1beb1a042e91f6, type: 2}
+  previewMaterial: {fileID: 0}
 --- !u!114 &1258532748
 MonoBehaviour:
   m_ObjectHideFlags: 0
