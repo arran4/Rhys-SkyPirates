@@ -11,10 +11,17 @@ public class BuildSelect : MonoBehaviour, ISelectionResponce
 
     private GameObject selectedObject = null;
     private Tile selectedTile = null;
+    private int tilehight = 1;
 
     public void Start()
     {
         EventManager.OnTileChange += ChangeTile;
+        EventManager.OnSliderValueChange += ChangeHight;
+    }
+
+    public void ChangeHight(float hight)
+    {
+        tilehight = (int)hight;
     }
 
     public void Select(GameObject selection)
@@ -34,7 +41,7 @@ public class BuildSelect : MonoBehaviour, ISelectionResponce
                 tile.Data = EditTile;
                 tile.SetPositionAndHeight(
                     new Vector2Int(
-                        selectedTile.Column, selectedTile.Row), selectedTile.QAxis, selectedTile.RAxis, 20);
+                        selectedTile.Column, selectedTile.Row), selectedTile.QAxis, selectedTile.RAxis, tilehight * 5);
                
                 Vector3 tilePosition = playarea.GetHexPositionFromCoordinate(new Vector2Int(selectedTile.Column,selectedTile.Row ));
                 tilePosition.y = tilePosition.y + tile.Height / 2;
@@ -70,5 +77,6 @@ public class BuildSelect : MonoBehaviour, ISelectionResponce
     public void OnDestroy()
     {
         EventManager.OnTileChange -= ChangeTile;
+        EventManager.OnSliderValueChange -= ChangeHight;
     }
 }
