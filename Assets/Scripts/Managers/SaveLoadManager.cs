@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using Newtonsoft.Json;
+using UnityEngine.UI;
 
 [System.Serializable]
 public class SerializableTile
@@ -29,6 +30,14 @@ public class ExportData
 public class SaveLoadManager : MonoBehaviour
 {
     public static SaveLoadManager SaveLoadInstance { get; private set; }
+    private DirectoryInfo dir;
+    public FileInfo[] info;
+
+
+    public void refreshDirectory()
+    {
+        info = dir.GetFiles("*.*");
+    }
     public void SaveMapToJson(Map map, string filePath)
     {
         var export = new ExportData();
@@ -66,6 +75,7 @@ public class SaveLoadManager : MonoBehaviour
         string json = JsonConvert.SerializeObject(export, Formatting.Indented);
         File.WriteAllText(filePath, json);
         Debug.Log($"Map saved to: {filePath}");
+        refreshDirectory();
     }
 
     public void LoadMapFromJson(Map map, string filePath)
@@ -149,6 +159,8 @@ public class SaveLoadManager : MonoBehaviour
             return;
         }
         SaveLoadInstance = this;
+        dir = new DirectoryInfo(Application.persistentDataPath);
+        refreshDirectory();
 
     }
 }

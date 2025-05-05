@@ -1,10 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
+
 
 public class TempLoad : MonoBehaviour
 {
+    public string Load;
+
     public Map ToLoad;
+
 
     public void Press()
     {
@@ -15,6 +20,6 @@ public class TempLoad : MonoBehaviour
                 Destroy(ToLoad.PlayArea.get_Tile(x, y).gameObject);
             }
         }
-        SaveLoadManager.SaveLoadInstance.LoadMapFromJson(ToLoad, Application.persistentDataPath + "/" + "save.json");
+        SaveLoadManager.SaveLoadInstance.LoadMapFromJson(ToLoad, Application.persistentDataPath + "/" + Load);
     }
 }
