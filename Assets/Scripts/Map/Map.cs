@@ -23,7 +23,7 @@ public class Map : MonoBehaviour
 
     private MovementLine Arrow;
 
-    //Generation types iplemented,, still unsure how to build two ships in 1 map yet 
+    //Generation types implemented working on merging two ships 
     public void Start()
     {
         generate = GetComponent<IGenerate>();
@@ -35,7 +35,7 @@ public class Map : MonoBehaviour
         SetNeighbours();
         setFirstHex();
 
-        if (typeof(GenerateEmptyAir).IsInstanceOfType(generate))
+        if (!typeof(RandomGeneration).IsInstanceOfType(generate))
         {
             foreach(PlayerPawns x in PawnManager.PawnManagerInstance.PlayerPawns)
             {
