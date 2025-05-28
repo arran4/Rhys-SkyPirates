@@ -643,7 +643,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45dc8e24f2fa2eb48b51c520d37356f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  viewport: {fileID: 0}
 --- !u!4 &661047520
 Transform:
   m_ObjectHideFlags: 0
@@ -1407,9 +1406,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1137514809}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8e0fc1972da43104587a1fb174d66616, type: 3}
+  m_Script: {fileID: 11500000, guid: 86a9c8d5a556ca648b026537185f2230, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Ship1Local: save
+  Ship2Local: Boat
+  Side: 2
 --- !u!1 &1241970350
 GameObject:
   m_ObjectHideFlags: 0

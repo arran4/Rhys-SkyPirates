@@ -35,7 +35,7 @@ public class Map : MonoBehaviour
         SetNeighbours();
         setFirstHex();
 
-        if (!typeof(RandomGeneration).IsInstanceOfType(generate))
+        if (!typeof(GenerateMerge).IsInstanceOfType(generate))
         {
             foreach(PlayerPawns x in PawnManager.PawnManagerInstance.PlayerPawns)
             {
@@ -95,12 +95,16 @@ public class Map : MonoBehaviour
         {
             for (int y = 0; y < MapSize.y; y++)
             {
-                PlayArea.get_Tile(x, y).Hex.innerSize = innerSize;
-                PlayArea.get_Tile(x, y).Hex.outerSize = outerSize;
-                PlayArea.get_Tile(x, y).Hex.height = PlayArea.get_Tile(x, y).Height;
-                PlayArea.get_Tile(x, y).Hex.isFlatTopped = isFlatTopped;
-                PlayArea.get_Tile(x, y).gameObject.transform.position = GetHexPositionFromCoordinate(new Vector2Int(x, y));
-                PlayArea.get_Tile(x, y).SetColliderMesh();
+                Tile Draw = PlayArea.get_Tile(x, y);
+                if (Draw != null)
+                {
+                    Draw.Hex.innerSize = innerSize;
+                    Draw.Hex.outerSize = outerSize;
+                    Draw.Hex.height = PlayArea.get_Tile(x, y).Height;
+                    Draw.Hex.isFlatTopped = isFlatTopped;
+                    Draw.gameObject.transform.position = GetHexPositionFromCoordinate(new Vector2Int(x, y));
+                    Draw.SetColliderMesh();
+                }
             }
         }
     }
@@ -120,11 +124,14 @@ public class Map : MonoBehaviour
             for (int y = 0; y < MapSize.y; y++)
             {
                 Tile currentTile = PlayArea.get_Tile(x, y);
-                float dist = Vector3.Distance(currentTile.transform.position, center);
-                if (dist < minDist)
+                if (currentTile != null)
                 {
-                    closest = currentTile;
-                    minDist = dist;
+                    float dist = Vector3.Distance(currentTile.transform.position, center);
+                    if (dist < minDist)
+                    {
+                        closest = currentTile;
+                        minDist = dist;
+                    }
                 }
             }
         }
@@ -137,14 +144,29 @@ public class Map : MonoBehaviour
 
     public void SetNeighbours()
     {
-        for (int x = 0; x < MapSize.x; x++)
+        // Clear all neighbors first (optional)
+        foreach (var tile in PlayArea.GetAllTiles())
         {
-            for (int y = 0; y < MapSize.y; y++)
+            tile.Neighbours.Clear();
+        }
+
+        // For each tile, find neighbors by checking cube directions
+        foreach (var tile in PlayArea.GetAllTiles())
+        {
+            Vector3Int cubeCoords = tile.ReturnSquareCoOrds();
+
+            foreach (var dir in HexUtils.CubeDirections)
             {
-                setSingleNeighbour(x, y);
+                Vector3Int neighborCube = cubeCoords + dir;
+                Tile neighbor = PlayArea.GetTileByCube(neighborCube);
+                if (neighbor != null)
+                {
+                    tile.SetNeighbour(neighbor);
+                }
             }
         }
     }
+
 
     public void setSingleNeighbour(int x, int y)
     {

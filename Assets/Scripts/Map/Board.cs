@@ -43,14 +43,16 @@ public class Board
         List<Tile> Neighbours = new List<Tile>();
 
         Tile tile = get_Tile(centerTile.x, centerTile.y);
-
-        for (int i = 0; i < 6; i++)
+        if (tile != null)
         {
-            Vector3Int neighborPos = new Vector3Int(tile.QAxis + directions[i].x, tile.RAxis + directions[i].y, tile.SAxis + directions[i].z);
-            Tile neighbour = SearchTileByCubeCoordinates(neighborPos.x, neighborPos.y, neighborPos.z);
-            if (neighbour != null)
+            for (int i = 0; i < 6; i++)
             {
-                Neighbours.Add(neighbour);
+                Vector3Int neighborPos = new Vector3Int(tile.QAxis + directions[i].x, tile.RAxis + directions[i].y, tile.SAxis + directions[i].z);
+                Tile neighbour = SearchTileByCubeCoordinates(neighborPos.x, neighborPos.y, neighborPos.z);
+                if (neighbour != null)
+                {
+                    Neighbours.Add(neighbour);
+                }
             }
         }
 
@@ -77,4 +79,51 @@ public class Board
             return null;
         }
     }
+
+    public Tile GetTileByCube(Vector3Int cubeCoords)
+    {
+        // Iterate all tiles or have a dictionary for faster lookup (preferred)
+        foreach (var tile in GetAllTiles())
+        {
+            if (tile.QAxis == cubeCoords.x && tile.RAxis == cubeCoords.y && tile.SAxis == cubeCoords.z)
+            {
+                return tile;
+            }
+        }
+        return null;
+    }
+
+    // Return all tiles in the board (implement if you don't have it)
+    public IEnumerable<Tile> GetAllTiles()
+    {
+        for (int x = 0; x < _size_X; x++)
+        {
+            for (int y = 0; y < _size_Y; y++)
+            {
+                Tile tile = get_Tile(x, y);
+                if (tile != null) yield return tile;
+            }
+        }
+    }
+
+
+    public void Destroy()
+    {
+        foreach(Tile x in _board_Contents)
+        {
+            MonoBehaviour.Destroy(x.gameObject);
+        }
+    }
+    public Tile FirstNonNullTile()
+    {
+        for (int x = 0; x < _size_X; x++)
+            for (int y = 0; y < _size_Y; y++)
+            {
+                Tile t = get_Tile(x, y);
+                if (t != null)
+                    return t;
+            }
+        return null;
+    }
+
 }

@@ -78,41 +78,24 @@ public class SaveLoadManager : MonoBehaviour
         refreshDirectory();
     }
 
-    public void LoadMapFromJson(Map map, string filePath)
+    public static Board LoadBoardFromJson(string filePath, Map mapContext, Transform parent)
     {
         if (!File.Exists(filePath))
         {
             Debug.LogError("File not found: " + filePath);
-            return;
+            return null;
         }
 
-        foreach (Transform child in transform)
-        {
-            Destroy(child.gameObject);
-        }
         string json = File.ReadAllText(filePath);
         ExportData data = JsonConvert.DeserializeObject<ExportData>(json);
 
         Dictionary<string, TileDataSO> idLookup = new Dictionary<string, TileDataSO>();
         foreach (var id in data.TileTypeIDs)
         {
-            TileDataSO match = map.TileTypes.Find(t => t.UniqueID == id);
+            TileDataSO match = mapContext.TileTypes.Find(t => t.UniqueID == id);
             if (match != null)
             {
                 idLookup[id] = match;
-            }
-            else
-            {
-                Debug.LogWarning($"Missing TileDataSO with ID: {id}");
-            }
-        }
-        foreach (var id in data.TileTypeIDs)
-        {
-            TileDataSO match = map.TileTypes.Find(t => t.UniqueID == id);
-            if (match != null)
-            {
-                idLookup[id] = match;
-                Debug.Log($"Mapped ID: {id} to TileDataSO: {match.name}");
             }
             else
             {
@@ -120,35 +103,33 @@ public class SaveLoadManager : MonoBehaviour
             }
         }
 
-        map.PlayArea = new Board(new Vector2Int(data.Board.x_Height, data.Board.y_Width));
+        Board board = new Board(new Vector2Int(data.Board.x_Height, data.Board.y_Width));
+
         for (int y = 0; y < data.Board.y_Width; y++)
         {
             for (int x = 0; x < data.Board.x_Height; x++)
             {
                 SerializableTile sTile = data.Board.Tiles[y][x];
-                TileDataSO tileType = idLookup.ContainsKey(sTile.TileTypeID) ? idLookup[sTile.TileTypeID] : map.TileTypes[0];
+                TileDataSO tileType = idLookup.ContainsKey(sTile.TileTypeID) ? idLookup[sTile.TileTypeID] : mapContext.TileTypes[0];
 
                 GameObject holder = new GameObject($"Hex {x},{y}", typeof(Tile));
                 Tile tile = holder.GetComponent<Tile>();
                 tile.Data = tileType;
                 tile.SetPositionAndHeight(new Vector2Int(x, y), x, y, sTile.Height);
-                Vector3 tilePosition = map.GetHexPositionFromCoordinate(new Vector2Int(x, y));
+                Vector3 tilePosition = mapContext.GetHexPositionFromCoordinate(new Vector2Int(x, y));
                 tilePosition.y += tile.Height / 2;
                 holder.transform.position = tilePosition;
-                holder.transform.SetParent(transform);
+                holder.transform.SetParent(parent);
                 Instantiate(tile.Data.TilePrefab, holder.transform).transform.position += new Vector3(0, tile.Height / 2 - 1, 0);
-                tile.SetupHexRenderer(map.innerSize, map.outerSize, map.isFlatTopped);
+                tile.SetupHexRenderer(mapContext.innerSize, mapContext.outerSize, mapContext.isFlatTopped);
                 tile.SetPosition(new Vector2Int(x, y));
                 tile.SetPawnPos();
 
-                map.PlayArea.set_Tile(x, y, tile);
+                board.set_Tile(x, y, tile);
             }
         }
 
-        map.SetNeighbours();
-        map.setFirstHex();
-        Debug.Log("Map loaded from JSON.");
-        Debug.Log(filePath);
+        return board;
     }
 
     private void Awake()

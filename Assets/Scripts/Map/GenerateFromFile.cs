@@ -7,7 +7,7 @@ public class GenerateFromFile : MonoBehaviour , IGenerate
     public string FileName;
     public Board Generate(Map Data)
     {
-        SaveLoadManager.SaveLoadInstance.LoadMapFromJson(Data, Application.dataPath + "/" + FileName);
+        Data.PlayArea = SaveLoadManager.LoadBoardFromJson(Application.dataPath + "/" + FileName, Data, Data.gameObject.transform);
         return Data.PlayArea;
     }
 }

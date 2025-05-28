@@ -20,6 +20,10 @@ public class TempLoad : MonoBehaviour
                 Destroy(ToLoad.PlayArea.get_Tile(x, y).gameObject);
             }
         }
-        SaveLoadManager.SaveLoadInstance.LoadMapFromJson(ToLoad, Application.persistentDataPath + "/" + Load);
+        ToLoad.PlayArea = SaveLoadManager.LoadBoardFromJson(Application.persistentDataPath + "/" + Load, ToLoad, ToLoad.gameObject.transform);
+        ToLoad.SetNeighbours();
+        ToLoad.setFirstHex();
+        Debug.Log("Map loaded from JSON.");
+        Debug.Log(Application.persistentDataPath + "/" + Load);
     }
 }
