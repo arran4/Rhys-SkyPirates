@@ -21,7 +21,14 @@ public class Board
 
     public Tile get_Tile(int x, int y)
     {
-        return _board_Contents[x, y];
+        if ((x >= 0 && x < _size_X) && (y >= 0 && y < _size_Y))
+        {
+            return _board_Contents[x, y];
+        }
+        else
+        {
+            return null;
+        }
     }
 
     public void set_Tile(int x, int y, Tile toset)

@@ -32,7 +32,7 @@ public class Map : MonoBehaviour
        // int nuberofenemies = PawnManager.PawnManagerInstance.GetAllEnemies().Count - 1;
 
         Arrow.SetMap(PlayArea);
-        SetNeighbours();
+        SetNeighbours(PlayArea, isFlatTopped);
         setFirstHex();
 
         if (!typeof(GenerateMerge).IsInstanceOfType(generate))
@@ -142,30 +142,40 @@ public class Map : MonoBehaviour
         }
     }
 
-    public void SetNeighbours()
+    public static readonly Vector2Int[] NeighborOffsetsFlatTopped = new Vector2Int[]
     {
-        // Clear all neighbors first (optional)
-        foreach (var tile in PlayArea.GetAllTiles())
-        {
-            tile.Neighbours.Clear();
-        }
+    new Vector2Int(+1, 0), new Vector2Int(0, +1), new Vector2Int(-1, +1),
+    new Vector2Int(-1, 0), new Vector2Int(0, -1), new Vector2Int(+1, -1)
+    };
 
-        // For each tile, find neighbors by checking cube directions
-        foreach (var tile in PlayArea.GetAllTiles())
-        {
-            Vector3Int cubeCoords = tile.ReturnSquareCoOrds();
+    public static readonly Vector2Int[] NeighborOffsetsPointyTopped = new Vector2Int[]
+    {
+    new Vector2Int(0, +1), new Vector2Int(-1, 0), new Vector2Int(-1, -1),
+    new Vector2Int(0, -1), new Vector2Int(+1, 0), new Vector2Int(+1, +1)
+    };
 
-            foreach (var dir in HexUtils.CubeDirections)
+    public void SetNeighbours(Board board, bool isFlatTopped)
+    {
+        var neighborOffsets = isFlatTopped ? NeighborOffsetsFlatTopped : NeighborOffsetsPointyTopped;
+
+        foreach (Tile tile in board.GetAllTiles())
+        {
+            if (tile == null) continue;
+
+            Vector2Int pos = new Vector2Int(tile.Column, tile.Row);
+
+            foreach (var offset in neighborOffsets)
             {
-                Vector3Int neighborCube = cubeCoords + dir;
-                Tile neighbor = PlayArea.GetTileByCube(neighborCube);
-                if (neighbor != null)
+                Vector2Int neighborPos = pos + offset;
+                Tile neighborTile = board.get_Tile(neighborPos.x, neighborPos.y);
+                if (neighborTile != null)
                 {
-                    tile.SetNeighbour(neighbor);
+                    tile.SetNeighbour(neighborTile);
                 }
             }
         }
     }
+
 
 
     public void setSingleNeighbour(int x, int y)

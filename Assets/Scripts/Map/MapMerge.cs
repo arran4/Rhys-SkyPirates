@@ -143,7 +143,7 @@ public class MapMerge : MonoBehaviour
         map.MapSize = new Vector2Int(mergedWidth, mergedHeight);
 
         // Set neighbors and first hex
-        map.SetNeighbours();
+        map.SetNeighbours(map.PlayArea, map.isFlatTopped);
         map.setFirstHex();
 
         Debug.Log("Merged boards into map.");

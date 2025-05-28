@@ -21,7 +21,7 @@ public class TempLoad : MonoBehaviour
             }
         }
         ToLoad.PlayArea = SaveLoadManager.LoadBoardFromJson(Application.persistentDataPath + "/" + Load, ToLoad, ToLoad.gameObject.transform);
-        ToLoad.SetNeighbours();
+        ToLoad.SetNeighbours(ToLoad.PlayArea, ToLoad.isFlatTopped);
         ToLoad.setFirstHex();
         Debug.Log("Map loaded from JSON.");
         Debug.Log(Application.persistentDataPath + "/" + Load);

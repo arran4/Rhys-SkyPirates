@@ -34,8 +34,11 @@ public class MovementLine : MonoBehaviour
         {
             foreach (Vector3Int a in Points)
             {
-                Tpoint = _Playarea.SearchTileByCubeCoordinates(a.x, a.y, a.z);
-                Wpoint.Add(Tpoint.gameObject.transform);
+                Tpoint = _Playarea.GetTileByCube(a);
+                if (Tpoint != null)
+                {
+                    Wpoint.Add(Tpoint.gameObject.transform);
+                }
             }
             Movement.positionCount = Wpoint.Count;
         }
