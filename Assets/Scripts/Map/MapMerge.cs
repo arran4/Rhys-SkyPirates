@@ -140,13 +140,67 @@ public class MapMerge : MonoBehaviour
             }
         }
 
+
         map.MapSize = new Vector2Int(mergedWidth, mergedHeight);
 
+        FillNulls(map.PlayArea, map);
         // Set neighbors and first hex
         map.SetNeighbours(map.PlayArea, map.isFlatTopped);
         map.setFirstHex();
 
         Debug.Log("Merged boards into map.");
+    }
+
+    public static void FillNulls(Board board, Map mapData)
+    {
+        int sizeX = board._size_X;
+        int sizeY = board._size_Y;
+
+        int qStart = -sizeX / 2;
+        int rStart = -sizeY / 2;
+
+        for (int x = 0; x < sizeX; x++)
+        {
+            for (int y = 0; y < sizeY; y++)
+            {
+                Tile existing = board.get_Tile(x, y);
+                if (existing == null)
+                {
+                    int q = qStart + x;
+                    int r = rStart + y;
+
+                    // Create empty GameObject with Tile component
+                    GameObject holder = new GameObject($"Hex {x},{y}", typeof(Tile));
+                    Tile tile = holder.GetComponent<Tile>();
+                    tile.Data = mapData.TileTypes[0];
+
+                    // Setup position, height, and cube coords
+                    tile.SetPositionAndHeight(new Vector2Int(x, y), q, r, tile.Data == mapData.TileTypes[0] ? 5 : 20);
+
+                    // Position the tile in world space
+                    Vector3 worldPos = mapData.GetHexPositionFromCoordinate(new Vector2Int(x, y));
+                    worldPos.y += tile.Height / 2f;
+                    holder.transform.position = worldPos;
+
+                    // Set parent to map object for hierarchy cleanliness
+                    holder.transform.SetParent(mapData.transform);
+
+                    // Instantiate visual mesh prefab under this tile
+                    GameObject visual = Object.Instantiate(tile.Data.TilePrefab, holder.transform);
+                    visual.transform.position += new Vector3(0, tile.Height / 2f - 1f, 0);
+
+                    // Setup mesh, material, size, etc.
+                    tile.SetupHexRenderer(mapData.innerSize, mapData.outerSize, mapData.isFlatTopped);
+
+                    // Set again in case something changed
+                    tile.SetPosition(new Vector2Int(x, y));
+                    tile.SetPawnPos();
+
+                    // Assign to board
+                    board.set_Tile(x, y, tile);
+                }
+            }
+        }
     }
 
 }

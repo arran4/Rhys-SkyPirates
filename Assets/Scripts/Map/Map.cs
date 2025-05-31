@@ -47,20 +47,26 @@ public class Map : MonoBehaviour
         while (count > 0)
         {
             Tile playerPos = PlayArea.get_Tile(Random.Range(0, MapSize.x), Random.Range(0, MapSize.y));
-            if (playerPos.Data != TileTypes[0] && playerPos.Contents == null)
+            if (playerPos != null)
             {
-                PawnManager.PawnManagerInstance.PlayerPawns[count - 1].SetPosition(playerPos);
-                count--;
+                if (playerPos.Data != TileTypes[0] && playerPos.Contents == null)
+                {
+                    PawnManager.PawnManagerInstance.PlayerPawns[count - 1].SetPosition(playerPos);
+                    count--;
+                }
             }
         }
         count = PawnManager.PawnManagerInstance.EnemyPawns.Count;
         while (count > 0)
         {
             Tile EnemyPos = PlayArea.get_Tile(Random.Range(0, MapSize.x), Random.Range(0, MapSize.y));
-            if (EnemyPos.Data != TileTypes[0] && EnemyPos.Contents == null)
+            if (EnemyPos != null)
             {
-                PawnManager.PawnManagerInstance.EnemyPawns[count - 1].SetPosition(EnemyPos);
-                count--;
+                if (EnemyPos.Data != TileTypes[0] && EnemyPos.Contents == null)
+                {
+                    PawnManager.PawnManagerInstance.EnemyPawns[count - 1].SetPosition(EnemyPos);
+                    count--;
+                }
             }
         }
     }

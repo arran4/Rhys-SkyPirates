@@ -118,7 +118,10 @@ public class Board
     {
         foreach(Tile x in _board_Contents)
         {
-            MonoBehaviour.Destroy(x.gameObject);
+            if (x != null)
+            {
+                MonoBehaviour.Destroy(x.gameObject);
+            }
         }
     }
     public Tile FirstNonNullTile()
