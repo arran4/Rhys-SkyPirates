@@ -9,14 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 83b481ba647aa8e48ac9bbe0481b33d7, type: 3}
-  m_Name: StandardRangeAttack
+  m_Script: {fileID: 11500000, guid: 39759325f0ee4a346830d3cddedf549f, type: 3}
+  m_Name: BasicRangedAttack
   m_EditorClassIdentifier: 
-  Name: BaseRangeAttack
-  Range: 6
-  Personal: 0
-  TotalArea: 00000000
-  Action: 00000000
-  HealthChange: 0f000000
-  BoardChange: 
-  PawnChange: 
+  UniqueID: 58b3aaec-7adb-45a5-bba8-6af38ec012da
+  Name: BasicRangedAttack
+  Cost: 0
+  ManaCost: 0
+  Actions:
+  - {fileID: 11400000, guid: 8f40c05f9609e544aba09ed49762aeab, type: 2}

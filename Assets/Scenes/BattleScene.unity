@@ -1409,9 +1409,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86a9c8d5a556ca648b026537185f2230, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Ship1Local: save
+  Ship1Local: Boat
   Ship2Local: Boat
-  Side: 2
+  Side: 3
+  Rot: 5
 --- !u!1 &1241970350
 GameObject:
   m_ObjectHideFlags: 0

@@ -176,8 +176,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   abilities:
-  - {fileID: 11400000, guid: 603536e2bd4bd2b4d9f36124d704482f, type: 2}
-  - {fileID: 11400000, guid: 3c860b5e52f713b47b2b482b56f2d686, type: 2}
+  - {fileID: 11400000, guid: 95713bdd631243c468ce1f7e100cf51c, type: 2}
 --- !u!114 &9119971392994064521
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -195,3 +194,11 @@ MonoBehaviour:
   Body: {fileID: 11400000, guid: 67281d79a0b23be408ffdb094d9a6ad3, type: 2}
   Accessorie: {fileID: 11400000, guid: 9d33c316ec4d7aa4299a8b5ab042a142, type: 2}
   Feet: {fileID: 11400000, guid: 7ffb8512480dff8479e3df47c0c3f1ba, type: 2}
+  chuzpah: 0
+  cadishness: 0
+  grace: 0
+  grit: 0
+  serindipity: 0
+  swagger: 0
+  Equipment: []
+  Onscreen: 0

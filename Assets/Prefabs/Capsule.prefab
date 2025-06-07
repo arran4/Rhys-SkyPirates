@@ -160,8 +160,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aabb7fe6ee9ada34980dfbafd86f6e2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Head: {fileID: 0}
-  Weapon: {fileID: 0}
-  Body: {fileID: 0}
-  Accessorie: {fileID: 0}
-  Feet: {fileID: 0}
+  Head: {fileID: 11400000, guid: fb099d115b4ea0e41893f7b7dc1a4865, type: 2}
+  Weapon: {fileID: 11400000, guid: e22f06cdaf1f9884da0a84fcc6588c6a, type: 2}
+  Body: {fileID: 11400000, guid: 67281d79a0b23be408ffdb094d9a6ad3, type: 2}
+  Accessorie: {fileID: 11400000, guid: c0fdb1024bf74764f80f6b0dee1bbc0e, type: 2}
+  Feet: {fileID: 11400000, guid: 7ffb8512480dff8479e3df47c0c3f1ba, type: 2}
+  chuzpah: 0
+  cadishness: 0
+  grace: 0
+  grit: 0
+  serindipity: 0
+  swagger: 0
+  Equipment: []
+  Onscreen: 0

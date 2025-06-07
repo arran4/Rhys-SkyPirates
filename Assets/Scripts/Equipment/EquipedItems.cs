@@ -23,6 +23,7 @@ public class EquipedItems : MonoBehaviour
     {
         EventManager.OnInfoCompare += Compare;
         populateEquipment();
+        SetStats();
     }
 
     public void populateEquipment()
@@ -69,23 +70,7 @@ public class EquipedItems : MonoBehaviour
                 break;
         }
 
-        int[] stats = new int[6];
-
-        Item[] items = { Head, Body, Weapon, Feet, Accessorie };
-        foreach (var item in items)
-        {
-            for (int i = 0; i < stats.Length; i++)
-            {
-                stats[i] += item.StatChanges[i];
-            }
-        }
-
-        chuzpah = stats[0];
-        cadishness = stats[1];
-        grace = stats[2];
-        grit = stats[3];
-        serindipity = stats[4];
-        swagger = stats[5];
+        SetStats();
     }
 
     public void Compare(Item toCompare)
@@ -139,5 +124,26 @@ public class EquipedItems : MonoBehaviour
     public void OnDestroy()
     {
         EventManager.OnInfoCompare -= Compare;
+    }
+
+    public void SetStats()
+    {
+        int[] stats = new int[6];
+
+        Item[] items = { Head, Body, Weapon, Feet, Accessorie };
+        foreach (Item item in items)
+        {
+            for (int i = 0; i < stats.Length; i++)
+            {
+                stats[i] += item.StatChanges[i];
+            }
+        }
+
+        chuzpah = stats[0];
+        cadishness = stats[1];
+        grace = stats[2];
+        grit = stats[3];
+        serindipity = stats[4];
+        swagger = stats[5];
     }
 }

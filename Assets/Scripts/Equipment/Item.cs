@@ -9,7 +9,7 @@ public class Item : ScriptableObject
     public string Name;
     public string Info;
     public int[] StatChanges = new int[6];
-    public List<Ability> ExtraAbilies;
+    public List<BaseAbility> ExtraAbilies;
     public List<PawnNames> WhoCanEquip;
 
     public override bool Equals(object other)

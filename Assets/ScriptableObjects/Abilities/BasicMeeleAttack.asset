@@ -9,14 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 83b481ba647aa8e48ac9bbe0481b33d7, type: 3}
-  m_Name: GetBack
+  m_Script: {fileID: 11500000, guid: 39759325f0ee4a346830d3cddedf549f, type: 3}
+  m_Name: BasicMeeleAttack
   m_EditorClassIdentifier: 
-  Name: GetBack
-  Range: 2
-  Personal: 1
-  TotalArea: 02000000
-  Action: 00000000
-  HealthChange: 14000000
-  BoardChange: 00000000
-  PawnChange: 02000000
+  UniqueID: 46eef812-907a-4697-90c8-fcc2dd18fc88
+  Name: BasicMeleeAttack
+  Cost: 0
+  ManaCost: 0
+  Actions:
+  - {fileID: 11400000, guid: 99e6370f5652f8f4c9fa100f567603d4, type: 2}
