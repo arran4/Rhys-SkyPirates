@@ -42,6 +42,7 @@ public class CharaterChange : MonoBehaviour
 
     public void UpdateCanvas(Pawn OnScreeen)
     {
+        //Change here to make equipment totals private
         Chuzpah.text = (OnScreeen.Stats.Chutzpah + OnScreeen.Equiped.chuzpah).ToString();
         Cadishness.text = (OnScreeen.Stats.Cadishness + OnScreeen.Equiped.cadishness).ToString();
         Grace.text = (OnScreeen.Stats.Grace + OnScreeen.Equiped.grace).ToString();

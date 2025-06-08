@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Item", menuName = "ScriptableObject/Item")]
-public class Item : ScriptableObject
+public class Item : BaseScriptableObject
 {
     public ItemType Type;
     public string Name;
@@ -20,7 +20,7 @@ public class Item : ScriptableObject
         }
         else
         {
-            if (this.Name == ((Item)other).Name)
+            if (this.UniqueID == ((Item)other).UniqueID)
             {
                 return true;
             }

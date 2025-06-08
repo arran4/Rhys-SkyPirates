@@ -1553,6 +1553,7 @@ GameObject:
   - component: {fileID: 1258532751}
   - component: {fileID: 1258532753}
   - component: {fileID: 1258532752}
+  - component: {fileID: 1258532754}
   m_Layer: 0
   m_Name: CameraContainer
   m_TagString: Untagged
@@ -1719,6 +1720,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selectedMat: {fileID: 2100000, guid: d7806e505ddf59d418ec93becf72d829, type: 2}
   CharaterNo: 0
+--- !u!114 &1258532754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1258532742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d773d9a8837525247825261d4382d626, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HighlightMat: {fileID: 2100000, guid: 1bfb50ba18d140840a1beb1a042e91f6, type: 2}
+  AreaHighlightMat: {fileID: 2100000, guid: 954e95ba543aa78468d8f9bbdeedc99a, type: 2}
 --- !u!1 &1277025363
 GameObject:
   m_ObjectHideFlags: 0

@@ -17,7 +17,8 @@ public enum EffectArea
     Area,
     Ring,
     Diagonal,
-    Line
+    Line,
+    Cone
 }
 
 public enum Effect

@@ -107,4 +107,52 @@ public class RangeFinder : MonoBehaviour
         return tile.Data.MovementCost == 0;
     }
 
+
+    public List<Tile> AreaLine(Tile center, int range, int direction = 0)
+    {
+        List<Tile> line = new List<Tile>();
+        Tile current = center;
+
+        for (int i = 0; i < range; i++)
+        {
+            if (current == null || direction < 0 || direction >= 6) break;
+            current = current.Neighbours[direction];
+            if (current != null)
+                line.Add(current);
+        }
+
+        return line;
+    }
+
+    public List<Tile> AreaCone(Tile center, int range, int direction)
+    {
+        List<Tile> cone = new List<Tile>();
+        Tile current = center;
+
+        if (direction < 0 || direction >= 6) return cone;
+
+        for (int i = 1; i <= range; i++)
+        {
+            Tile main = current;
+            for (int j = -1; j <= 1; j++)
+            {
+                int dir = (direction + j + 6) % 6;
+                Tile step = main;
+                for (int k = 0; k < i; k++)
+                {
+                    if (step == null) break;
+                    step = step.Neighbours[dir];
+                }
+                if (step != null)
+                    cone.Add(step);
+            }
+
+            current = current.Neighbours[direction];
+            if (current == null) break;
+        }
+
+        return cone;
+    }
+
+
 }
