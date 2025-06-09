@@ -17,11 +17,11 @@ public class RangeFinder : MonoBehaviour
         return _GameBoard.PlayArea.SearchTileByCubeCoordinates(hex.QAxis + QAxis, hex.RAxis + RAxis, hex.SAxis + SAxis);
     }
 
-    public List<Tile> GetMovementRange(Pawn center)
+    public Tile HexScale(Tile hex, int factor)
     {
-        List<Tile> MoveRange = AreaRing(center.Position, center.Stats.Movement);
-        return MoveRange;
+        return _GameBoard.PlayArea.SearchTileByCubeCoordinates(hex.QAxis * factor, hex.RAxis * factor, hex.SAxis * factor);
     }
+
     public List<Tile> AreaRing(Tile center, int radius)
     {
         List<Tile> results = new List<Tile>();
@@ -34,7 +34,7 @@ public class RangeFinder : MonoBehaviour
             {
                 int s = -q - r;
                 Tile add = tile_add(center, q, r, s);
-                if (add != null && add.Data.MovementCost != 0)
+                if (add != null)
                 {
                     results.Add(add);
                 }
@@ -43,10 +43,6 @@ public class RangeFinder : MonoBehaviour
         return results;
     }
 
-    public Tile HexScale(Tile hex, int factor)
-    {
-        return _GameBoard.PlayArea.SearchTileByCubeCoordinates(hex.QAxis * factor, hex.RAxis * factor, hex.SAxis * factor);
-    }
 
     public List<Tile> HexRing(Tile center, int radius)
     {
@@ -57,15 +53,17 @@ public class RangeFinder : MonoBehaviour
             return results;
         }
 
-        Tile hex2 = HexScale(center.Neighbours[4], radius);
-        Tile hex = tile_add(center, hex2.QAxis,hex2.RAxis, hex2.SAxis);
+        Tile hex = HexScale(center.Neighbours[0], radius);
 
         for (int i = 0; i < 6; i++)
         {
             for (int j = 0; j < radius; j++)
             {
-                results.Add(hex);
-                hex = hex.Neighbours[i];
+                if (hex != null)
+                {
+                    results.Add(hex);
+                    hex = hex.Neighbours[i];
+                }
             }
         }
 
@@ -86,7 +84,7 @@ public class RangeFinder : MonoBehaviour
 
             foreach (Tile neighbor in currentTile.Neighbours)
             {
-                if (neighbor != null && !visited.Contains(neighbor) && !IsBlocked(neighbor))
+                if (neighbor != null && !visited.Contains(neighbor) && !(neighbor.Data.MovementCost == 0))
                 {
                     int newCost = currentCost + neighbor.Data.MovementCost;
                     if (newCost <= movement && neighbor.Contents == null)
@@ -101,28 +99,30 @@ public class RangeFinder : MonoBehaviour
         return new List<Tile>(visited);
     }
 
-    private bool IsBlocked(Tile tile)
-    {
-        // A tile is considered blocked if its movement cost is zero
-        return tile.Data.MovementCost == 0;
-    }
-
-
-    public List<Tile> AreaLine(Tile center, int range, int direction = 0)
+    public List<Tile> AreaLine(Tile center, Tile target, int range)
     {
         List<Tile> line = new List<Tile>();
-        Tile current = center;
 
-        for (int i = 0; i < range; i++)
+        Vector3Int direction = _GameBoard.PlayArea.GetDirectionVector(center, target);
+        if (direction == Vector3Int.zero) return line;
+
+        Vector3Int current = center.ReturnSquareCoOrds();
+
+        for (int i = 1; i <= range; i++)
         {
-            if (current == null || direction < 0 || direction >= 6) break;
-            current = current.Neighbours[direction];
-            if (current != null)
-                line.Add(current);
+            current += direction;
+            Tile tile = _GameBoard.PlayArea.SearchTileByCubeCoordinates(current.x, current.y, current.z);
+            if (tile != null)
+            {
+                line.Add(tile);
+            }
+            else break; // Stop if we hit an invalid tile
         }
 
         return line;
     }
+
+
 
     public List<Tile> AreaCone(Tile center, int range, int direction)
     {

@@ -37,7 +37,14 @@ public class HexSelection : MonoBehaviour, ISelectionResponce
                 }
                 else
                 {
-                    movementRangeEnemy = HexSelectManager.Instance.HighlightFinder.GetMovementRange(SelectedContents);
+                    movementRangeEnemy = HexSelectManager.Instance.HighlightFinder.AreaRing(SelectedContents.Position, SelectedContents.Stats.Movement);
+                    foreach(Tile x in movementRangeEnemy)
+                    {
+                        if(x.Data.MovementCost == 0)
+                        {
+                            movementRangeEnemy.Remove(x);
+                        }
+                    }
                 }
             }
             SelectedTile.Hex.meshupdate(selectedMat);

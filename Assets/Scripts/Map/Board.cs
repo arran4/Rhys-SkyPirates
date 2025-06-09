@@ -136,4 +136,58 @@ public class Board
         return null;
     }
 
+    public int CubeDistance(Tile a, Tile b)
+    {
+        return (Mathf.Abs(a.QAxis - b.QAxis) + Mathf.Abs(a.RAxis - b.RAxis) + Mathf.Abs(a.SAxis - b.SAxis)) / 2;
+    }
+
+    public Vector3 CubeLerp(Tile a, Tile b, float t)
+    {
+        return new Vector3(
+            Mathf.Lerp(a.QAxis, b.QAxis, t),
+            Mathf.Lerp(a.RAxis, b.RAxis, t),
+            Mathf.Lerp(a.SAxis, b.SAxis, t)
+        );
+    }
+
+    public Vector3Int CubeRound(Vector3 cube)
+    {
+        int q = Mathf.RoundToInt(cube.x);
+        int r = Mathf.RoundToInt(cube.y);
+        int s = Mathf.RoundToInt(cube.z);
+
+        float q_diff = Mathf.Abs(q - cube.x);
+        float r_diff = Mathf.Abs(r - cube.y);
+        float s_diff = Mathf.Abs(s - cube.z);
+
+        if (q_diff > r_diff && q_diff > s_diff)
+        {
+            q = -r - s;
+        }
+        else if (r_diff > s_diff)
+        {
+            r = -q - s;
+        }
+        else
+        {
+            s = -q - r;
+        }
+
+        return new Vector3Int(q, r, s);
+    }
+
+    public Vector3Int GetDirectionVector(Tile from, Tile to)
+    {
+        Vector3Int delta = new Vector3Int(to.QAxis - from.QAxis, to.RAxis - from.RAxis, to.SAxis - from.SAxis);
+        // Normalize to closest hex direction
+        float max = Mathf.Max(Mathf.Abs(delta.x), Mathf.Abs(delta.y), Mathf.Abs(delta.z));
+        Vector3 lerp = new Vector3(delta.x / max, delta.y / max, delta.z / max);
+        Vector3Int rounded = CubeRound(lerp);
+
+        foreach (Vector3Int dir in directions)
+        {
+            if (dir == rounded) return dir;
+        }
+        return Vector3Int.zero;
+    }
 }

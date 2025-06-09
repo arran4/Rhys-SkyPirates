@@ -85,6 +85,8 @@ public class AbilityHighlight : MonoBehaviour, IHighlightResponce
             _highlightedTile.Hex.meshupdate(HighlightMat);
     }
 
+
+
     private List<Tile> GetTilesForAction(BaseAction action, Tile origin, int direction)
     {
         switch (action.Area)
