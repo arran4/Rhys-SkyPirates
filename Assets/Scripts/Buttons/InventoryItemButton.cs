@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InventroyItemButton : MonoBehaviour
+public class InventoryItemButton : MonoBehaviour
 {
     public Item Equip;
 

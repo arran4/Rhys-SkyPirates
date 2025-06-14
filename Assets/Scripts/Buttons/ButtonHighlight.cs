@@ -30,7 +30,7 @@ public class ButtonHighlight : Selectable, IPointerEnterHandler, ISelectHandler
             return;
         }
 
-        var button2 = hoveredObject.GetComponentInParent<InventroyItemButton>();
+        var button2 = hoveredObject.GetComponentInParent<InventoryItemButton>();
         if (button2 != null)
         {
             if (button2.Equip != null)
@@ -39,7 +39,7 @@ public class ButtonHighlight : Selectable, IPointerEnterHandler, ISelectHandler
             }
             else
             {
-                Debug.LogWarning("[PointerEnter] InventroyItemButton found but Equip is null.");
+                Debug.LogWarning("[PointerEnter] InventoryItemButton found but Equip is null.");
             }
             return;
         }
@@ -67,7 +67,7 @@ public class ButtonHighlight : Selectable, IPointerEnterHandler, ISelectHandler
             return;
         }
 
-        var button2 = selectedObject.GetComponent<InventroyItemButton>();
+        var button2 = selectedObject.GetComponent<InventoryItemButton>();
         if (button2 != null)
         {
             if (button2.Equip != null)
@@ -76,7 +76,7 @@ public class ButtonHighlight : Selectable, IPointerEnterHandler, ISelectHandler
             }
             else
             {
-                Debug.LogWarning("[Select] InventroyItemButton found but Equip is null.");
+                Debug.LogWarning("[Select] InventoryItemButton found but Equip is null.");
             }
             return;
         }
