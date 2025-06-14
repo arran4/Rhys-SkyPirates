@@ -11,7 +11,7 @@ public class SceneChange : MonoBehaviour
     {
         inputActions = EventManager.EventInstance.inputActions;
         string name = SceneManager.GetActiveScene().name;
-        if (name == "CharaterScene")
+        if (name == "CharacterScene")
         {
             inputActions.Battle.Disable();
             inputActions.Menu.Enable();
@@ -36,10 +36,10 @@ public class SceneChange : MonoBehaviour
             {
                 inputActions.Battle.Disable();
                 inputActions.Menu.Enable();
-                SceneManager.LoadScene("CharaterScene");
+                SceneManager.LoadScene("CharacterScene");
                 
             }
-            if (name == "CharaterScene")
+            if (name == "CharacterScene")
             {
                 inputActions.Battle.Enable();
                 inputActions.Menu.Disable();
