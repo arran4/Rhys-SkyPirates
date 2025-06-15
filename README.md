@@ -31,4 +31,3 @@ To create a standalone build:
 1. Open `File > Build Settings…` in Unity.
 2. Add the scenes you want included in the build (e.g., `BattleScene`, `ShipBuildScreen`).
 3. Choose your target platform and click **Build**.
-
