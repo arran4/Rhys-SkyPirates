@@ -43,3 +43,10 @@ from the Unity editor:
 These tests cover parts of the hex range calculation logic and help verify that
 the algorithms work as expected. Running them regularly prevents subtle bugs
 from creeping in as you make changes.
+
+Tests are written just like regular C# code using NUnit's `[Test]` attribute.
+Good tests document how a method should behave, guard against regressions and,
+when possible, act as small examples for new contributors. When a bug is found
+it's helpful to first create a failing test that demonstrates the issue – once
+the bug is fixed the failing assertion serves as proof and can be removed or
+updated.

@@ -73,22 +73,49 @@ public class Map : MonoBehaviour
 
 
 
-    //Sets a hexes possition in world coords from its x,y values
+    /// <summary>
+    /// Converts axial grid coordinates <c>(q,r)</c> into Unity world space.
+    /// <para>
+    /// The width and height of a hexagon are derived from the outer radius
+    /// <c>size</c> as:
+    /// <code>
+    /// width  = sqrt(3) * size
+    /// height = 2 * size
+    /// </code>
+    /// For flat topped layouts the origin is shifted horizontally by
+    /// <c>width / 2</c>. A <c>0.9</c> factor leaves a small gap between tiles.
+    /// </para>
+    /// <para>Sample positions when <c>size = 1</c>:</para>
+    /// <code>
+    /// | q | r | layout | expected (x,z) |
+    /// | 0 | 0 | flat   | (0.866,  0.000) |
+    /// | 1 | 0 | flat   | (2.425, -0.900) |
+    /// | 0 | 1 | flat   | (0.866, -1.800) |
+    /// | 0 | 0 | pointy | (0.000,  0.000) |
+    /// | 1 | 0 | pointy | (1.559, -0.900) |
+    /// | 1 | 1 | pointy | (1.559, -2.700) |
+    /// </code>
+    /// <para>Coordinate diagram:</para>
+    /// <code>
+    ///    (-1,1)  (0,1)  (1,1)
+    ///       \      |      /
+    ///    (-1,0) (0,0) (1,0)
+    ///       /      |      \
+    ///    (-1,-1)(0,-1)(1,-1)
+    /// </code>
+    /// </summary>
     public Vector3 GetHexPositionFromCoordinate(Vector2Int coordinates)
     {
         int q = coordinates.x;
         int r = coordinates.y;
         float size = outerSize;
 
-        // Calculate the horizontal and vertical spacing between hexagons
         float width = Mathf.Sqrt(3) * size;
         float height = 2f * size;
 
-        // Determine the horizontal offset based on the grid type
         float offset = isFlatTopped ? width / 2f : 0f;
 
-        // Calculate the x and y positions based on axial coordinates
-        float xPosition = (q * (width *0.90f) + offset);
+        float xPosition = (q * (width * 0.90f) + offset);
         float yPosition = -((r + q / 2f) * height * 0.90f);
 
         return new Vector3(xPosition, 0f, yPosition);
