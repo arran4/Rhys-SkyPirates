@@ -83,7 +83,7 @@ public class EquipmentButtonSpawner : MonoBehaviour
         rectTransform.sizeDelta = new Vector2(ScrollSpace.rect.width, ScrollSpace.rect.height / 6);
 
         // Add custom script and listener
-        InventroyItemButton newScript = button.gameObject.AddComponent<InventroyItemButton>();
+        InventoryItemButton newScript = button.gameObject.AddComponent<InventoryItemButton>();
         newScript.Equip = item;
         button.onClick.AddListener(newScript.onClick);
 
