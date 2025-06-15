@@ -16,14 +16,16 @@ public static class BoardRotator
     public static Board RotateBoard(Board original, Rotation rotation)
     {
         List<Tile> originalTiles = new List<Tile>(original.GetAllTiles());
-        List<Vector3Int> rotatedCoords = new List<Vector3Int>();
+        List<Vector3Int> coords = new List<Vector3Int>();
 
-        // Step 1: Rotate cube coordinates
+        // Gather cube coordinates for the board before instantiating any tiles
         foreach (Tile tile in originalTiles)
         {
-            Vector3Int rotatedCube = RotateCube(tile.QAxis, tile.RAxis, tile.SAxis, rotation);
-            rotatedCoords.Add(rotatedCube);
+            coords.Add(new Vector3Int(tile.QAxis, tile.RAxis, tile.SAxis));
         }
+
+        // Rotate coordinates using the pure helper so tests don't touch GameObjects
+        List<Vector3Int> rotatedCoords = RotateCubeCoords(coords, rotation);
 
         // Step 2: Compute bounding box for new board size
         int minQ = int.MaxValue, maxQ = int.MinValue;
@@ -66,19 +68,39 @@ public static class BoardRotator
         return rotatedBoard;
     }
 
+    // Rotate a list of cube coordinates according to the selected rotation.
+    // This method is pure and does not touch any GameObjects so it can be used
+    // directly in unit tests.
+    public static List<Vector3Int> RotateCubeCoords(List<Vector3Int> coords, Rotation rot)
+    {
+        List<Vector3Int> rotated = new List<Vector3Int>(coords.Count);
+        foreach (Vector3Int c in coords)
+        {
+            rotated.Add(RotateCube(c.x, c.y, c.z, rot));
+        }
+        return rotated;
+    }
+
 
 
 
     private static Vector3Int RotateCube(int q, int r, int s, Rotation rot)
     {
+        // Example rotations for cube coordinate (1,0,-1):
+        //  None          -> (1, 0, -1)
+        //  Rotate60CW    -> (1, -1, 0)
+        //  Rotate120CW   -> (0, -1, 1)
+        //  Rotate180     -> (-1, 0, 1)
+        //  Rotate120CCW  -> (0, 1, -1)
+        //  Rotate60CCW   -> (-1, 1, 0)
         return rot switch
         {
-            Rotation.Rotate60CW => new Vector3Int(-s, -q, -r),
-            Rotation.Rotate120CW => new Vector3Int(r, s, q),
-            Rotation.Rotate180 => new Vector3Int(-q, -r, -s),
-            Rotation.Rotate120CCW => new Vector3Int(-r, -s, -q),
-            Rotation.Rotate60CCW => new Vector3Int(s, q, r),
-            _ => new Vector3Int(q, r, s),
+            Rotation.Rotate60CW => new Vector3Int(-s, -q, -r),    // (q,r,s) -> (-s,-q,-r)
+            Rotation.Rotate120CW => new Vector3Int(r, s, q),      // (q,r,s) -> (r,s,q)
+            Rotation.Rotate180 => new Vector3Int(-q, -r, -s),     // (q,r,s) -> (-q,-r,-s)
+            Rotation.Rotate120CCW => new Vector3Int(-r, -s, -q),  // (q,r,s) -> (-r,-s,-q)
+            Rotation.Rotate60CCW => new Vector3Int(s, q, r),      // (q,r,s) -> (s,q,r)
+            _ => new Vector3Int(q, r, s),                         // No rotation
         };
     }
 }
