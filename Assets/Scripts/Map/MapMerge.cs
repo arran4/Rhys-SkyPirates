@@ -30,6 +30,44 @@ public class MapMerge : MonoBehaviour
         { ShipSide.Starboard, new Vector2Int(0, 1) }     // Down
     };
 
+    /// <summary>
+    /// Calculate offsets for two boards when merged together. This function is
+    /// pure so the math can be unit tested without any scene objects.
+    /// </summary>
+    public static (Vector2Int offsetA, Vector2Int offsetB, Vector2Int merged)
+        GetMergeLayout(Vector2Int sizeA, Vector2Int sizeB, ShipSide side)
+    {
+        Vector2Int offsetA = Vector2Int.zero;
+        Vector2Int offsetB = Vector2Int.zero;
+        Vector2Int merged = Vector2Int.zero;
+
+        switch (side)
+        {
+            case ShipSide.Bow:
+                // Ship B sits above ship A
+                offsetB = new Vector2Int(0, sizeA.y);
+                merged = new Vector2Int(Mathf.Max(sizeA.x, sizeB.x), sizeA.y + sizeB.y);
+                break;
+            case ShipSide.Stern:
+                // Ship B attaches below, so shift ship A up
+                offsetA = new Vector2Int(0, sizeB.y);
+                merged = new Vector2Int(Mathf.Max(sizeA.x, sizeB.x), sizeA.y + sizeB.y);
+                break;
+            case ShipSide.Port:
+                // Ship B attaches on the left
+                offsetA = new Vector2Int(sizeB.x, 0);
+                merged = new Vector2Int(sizeA.x + sizeB.x, Mathf.Max(sizeA.y, sizeB.y));
+                break;
+            case ShipSide.Starboard:
+                // Ship B attaches on the right
+                offsetB = new Vector2Int(sizeA.x, 0);
+                merged = new Vector2Int(sizeA.x + sizeB.x, Mathf.Max(sizeA.y, sizeB.y));
+                break;
+        }
+
+        return (offsetA, offsetB, merged);
+    }
+
     public static void MergeBoards(Map map, Board shipA, Board shipB, ShipSide sideToAttach)
     {
         bool pointyTopped = !map.isFlatTopped;
@@ -41,54 +79,15 @@ public class MapMerge : MonoBehaviour
         int widthB = shipB._size_X;
         int heightB = shipB._size_Y;
 
-        int offsetXA = 0; // Offset for Ship A
-        int offsetYA = 0;
-        int offsetXB = 0; // Offset for Ship B
-        int offsetYB = 0;
+        // Determine where each board should be positioned in the merged grid.
+        var layout = GetMergeLayout(new Vector2Int(widthA, heightA), new Vector2Int(widthB, heightB), sideToAttach);
 
-        int mergedWidth = 0;
-        int mergedHeight = 0;
-
-        switch (sideToAttach)
-        {
-            case ShipSide.Bow:
-                // Attach ship B above ship A
-                offsetXB = 0;
-                offsetYB = heightA;
-                mergedWidth = Mathf.Max(widthA, widthB);
-                mergedHeight = heightA + heightB;
-                break;
-
-            case ShipSide.Stern:
-                // Attach ship B below ship A — shift ship A up by heightB
-                offsetXA = 0;
-                offsetYA = heightB;  // Shift ship A up
-                offsetXB = 0;
-                offsetYB = 0;       // Ship B at bottom (0,0)
-                mergedWidth = Mathf.Max(widthA, widthB);
-                mergedHeight = heightA + heightB;
-                break;
-
-            case ShipSide.Port:
-                // Attach ship B to left of ship A — shift ship A right by widthB
-                offsetXA = widthB;   // Shift ship A right
-                offsetYA = 0;
-                offsetXB = 0;
-                offsetYB = 0;       // Ship B at left (0,0)
-                mergedWidth = widthA + widthB;
-                mergedHeight = Mathf.Max(heightA, heightB);
-                break;
-
-            case ShipSide.Starboard:
-                // Attach ship B to right of ship A
-                offsetXA = 0;
-                offsetYA = 0;
-                offsetXB = widthA;
-                offsetYB = 0;
-                mergedWidth = widthA + widthB;
-                mergedHeight = Mathf.Max(heightA, heightB);
-                break;
-        }
+        int offsetXA = layout.offsetA.x;
+        int offsetYA = layout.offsetA.y;
+        int offsetXB = layout.offsetB.x;
+        int offsetYB = layout.offsetB.y;
+        int mergedWidth = layout.merged.x;
+        int mergedHeight = layout.merged.y;
 
         map.PlayArea = new Board(new Vector2Int(mergedWidth, mergedHeight));
 
