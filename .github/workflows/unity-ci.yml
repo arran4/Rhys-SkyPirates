@@ -1,0 +1,78 @@
+# This GitHub Actions workflow ensures that every pull request compiles
+# and that automated tests run successfully.
+#
+# Workflows are sets of automated steps that run on GitHub's servers.
+# Whenever a pull request is opened, GitHub will run these steps using a
+# temporary virtual machine. If compilation or tests fail, the pull request
+# will be marked as failing.
+#
+# For a primer on GitHub Actions see:
+# https://docs.github.com/en/actions/using-workflows/about-workflows
+# The actions used here come from https://game.ci/ which provides Unity
+# tooling for CI environments.
+#
+# Why do this? Compiling the project and running tests automatically
+# helps catch script errors before code is merged. This protects main
+# from broken builds and gives quick feedback to contributors.
+
+name: Unity CI
+
+on:
+  # Run when pull requests are opened or updated against the main branch.
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    # GitHub provides Linux, Windows and macOS runners.
+    # The GameCI actions use Docker so ubuntu-latest works well.
+    runs-on: ubuntu-latest
+    
+    steps:
+    # 1) Check out the repository so the workflow has the project files.
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    # 2) Request a Unity license activation.
+    #    A license is required for the Unity editor to run in batch mode.
+    #    Credentials and serial are stored as encrypted repository secrets.
+    #    Learn more: https://game.ci/docs/github/basics
+    - name: Activate Unity
+      id: unity-activate
+      uses: game-ci/unity-activate@v2
+      with:
+        unityVersion: 2020.3.14f1
+        unitySerial: ${{ secrets.UNITY_SERIAL }}
+        unityEmail: ${{ secrets.UNITY_EMAIL }}
+        unityPassword: ${{ secrets.UNITY_PASSWORD }}
+
+    # 3) Build the project. This step compiles all scripts and creates
+    #    a standalone player build. If the compilation fails, the job
+    #    stops here and the pull request check will show an error.
+    #    Documentation: https://game.ci/docs/github/builder
+    - name: Build project
+      uses: game-ci/unity-builder@v2
+      with:
+        unityVersion: 2020.3.14f1
+        targetPlatform: StandaloneLinux64
+        buildPath: build
+
+    # 4) Run play mode tests defined under Assets/Tests.
+    #    The Test Runner runs inside the editor and produces results
+    #    which are uploaded as build artifacts.
+    #    Documentation: https://game.ci/docs/github/test-runner
+    - name: Run tests
+      uses: game-ci/unity-test-runner@v2
+      with:
+        unityVersion: 2020.3.14f1
+        testMode: playmode
+        artifactsPath: test-results
+
+    # 5) Once everything is done, return the Unity license.
+    #    Returning the license avoids hitting the activation limit.
+    - name: Return license
+      if: always()
+      uses: game-ci/unity-return-license@v2
+      with:
+        unityVersion: 2020.3.14f1
+        unitySerial: ${{ secrets.UNITY_SERIAL }}
