@@ -1,158 +1,75 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 
-
+/// <summary>
+/// MonoBehaviour wrapper that delegates range calculations to
+/// <see cref="RangeCalculator"/>. The heavy math was extracted into that static
+/// class so the logic can be tested without requiring a running scene.
+/// Keeping this behaviour separate also lets AI coding agents analyse and
+/// extend the algorithms more easily.
+/// </summary>
 public class RangeFinder : MonoBehaviour
 {
+    /// <summary>
+    /// Reference to the <see cref="Map"/> component containing the active board.
+    /// If not assigned in the inspector it will be located at runtime.
+    /// </summary>
+    [SerializeField]
     public Map _GameBoard;
-    // Start is called before the first frame update
-    void Start()
+
+    void Awake()
     {
-        _GameBoard = FindObjectOfType<Map>();
+        if (_GameBoard == null)
+        {
+            _GameBoard = FindObjectOfType<Map>();
+        }
     }
 
-    private Tile tile_add(Tile hex, int QAxis, int RAxis, int SAxis)
+    /// <summary>
+    /// Wrapper for <see cref="RangeCalculator.HexScale"/> using the active board.
+    /// </summary>
+    public Tile HexScale(Tile tile, int factor)
     {
-        return _GameBoard.PlayArea.SearchTileByCubeCoordinates(hex.QAxis + QAxis, hex.RAxis + RAxis, hex.SAxis + SAxis);
+        return RangeCalculator.HexScale(_GameBoard.PlayArea, tile, factor);
     }
 
-    public Tile HexScale(Tile hex, int factor)
-    {
-        return _GameBoard.PlayArea.SearchTileByCubeCoordinates(hex.QAxis * factor, hex.RAxis * factor, hex.SAxis * factor);
-    }
-
+    /// <summary>
+    /// Wrapper for <see cref="RangeCalculator.AreaRing"/>.
+    /// </summary>
     public List<Tile> AreaRing(Tile center, int radius)
     {
-        List<Tile> results = new List<Tile>();
-
-        for (int q = -radius; q <= radius; q++)
-        {
-            int r1 = Mathf.Max(-radius, -q - radius);
-            int r2 = Mathf.Min(radius, -q + radius);
-            for (int r = r1; r <= r2; r++)
-            {
-                int s = -q - r;
-                Tile add = tile_add(center, q, r, s);
-                if (add != null)
-                {
-                    results.Add(add);
-                }
-            }
-        }
-        return results;
+        return RangeCalculator.AreaRing(_GameBoard.PlayArea, center, radius);
     }
 
-
+    /// <summary>
+    /// Wrapper for <see cref="RangeCalculator.HexRing"/>.
+    /// </summary>
     public List<Tile> HexRing(Tile center, int radius)
     {
-        List<Tile> results = new List<Tile>();
-
-        if (radius == 0)
-        {
-            return results;
-        }
-
-        Tile hex = HexScale(center.Neighbours[0], radius);
-
-        for (int i = 0; i < 6; i++)
-        {
-            for (int j = 0; j < radius; j++)
-            {
-                if (hex != null)
-                {
-                    results.Add(hex);
-                    hex = hex.Neighbours[i];
-                }
-            }
-        }
-
-        return results;
+        return RangeCalculator.HexRing(_GameBoard.PlayArea, center, radius);
     }
 
+    /// <summary>
+    /// Wrapper for <see cref="RangeCalculator.HexReachable"/>.
+    /// </summary>
     public List<Tile> HexReachable(Tile start, int movement)
     {
-        HashSet<Tile> visited = new HashSet<Tile>();
-        Queue<(Tile tile, int cost)> fringes = new Queue<(Tile, int)>();
-
-        visited.Add(start);
-        fringes.Enqueue((start, 0));
-
-        while (fringes.Count > 0)
-        {
-            var (currentTile, currentCost) = fringes.Dequeue();
-
-            foreach (Tile neighbor in currentTile.Neighbours)
-            {
-                if (neighbor != null && !visited.Contains(neighbor) && !(neighbor.Data.MovementCost == 0))
-                {
-                    int newCost = currentCost + neighbor.Data.MovementCost;
-                    if (newCost <= movement && neighbor.Contents == null)
-                    {
-                        visited.Add(neighbor);
-                        fringes.Enqueue((neighbor, newCost));
-                    }
-                }
-            }
-        }
-
-        return new List<Tile>(visited);
+        return RangeCalculator.HexReachable(_GameBoard.PlayArea, start, movement);
     }
 
+    /// <summary>
+    /// Wrapper for <see cref="RangeCalculator.AreaLine"/>.
+    /// </summary>
     public List<Tile> AreaLine(Tile center, Tile target, int range)
     {
-        List<Tile> line = new List<Tile>();
-
-        Vector3Int direction = _GameBoard.PlayArea.GetDirectionVector(center, target);
-        if (direction == Vector3Int.zero) return line;
-
-        Vector3Int current = center.ReturnSquareCoOrds();
-
-        for (int i = 1; i <= range; i++)
-        {
-            current += direction;
-            Tile tile = _GameBoard.PlayArea.SearchTileByCubeCoordinates(current.x, current.y, current.z);
-            if (tile != null)
-            {
-                line.Add(tile);
-            }
-            else break; // Stop if we hit an invalid tile
-        }
-
-        return line;
+        return RangeCalculator.AreaLine(_GameBoard.PlayArea, center, target, range);
     }
 
-
-
+    /// <summary>
+    /// Wrapper for <see cref="RangeCalculator.AreaCone"/>.
+    /// </summary>
     public List<Tile> AreaCone(Tile center, int range, int direction)
     {
-        List<Tile> cone = new List<Tile>();
-        Tile current = center;
-
-        if (direction < 0 || direction >= 6) return cone;
-
-        for (int i = 1; i <= range; i++)
-        {
-            Tile main = current;
-            for (int j = -1; j <= 1; j++)
-            {
-                int dir = (direction + j + 6) % 6;
-                Tile step = main;
-                for (int k = 0; k < i; k++)
-                {
-                    if (step == null) break;
-                    step = step.Neighbours[dir];
-                }
-                if (step != null)
-                    cone.Add(step);
-            }
-
-            current = current.Neighbours[direction];
-            if (current == null) break;
-        }
-
-        return cone;
+        return RangeCalculator.AreaCone(_GameBoard.PlayArea, center, range, direction);
     }
-
-
 }

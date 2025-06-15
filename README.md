@@ -33,10 +33,16 @@ To create a standalone build:
 3. Choose your target platform and click **Build**.
 
 ## Testing
-This project uses Unity's built‑in **PlayMode** test framework, which allows you
-to run small pieces of game code outside the main scenes. Tests live under
-`Assets/Tests` and can be executed with the Unity Test Runner (`Window > General > Test Runner`)
-or from the command line with `dotnet test`.
+This project uses Unity's built-in Test Runner. You can run the Edit Mode tests
+from the Unity editor:
+
+1. Open the **Test Runner** window via **Window > General > Test Runner**.
+2. Select **EditMode** and click **Run All** to execute the unit tests located
+   under `Assets/Tests`.
+
+These tests cover parts of the hex range calculation logic and help verify that
+the algorithms work as expected. Running them regularly prevents subtle bugs
+from creeping in as you make changes.
 
 Tests are written just like regular C# code using NUnit's `[Test]` attribute.
 Good tests document how a method should behave, guard against regressions and,
@@ -44,10 +50,3 @@ when possible, act as small examples for new contributors. When a bug is found
 it's helpful to first create a failing test that demonstrates the issue – once
 the bug is fixed the failing assertion serves as proof and can be removed or
 updated.
-
-
-More details on the hex coordinate math used by `Map.GetHexPositionFromCoordinate`
-can be found in the XML comments of that method. Those comments include a short
-table of sample results and an ASCII diagram which are mirrored by the
-PlayMode tests under `Assets/Tests/PlayMode`.
-

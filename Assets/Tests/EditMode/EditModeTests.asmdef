@@ -1,0 +1,8 @@
+{
+  "name": "EditModeTests",
+  "references": [],
+  "optionalUnityReferences": ["TestAssemblies"],
+  "includePlatforms": ["Editor"],
+  "allowUnsafeCode": false,
+  "overrideReferences": false
+}
