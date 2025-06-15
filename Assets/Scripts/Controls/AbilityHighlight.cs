@@ -101,7 +101,7 @@ public class AbilityHighlight : MonoBehaviour, IHighlightResponce
                 return _rangeFinder.HexRing(origin, action.Size);
 
             case EffectArea.Line:
-                return _rangeFinder.AreaLine(origin, action.Range, direction);
+                return _rangeFinder.AreaLine(origin, _highlightedTile, direction);
 
             case EffectArea.Cone:
                 return _rangeFinder.AreaCone(origin, action.Range, direction);
