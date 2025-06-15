@@ -31,3 +31,15 @@ To create a standalone build:
 1. Open `File > Build Settings…` in Unity.
 2. Add the scenes you want included in the build (e.g., `BattleScene`, `ShipBuildScreen`).
 3. Choose your target platform and click **Build**.
+
+## Testing
+This project uses Unity's built-in Test Runner. You can run the Edit Mode tests
+from the Unity editor:
+
+1. Open the **Test Runner** window via **Window > General > Test Runner**.
+2. Select **EditMode** and click **Run All** to execute the unit tests located
+   under `Assets/Tests`.
+
+These tests cover parts of the hex range calculation logic and help verify that
+the algorithms work as expected. Running them regularly prevents subtle bugs
+from creeping in as you make changes.
