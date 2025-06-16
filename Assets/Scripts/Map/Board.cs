@@ -6,16 +6,20 @@ public class Board
 {
     public int _size_X { get; private set; }
     public int _size_Y { get; private set; }
+    public int qOffset { get; private set; }
+    public int rOffset { get; private set; }
 
     private Tile[,] _board_Contents;
 
     //Additive vectors for assigning neighbours 
     private Vector3Int[] directions = new Vector3Int[6] { new Vector3Int(1, -1, 0), new Vector3Int(1, 0, -1), new Vector3Int(0, 1, -1),new Vector3Int(-1, 1, 0), new Vector3Int(-1, 0, 1), new Vector3Int(0, -1, 1) };
    
-    public Board(Vector2Int coordinates)
+    public Board(Vector2Int coordinates, int? qOffset = null, int? rOffset = null)
     {
         _size_Y = coordinates.y;
         _size_X = coordinates.x;
+        this.qOffset = qOffset ?? _size_X / 2;
+        this.rOffset = rOffset ?? _size_Y / 2;
         _board_Contents = new Tile[_size_X, _size_Y];
     }
 
@@ -67,13 +71,10 @@ public class Board
     }
     public Tile SearchTileByCubeCoordinates(int q, int r, int s)
     {
-        int centerX = _size_X / 2;
-        int centerY = _size_Y / 2;
-
         // Convert cube coordinates (q, r, s) to array indices (x, y)
-        // This conversion depends on how your array and cube coordinates are related
-        int x = q + centerX;
-        int y = r + centerY;
+        // using the stored offsets so boards with different origins work
+        int x = q + qOffset;
+        int y = r + rOffset;
 
         // Check if the calculated indices are within bounds
         if (x >= 0 && x < _board_Contents.GetLength(0) && y >= 0 && y < _board_Contents.GetLength(1))

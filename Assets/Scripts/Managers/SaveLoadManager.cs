@@ -103,7 +103,7 @@ public class SaveLoadManager : MonoBehaviour
             }
         }
 
-        Board board = new Board(new Vector2Int(data.Board.x_Height, data.Board.y_Width));
+        Board board = new Board(new Vector2Int(data.Board.x_Height, data.Board.y_Width), 0, 0);
 
         for (int y = 0; y < data.Board.y_Width; y++)
         {
