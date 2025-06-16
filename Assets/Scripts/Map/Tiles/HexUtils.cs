@@ -2,7 +2,31 @@ using UnityEngine;
 
 public static class HexUtils
 {
-    // Convert Offset Coordinates (Column, Row) to Cube Coordinates (Q, R, S)
+    /// <summary>
+    /// Converts column/row <c>offset</c> coordinates to cube <c>(q,r,s)</c>.
+    /// <para>
+    /// Flat topped layout (<c>odd-q</c>) shifts odd columns down:
+    /// <code>
+    /// (col,row)
+    ///  0,0   1,0   2,0
+    ///    0,1   1,1   2,1
+    ///  0,2   1,2   2,2
+    /// q = col
+    /// r = row - (col + (col &amp; 1)) / 2
+    /// s = -q - r
+    /// </code>
+    /// Pointy topped layout (<c>odd-r</c>) shifts odd rows right:
+    /// <code>
+    /// (col,row)
+    /// 0,0  1,0  2,0
+    /// 0,1  1,1  2,1
+    /// 0,2  1,2  2,2
+    /// q = col - (row + (row &amp; 1)) / 2
+    /// r = row
+    /// s = -q - r
+    /// </code>
+    /// </para>
+    /// </summary>
     public static Vector3Int OffsetToCube(Vector2Int offset, bool isFlatTopped)
     {
         int col = offset.x;
