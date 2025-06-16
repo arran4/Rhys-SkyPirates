@@ -115,7 +115,9 @@ public class SaveLoadManager : MonoBehaviour
                 GameObject holder = new GameObject($"Hex {x},{y}", typeof(Tile));
                 Tile tile = holder.GetComponent<Tile>();
                 tile.Data = tileType;
-                tile.SetPositionAndHeight(new Vector2Int(x, y), x, y, sTile.Height);
+                int q = x - board.qOffset;
+                int r = y - board.rOffset;
+                tile.SetPositionAndHeight(new Vector2Int(x, y), q, r, sTile.Height);
                 Vector3 tilePosition = mapContext.GetHexPositionFromCoordinate(new Vector2Int(x, y));
                 tilePosition.y += tile.Height / 2;
                 holder.transform.position = tilePosition;

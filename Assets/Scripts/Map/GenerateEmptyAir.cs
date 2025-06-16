@@ -7,14 +7,12 @@ public class GenerateEmptyAir : MonoBehaviour, IGenerate
     public Board Generate(Map Data)
     {
         Board PlayArea = new Board(Data.MapSize);
-        int qStart = -Data.MapSize.x / 2;
-        int rStart = -Data.MapSize.y / 2;
         for (int x = 0; x < Data.MapSize.x; x++)
         {
             for (int y = 0; y < Data.MapSize.y; y++)
             {
-                int q = qStart + x;
-                int r = rStart + y;
+                int q = x - PlayArea.qOffset;
+                int r = y - PlayArea.rOffset;
                 GameObject holder = new GameObject($"Hex {x},{y}", typeof(Tile));
                 Tile tile = holder.GetComponent<Tile>();
                 tile.Data = Data.TileTypes[0];

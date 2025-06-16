@@ -89,9 +89,11 @@ public class MapMerge : MonoBehaviour
         int mergedWidth = layout.merged.x;
         int mergedHeight = layout.merged.y;
 
-        map.PlayArea = new Board(new Vector2Int(mergedWidth, mergedHeight));
+        List<(Tile tile, Vector2Int pos, Vector3Int cube)> allTiles = new List<(Tile, Vector2Int, Vector3Int)>();
+        int minQ = int.MaxValue;
+        int minR = int.MaxValue;
 
-        // Copy Ship A tiles with offset
+        // Gather Ship A tiles
         for (int x = 0; x < widthA; x++)
         {
             for (int y = 0; y < heightA; y++)
@@ -102,20 +104,15 @@ public class MapMerge : MonoBehaviour
                     int mx = x + offsetXA;
                     int my = y + offsetYA;
                     Vector2Int tilePos = new Vector2Int(mx, my);
-                    Vector3Int cubeCoords = HexUtils.OffsetToCube(tilePos, map.isFlatTopped);
-
-                    Tile newTile = Object.Instantiate(tile, map.transform);
-                    newTile.SetPosition(tilePos);
-                    newTile.SetQUSPosition(cubeCoords.x, cubeCoords.y);
-                    newTile.SetPawnPos();
-
-                    map.PlayArea.set_Tile(mx, my, newTile);
-                    newTile.transform.position = map.GetHexPositionFromCoordinate(tilePos);
+                    Vector3Int cube = HexUtils.OffsetToCube(tilePos, map.isFlatTopped);
+                    allTiles.Add((tile, tilePos, cube));
+                    if (cube.x < minQ) minQ = cube.x;
+                    if (cube.y < minR) minR = cube.y;
                 }
             }
         }
 
-        // Copy Ship B tiles with offset
+        // Gather Ship B tiles
         for (int x = 0; x < widthB; x++)
         {
             for (int y = 0; y < heightB; y++)
@@ -126,17 +123,26 @@ public class MapMerge : MonoBehaviour
                     int mx = x + offsetXB;
                     int my = y + offsetYB;
                     Vector2Int tilePos = new Vector2Int(mx, my);
-                    Vector3Int cubeCoords = HexUtils.OffsetToCube(tilePos, map.isFlatTopped);
-
-                    Tile newTile = Object.Instantiate(tile, map.transform);
-                    newTile.SetPosition(tilePos);
-                    newTile.SetQUSPosition(cubeCoords.x, cubeCoords.y);
-                    newTile.SetPawnPos();
-
-                    map.PlayArea.set_Tile(mx, my, newTile);
-                    newTile.transform.position = map.GetHexPositionFromCoordinate(tilePos);
+                    Vector3Int cube = HexUtils.OffsetToCube(tilePos, map.isFlatTopped);
+                    allTiles.Add((tile, tilePos, cube));
+                    if (cube.x < minQ) minQ = cube.x;
+                    if (cube.y < minR) minR = cube.y;
                 }
             }
+        }
+
+        int qOffset = -minQ;
+        int rOffset = -minR;
+        map.PlayArea = new Board(new Vector2Int(mergedWidth, mergedHeight), qOffset, rOffset);
+
+        foreach (var entry in allTiles)
+        {
+            Tile tile = Object.Instantiate(entry.tile, map.transform);
+            tile.SetPosition(entry.pos);
+            tile.SetQUSPosition(entry.cube.x, entry.cube.y);
+            tile.SetPawnPos();
+            map.PlayArea.set_Tile(entry.pos.x, entry.pos.y, tile);
+            tile.transform.position = map.GetHexPositionFromCoordinate(entry.pos);
         }
 
 
@@ -155,8 +161,6 @@ public class MapMerge : MonoBehaviour
         int sizeX = board._size_X;
         int sizeY = board._size_Y;
 
-        int qStart = -sizeX / 2;
-        int rStart = -sizeY / 2;
 
         for (int x = 0; x < sizeX; x++)
         {
@@ -165,8 +169,8 @@ public class MapMerge : MonoBehaviour
                 Tile existing = board.get_Tile(x, y);
                 if (existing == null)
                 {
-                    int q = qStart + x;
-                    int r = rStart + y;
+                    int q = x - board.qOffset;
+                    int r = y - board.rOffset;
 
                     // Create empty GameObject with Tile component
                     GameObject holder = new GameObject($"Hex {x},{y}", typeof(Tile));
