@@ -70,8 +70,7 @@ public class MapMerge : MonoBehaviour
 
     public static void MergeBoards(Map map, Board shipA, Board shipB, ShipSide sideToAttach)
     {
-        bool pointyTopped = !map.isFlatTopped;
-        var offsets = pointyTopped ? PointyOffsets : FlatOffsets;
+        var offsets = map.isFlatTopped ? FlatOffsets : PointyOffsets;
         Vector2Int dir = offsets[sideToAttach];
 
         int widthA = shipA._size_X;
@@ -108,6 +107,7 @@ public class MapMerge : MonoBehaviour
                     newTile.SetPosition(tilePos);
                     newTile.SetQUSPosition(cubeCoords.x, cubeCoords.y);
                     newTile.SetPawnPos();
+                    newTile.SetupHexRenderer(map.innerSize, map.outerSize, map.isFlatTopped);
 
                     map.PlayArea.set_Tile(mx, my, newTile);
                     newTile.transform.position = map.GetHexPositionFromCoordinate(tilePos);
@@ -132,6 +132,7 @@ public class MapMerge : MonoBehaviour
                     newTile.SetPosition(tilePos);
                     newTile.SetQUSPosition(cubeCoords.x, cubeCoords.y);
                     newTile.SetPawnPos();
+                    newTile.SetupHexRenderer(map.innerSize, map.outerSize, map.isFlatTopped);
 
                     map.PlayArea.set_Tile(mx, my, newTile);
                     newTile.transform.position = map.GetHexPositionFromCoordinate(tilePos);

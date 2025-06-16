@@ -160,6 +160,36 @@ public class BoardLookupPlayModeTests
     }
 
     /// <summary>
+    /// Merging should initialise each tile's renderer using the map's
+    /// orientation so that meshes face the correct direction.
+    /// </summary>
+    [UnityTest]
+    public IEnumerator MergeBoards_RespectsMapOrientation([Values(true, false)] bool flat)
+    {
+        // Arrange
+        EnsureCamera();
+        var map = CreateBasicMap(new Vector2Int(2, 2));
+        map.isFlatTopped = flat;
+        var genGO = new GameObject("Gen");
+        var gen = genGO.AddComponent<RandomGeneration>();
+        Board a = gen.Generate(map);
+        Board b = gen.Generate(map);
+
+        // Act
+        MapMerge.MergeBoards(map, a, b, ShipSide.Bow);
+        yield return null;
+
+        // Assert - every tile should adopt the map's orientation
+        foreach (var tile in map.PlayArea.GetAllTiles())
+        {
+            Assert.AreEqual(flat, tile.Hex.isFlatTopped);
+        }
+
+        Object.Destroy(genGO);
+        Object.Destroy(map.gameObject);
+    }
+
+    /// <summary>
     /// Rotates an existing board and confirms that rotated tiles maintain
     /// valid cube coordinate lookups.
     /// </summary>
