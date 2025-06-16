@@ -32,6 +32,7 @@ public class SaveLoadManager : MonoBehaviour
     public static SaveLoadManager SaveLoadInstance { get; private set; }
     private DirectoryInfo dir;
     public FileInfo[] info;
+    public IFileLoader FileLoader { get; set; } = new SystemFileLoader();
 
 
     public void refreshDirectory()
@@ -73,20 +74,25 @@ public class SaveLoadManager : MonoBehaviour
         }
 
         string json = JsonConvert.SerializeObject(export, Formatting.Indented);
-        File.WriteAllText(filePath, json);
+        FileLoader.WriteAllText(filePath, json);
         Debug.Log($"Map saved to: {filePath}");
         refreshDirectory();
     }
 
     public static Board LoadBoardFromJson(string filePath, Map mapContext, Transform parent)
     {
-        if (!File.Exists(filePath))
+        IFileLoader loader = SaveLoadInstance != null ? SaveLoadInstance.FileLoader : new SystemFileLoader();
+        string json;
+        try
+        {
+            json = loader.ReadAllText(filePath);
+        }
+        catch (IOException)
         {
             Debug.LogError("File not found: " + filePath);
             return null;
         }
 
-        string json = File.ReadAllText(filePath);
         ExportData data = JsonConvert.DeserializeObject<ExportData>(json);
 
         Dictionary<string, TileDataSO> idLookup = new Dictionary<string, TileDataSO>();
