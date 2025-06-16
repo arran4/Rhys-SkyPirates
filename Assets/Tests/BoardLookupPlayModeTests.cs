@@ -79,6 +79,25 @@ public class BoardLookupPlayModeTests
     }
 
     /// <summary>
+    /// Checks that cube coordinates begin at (-size/2,-size/2) so the board is
+    /// centred around the origin.  This mirrors how boards are generated in
+    /// RandomGeneration and other utilities.
+    /// </summary>
+    private void AssertCenteredCoords(Board board)
+    {
+        int qStart = -board._size_X / 2;
+        int rStart = -board._size_Y / 2;
+
+        Assert.AreEqual(qStart, board.get_Tile(0, 0).QAxis);
+        Assert.AreEqual(rStart, board.get_Tile(0, 0).RAxis);
+
+        Assert.AreEqual(qStart + board._size_X - 1,
+            board.get_Tile(board._size_X - 1, board._size_Y - 1).QAxis);
+        Assert.AreEqual(rStart + board._size_Y - 1,
+            board.get_Tile(board._size_X - 1, board._size_Y - 1).RAxis);
+    }
+
+    /// <summary>
     /// Verifies tiles can be found after randomly generating a board.
     /// </summary>
     [UnityTest]
@@ -127,6 +146,7 @@ public class BoardLookupPlayModeTests
 
         // Assert
         AssertBoardLookups(loaded);
+        AssertCenteredCoords(loaded);
 
         Object.Destroy(genGO);
         Object.Destroy(saveGO);
