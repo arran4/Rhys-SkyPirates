@@ -3,11 +3,12 @@ using UnityEngine;
 
 /// <summary>
 /// Provides pure helper methods for calculating ranges on a hexagonal board.
-/// None of the methods modify the board state which makes them easy to test in
-/// isolation.  Extracting the algorithms from <see cref="RangeFinder"/> keeps
-/// them free of Unity specific behaviour so unit tests can run without scenes
-/// loaded.  AI coding agents can quickly verify logic by calling these methods
-/// directly.
+/// Tiles are addressed using **cube** coordinates (q, r, s) where the three
+/// axes always satisfy <c>q + r + s = 0</c>. None of the methods modify the
+/// board state which makes them easy to test in isolation.  Extracting the
+/// algorithms from <see cref="RangeFinder"/> keeps them free of Unity specific
+/// behaviour so unit tests can run without scenes loaded.  AI coding agents can
+/// quickly verify logic by calling these methods directly.
 ///
 /// <para>Neighbour index diagram (pointy top hexes):
 /// <code>
