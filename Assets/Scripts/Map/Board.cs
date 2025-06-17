@@ -8,6 +8,8 @@ public class Board
     public int _size_Y { get; private set; }
 
     private Tile[,] _board_Contents;
+    // Lookup dictionary for cube coordinate access
+    private Dictionary<Vector3Int, Tile> _cubeIndex;
 
     //Additive vectors for assigning neighbours 
     private Vector3Int[] directions = new Vector3Int[6] { new Vector3Int(1, -1, 0), new Vector3Int(1, 0, -1), new Vector3Int(0, 1, -1),new Vector3Int(-1, 1, 0), new Vector3Int(-1, 0, 1), new Vector3Int(0, -1, 1) };
@@ -17,6 +19,7 @@ public class Board
         _size_Y = coordinates.y;
         _size_X = coordinates.x;
         _board_Contents = new Tile[_size_X, _size_Y];
+        _cubeIndex = new Dictionary<Vector3Int, Tile>();
     }
 
     public Tile get_Tile(int x, int y)
@@ -34,7 +37,19 @@ public class Board
     public void set_Tile(int x, int y, Tile toset)
     {
         toset.SetPosition(new Vector2Int(x, y));
+
+        // Remove existing tile from dictionary if replacing
+        Tile existing = _board_Contents[x, y];
+        if (existing != null)
+        {
+            var oldCube = new Vector3Int(existing.QAxis, existing.RAxis, existing.SAxis);
+            _cubeIndex.Remove(oldCube);
+        }
+
         _board_Contents[x, y] = toset;
+
+        var cube = new Vector3Int(toset.QAxis, toset.RAxis, toset.SAxis);
+        _cubeIndex[cube] = toset;
     }
 
     public void swap_Tiles(Vector2Int Tile1, Vector2Int Tile2)
@@ -87,18 +102,8 @@ public class Board
         }
     }
 
-    public Tile GetTileByCube(Vector3Int cubeCoords)
-    {
-        // Iterate all tiles or have a dictionary for faster lookup (preferred)
-        foreach (var tile in GetAllTiles())
-        {
-            if (tile.QAxis == cubeCoords.x && tile.RAxis == cubeCoords.y && tile.SAxis == cubeCoords.z)
-            {
-                return tile;
-            }
-        }
-        return null;
-    }
+    public Tile GetTileByCube(Vector3Int cubeCoords) =>
+        _cubeIndex.TryGetValue(cubeCoords, out var tile) ? tile : null;
 
     // Return all tiles in the board (implement if you don't have it)
     public IEnumerable<Tile> GetAllTiles()
@@ -120,9 +125,12 @@ public class Board
         {
             if (x != null)
             {
+                var cube = new Vector3Int(x.QAxis, x.RAxis, x.SAxis);
+                _cubeIndex.Remove(cube);
                 MonoBehaviour.Destroy(x.gameObject);
             }
         }
+        _cubeIndex.Clear();
     }
     public Tile FirstNonNullTile()
     {
