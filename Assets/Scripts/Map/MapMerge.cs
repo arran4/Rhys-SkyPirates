@@ -70,8 +70,7 @@ public class MapMerge : MonoBehaviour
 
     public static void MergeBoards(Map map, Board shipA, Board shipB, ShipSide sideToAttach)
     {
-        bool pointyTopped = !map.isFlatTopped;
-        var offsets = pointyTopped ? PointyOffsets : FlatOffsets;
+        var offsets = map.isFlatTopped ? FlatOffsets : PointyOffsets;
         Vector2Int dir = offsets[sideToAttach];
 
         int widthA = shipA._size_X;
@@ -89,9 +88,45 @@ public class MapMerge : MonoBehaviour
         int mergedWidth = layout.merged.x;
         int mergedHeight = layout.merged.y;
 
-        map.PlayArea = new Board(new Vector2Int(mergedWidth, mergedHeight));
+        int minQ = int.MaxValue;
+        int minR = int.MaxValue;
 
-        // Copy Ship A tiles with offset
+        // First pass to compute cube coordinate bounds
+        for (int x = 0; x < widthA; x++)
+        {
+            for (int y = 0; y < heightA; y++)
+            {
+                Tile tile = shipA.get_Tile(x, y);
+                if (tile != null)
+                {
+                    int mx = x + offsetXA;
+                    int my = y + offsetYA;
+                    Vector3Int cube = HexUtils.OffsetToCube(new Vector2Int(mx, my), map.isFlatTopped);
+                    if (cube.x < minQ) minQ = cube.x;
+                    if (cube.y < minR) minR = cube.y;
+                }
+            }
+        }
+
+        for (int x = 0; x < widthB; x++)
+        {
+            for (int y = 0; y < heightB; y++)
+            {
+                Tile tile = shipB.get_Tile(x, y);
+                if (tile != null)
+                {
+                    int mx = x + offsetXB;
+                    int my = y + offsetYB;
+                    Vector3Int cube = HexUtils.OffsetToCube(new Vector2Int(mx, my), map.isFlatTopped);
+                    if (cube.x < minQ) minQ = cube.x;
+                    if (cube.y < minR) minR = cube.y;
+                }
+            }
+        }
+
+        map.PlayArea = new Board(new Vector2Int(mergedWidth, mergedHeight), -minQ, -minR);
+
+        // Gather Ship A tiles
         for (int x = 0; x < widthA; x++)
         {
             for (int y = 0; y < heightA; y++)
@@ -102,20 +137,25 @@ public class MapMerge : MonoBehaviour
                     int mx = x + offsetXA;
                     int my = y + offsetYA;
                     Vector2Int tilePos = new Vector2Int(mx, my);
-                    Vector3Int cubeCoords = HexUtils.OffsetToCube(tilePos, map.isFlatTopped);
+
+                    // Boards are currently generated using even-q/even-r layout
+                    // so we pass 'useOdd:false' explicitly for clarity.
+                    Vector3Int cubeCoords = HexUtils.OffsetToCube(tilePos, map.isFlatTopped, false);
 
                     Tile newTile = Object.Instantiate(tile, map.transform);
                     newTile.SetPosition(tilePos);
                     newTile.SetQUSPosition(cubeCoords.x, cubeCoords.y);
                     newTile.SetPawnPos();
+                    newTile.SetupHexRenderer(map.innerSize, map.outerSize, map.isFlatTopped);
 
                     map.PlayArea.set_Tile(mx, my, newTile);
                     newTile.transform.position = map.GetHexPositionFromCoordinate(tilePos);
+
                 }
             }
         }
 
-        // Copy Ship B tiles with offset
+        // Gather Ship B tiles
         for (int x = 0; x < widthB; x++)
         {
             for (int y = 0; y < heightB; y++)
@@ -126,17 +166,33 @@ public class MapMerge : MonoBehaviour
                     int mx = x + offsetXB;
                     int my = y + offsetYB;
                     Vector2Int tilePos = new Vector2Int(mx, my);
-                    Vector3Int cubeCoords = HexUtils.OffsetToCube(tilePos, map.isFlatTopped);
+
+                    Vector3Int cubeCoords = HexUtils.OffsetToCube(tilePos, map.isFlatTopped, false);
 
                     Tile newTile = Object.Instantiate(tile, map.transform);
                     newTile.SetPosition(tilePos);
                     newTile.SetQUSPosition(cubeCoords.x, cubeCoords.y);
                     newTile.SetPawnPos();
+                    newTile.SetupHexRenderer(map.innerSize, map.outerSize, map.isFlatTopped);
 
                     map.PlayArea.set_Tile(mx, my, newTile);
                     newTile.transform.position = map.GetHexPositionFromCoordinate(tilePos);
                 }
             }
+        }
+
+        int qOffset = -minQ;
+        int rOffset = -minR;
+        map.PlayArea = new Board(new Vector2Int(mergedWidth, mergedHeight), qOffset, rOffset);
+
+        foreach (var entry in allTiles)
+        {
+            Tile tile = Object.Instantiate(entry.tile, map.transform);
+            tile.SetPosition(entry.pos);
+            tile.SetQUSPosition(entry.cube.x, entry.cube.y);
+            tile.SetPawnPos();
+            map.PlayArea.set_Tile(entry.pos.x, entry.pos.y, tile);
+            tile.transform.position = map.GetHexPositionFromCoordinate(entry.pos);
         }
 
 
@@ -155,8 +211,10 @@ public class MapMerge : MonoBehaviour
         int sizeX = board._size_X;
         int sizeY = board._size_Y;
 
-        int qStart = -sizeX / 2;
-        int rStart = -sizeY / 2;
+
+        int qStart = -board.qOffset;
+        int rStart = -board.rOffset;
+
 
         for (int x = 0; x < sizeX; x++)
         {
@@ -165,8 +223,8 @@ public class MapMerge : MonoBehaviour
                 Tile existing = board.get_Tile(x, y);
                 if (existing == null)
                 {
-                    int q = qStart + x;
-                    int r = rStart + y;
+                    int q = x - board.qOffset;
+                    int r = y - board.rOffset;
 
                     // Create empty GameObject with Tile component
                     GameObject holder = new GameObject($"Hex {x},{y}", typeof(Tile));

@@ -42,7 +42,11 @@ public static class BoardRotator
         int width = maxQ - minQ + 1;
         int height = maxR - minR + 1;
 
-        Board rotatedBoard = new Board(new Vector2Int(width, height));
+
+        int qOffset = -minQ;
+        int rOffset = -minR;
+        Board rotatedBoard = new Board(new Vector2Int(width, height), qOffset, rOffset);
+
 
         // Step 3: Instantiate rotated tiles and set them into new board
         for (int i = 0; i < originalTiles.Count; i++)
@@ -52,10 +56,12 @@ public static class BoardRotator
 
             int offsetX = rotated.x - minQ;
             int offsetY = rotated.y - minR;
+            int q = offsetX - rotatedBoard.qOffset;
+            int r = offsetY - rotatedBoard.rOffset;
 
             Tile newTile = Object.Instantiate(oldTile);
             newTile.name = oldTile.name + $"_rotated_{rotation}";
-            newTile.SetQUSPosition(rotated.x, rotated.y);
+            newTile.SetQUSPosition(q, r);
             newTile.SetHeight(oldTile.Height);
             newTile.SetPosition(new Vector2Int(offsetX, offsetY));
 
