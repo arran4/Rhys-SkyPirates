@@ -3,11 +3,13 @@ using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 
+
 public class PathfindingTests
 {
     // Helper that builds a small square board and links neighbour references.
     // Movement costs can be overridden by passing a 2D array of values.
     private Board CreateBoard(int size, int[,] movementCosts = null)
+
     {
         Board board = new Board(new Vector2Int(size, size));
         Map map = new GameObject("TestMap").AddComponent<Map>();
@@ -20,7 +22,9 @@ public class PathfindingTests
                 GameObject go = new GameObject($"Tile_{x}_{y}");
                 Tile tile = go.AddComponent<Tile>();
                 tile.Data = ScriptableObject.CreateInstance<TileDataSO>();
+
                 tile.Data.MovementCost = movementCosts == null ? 1 : movementCosts[x, y];
+
                 tile.SetPositionAndHeight(new Vector2Int(x, y), x - size / 2, y - size / 2, 0);
                 board.set_Tile(x, y, tile);
             }
@@ -31,6 +35,7 @@ public class PathfindingTests
     }
 
     [Test]
+
     public void FindPath_ReturnsExpectedCoordinates()
     {
         // Arrange: build a 3x3 board with a couple of impassable tiles
@@ -68,5 +73,6 @@ public class PathfindingTests
 
         // Assert
         Assert.AreEqual(expected, path);
+
     }
 }
