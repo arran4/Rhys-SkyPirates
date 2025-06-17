@@ -9,21 +9,27 @@ public class Board
     public int qOffset { get; private set; }
     public int rOffset { get; private set; }
 
+    public int qOffset { get; private set; }
+    public int rOffset { get; private set; }
+
     private Tile[,] _board_Contents;
-    // Lookup dictionary for cube coordinate access
-    private Dictionary<Vector3Int, Tile> _cubeIndex;
+
+    private Dictionary<Vector3Int, Tile> cubeLookup;
+
 
     //Additive vectors for assigning neighbours 
     private Vector3Int[] directions = new Vector3Int[6] { new Vector3Int(1, -1, 0), new Vector3Int(1, 0, -1), new Vector3Int(0, 1, -1),new Vector3Int(-1, 1, 0), new Vector3Int(-1, 0, 1), new Vector3Int(0, -1, 1) };
    
-    public Board(Vector2Int coordinates, int? qOffset = null, int? rOffset = null)
+
+    public Board(Vector2Int coordinates, int qOffset = int.MinValue, int rOffset = int.MinValue)
     {
         _size_Y = coordinates.y;
         _size_X = coordinates.x;
-        this.qOffset = qOffset ?? _size_X / 2;
-        this.rOffset = rOffset ?? _size_Y / 2;
+        this.qOffset = qOffset == int.MinValue ? _size_X / 2 : qOffset;
+        this.rOffset = rOffset == int.MinValue ? _size_Y / 2 : rOffset;
         _board_Contents = new Tile[_size_X, _size_Y];
-        _cubeIndex = new Dictionary<Vector3Int, Tile>();
+        cubeLookup = new Dictionary<Vector3Int, Tile>();
+
     }
 
     public Tile get_Tile(int x, int y)
@@ -40,6 +46,13 @@ public class Board
 
     public void set_Tile(int x, int y, Tile toset)
     {
+        Tile existing = _board_Contents[x, y];
+        if (existing != null)
+        {
+            Vector3Int oldKey = new Vector3Int(existing.QAxis, existing.RAxis, existing.SAxis);
+            cubeLookup.Remove(oldKey);
+        }
+
         toset.SetPosition(new Vector2Int(x, y));
 
         // Remove existing tile from dictionary if replacing
@@ -52,8 +65,9 @@ public class Board
 
         _board_Contents[x, y] = toset;
 
-        var cube = new Vector3Int(toset.QAxis, toset.RAxis, toset.SAxis);
-        _cubeIndex[cube] = toset;
+        Vector3Int cube = new Vector3Int(toset.QAxis, toset.RAxis, toset.SAxis);
+        cubeLookup[cube] = toset;
+
     }
 
     public void swap_Tiles(Vector2Int Tile1, Vector2Int Tile2)
@@ -85,9 +99,10 @@ public class Board
         return Neighbours;
     }
     public Tile SearchTileByCubeCoordinates(int q, int r, int s)
-    {
+ 
         // Convert cube coordinates (q, r, s) to array indices (x, y)
         // using the stored offsets so boards with different origins work
+
         int x = q + qOffset;
         int y = r + rOffset;
 
@@ -103,8 +118,13 @@ public class Board
         }
     }
 
-    public Tile GetTileByCube(Vector3Int cubeCoords) =>
-        _cubeIndex.TryGetValue(cubeCoords, out var tile) ? tile : null;
+
+    public Tile GetTileByCube(Vector3Int cubeCoords)
+    {
+        cubeLookup.TryGetValue(cubeCoords, out Tile tile);
+        return tile;
+    }
+
 
     // Return all tiles in the board (implement if you don't have it)
     public IEnumerable<Tile> GetAllTiles()
