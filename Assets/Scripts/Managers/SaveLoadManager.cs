@@ -109,7 +109,7 @@ public class SaveLoadManager : MonoBehaviour
             }
         }
 
-        Board board = new Board(new Vector2Int(data.Board.x_Height, data.Board.y_Width));
+        Board board = new Board(new Vector2Int(data.Board.x_Height, data.Board.y_Width), 0, 0);
 
         int qStart = -data.Board.x_Height / 2;
         int rStart = -data.Board.y_Width / 2;

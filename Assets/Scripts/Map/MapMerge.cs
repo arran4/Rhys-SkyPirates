@@ -88,7 +88,43 @@ public class MapMerge : MonoBehaviour
         int mergedWidth = layout.merged.x;
         int mergedHeight = layout.merged.y;
 
-        map.PlayArea = new Board(new Vector2Int(mergedWidth, mergedHeight));
+        int minQ = int.MaxValue;
+        int minR = int.MaxValue;
+
+        // First pass to compute cube coordinate bounds
+        for (int x = 0; x < widthA; x++)
+        {
+            for (int y = 0; y < heightA; y++)
+            {
+                Tile tile = shipA.get_Tile(x, y);
+                if (tile != null)
+                {
+                    int mx = x + offsetXA;
+                    int my = y + offsetYA;
+                    Vector3Int cube = HexUtils.OffsetToCube(new Vector2Int(mx, my), map.isFlatTopped);
+                    if (cube.x < minQ) minQ = cube.x;
+                    if (cube.y < minR) minR = cube.y;
+                }
+            }
+        }
+
+        for (int x = 0; x < widthB; x++)
+        {
+            for (int y = 0; y < heightB; y++)
+            {
+                Tile tile = shipB.get_Tile(x, y);
+                if (tile != null)
+                {
+                    int mx = x + offsetXB;
+                    int my = y + offsetYB;
+                    Vector3Int cube = HexUtils.OffsetToCube(new Vector2Int(mx, my), map.isFlatTopped);
+                    if (cube.x < minQ) minQ = cube.x;
+                    if (cube.y < minR) minR = cube.y;
+                }
+            }
+        }
+
+        map.PlayArea = new Board(new Vector2Int(mergedWidth, mergedHeight), -minQ, -minR);
 
         // Copy Ship A tiles with offset
         for (int x = 0; x < widthA; x++)
@@ -158,8 +194,8 @@ public class MapMerge : MonoBehaviour
         int sizeX = board._size_X;
         int sizeY = board._size_Y;
 
-        int qStart = -sizeX / 2;
-        int rStart = -sizeY / 2;
+        int qStart = -board.qOffset;
+        int rStart = -board.rOffset;
 
         for (int x = 0; x < sizeX; x++)
         {
