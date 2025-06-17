@@ -42,9 +42,11 @@ public static class BoardRotator
         int width = maxQ - minQ + 1;
         int height = maxR - minR + 1;
 
+
         int qOffset = -minQ;
         int rOffset = -minR;
         Board rotatedBoard = new Board(new Vector2Int(width, height), qOffset, rOffset);
+
 
         // Step 3: Instantiate rotated tiles and set them into new board
         for (int i = 0; i < originalTiles.Count; i++)
