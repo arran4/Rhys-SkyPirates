@@ -102,7 +102,9 @@ public class MapMerge : MonoBehaviour
                     int mx = x + offsetXA;
                     int my = y + offsetYA;
                     Vector2Int tilePos = new Vector2Int(mx, my);
-                    Vector3Int cubeCoords = HexUtils.OffsetToCube(tilePos, map.isFlatTopped);
+                    // Boards are currently generated using even-q/even-r layout
+                    // so we pass 'useOdd:false' explicitly for clarity.
+                    Vector3Int cubeCoords = HexUtils.OffsetToCube(tilePos, map.isFlatTopped, false);
 
                     Tile newTile = Object.Instantiate(tile, map.transform);
                     newTile.SetPosition(tilePos);
@@ -126,7 +128,7 @@ public class MapMerge : MonoBehaviour
                     int mx = x + offsetXB;
                     int my = y + offsetYB;
                     Vector2Int tilePos = new Vector2Int(mx, my);
-                    Vector3Int cubeCoords = HexUtils.OffsetToCube(tilePos, map.isFlatTopped);
+                    Vector3Int cubeCoords = HexUtils.OffsetToCube(tilePos, map.isFlatTopped, false);
 
                     Tile newTile = Object.Instantiate(tile, map.transform);
                     newTile.SetPosition(tilePos);
