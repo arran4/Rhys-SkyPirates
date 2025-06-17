@@ -18,8 +18,8 @@ public class GenerateFromBoard : MonoBehaviour, IGenerate
                 if (tile == null)
                     continue;
 
-                int q = -width / 2 + x;
-                int r = -height / 2 + y;
+                int q = x - playArea.qOffset;
+                int r = y - playArea.rOffset;
 
                 tile.SetPositionAndHeight(new Vector2Int(x, y), q, r, tile.Data == Data.TileTypes[0] ? 5 : 20);
                 Vector3 tilePosition = Data.GetHexPositionFromCoordinate(new Vector2Int(x, y));

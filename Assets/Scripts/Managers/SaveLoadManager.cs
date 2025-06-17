@@ -32,6 +32,7 @@ public class SaveLoadManager : MonoBehaviour
     public static SaveLoadManager SaveLoadInstance { get; private set; }
     private DirectoryInfo dir;
     public FileInfo[] info;
+    public IFileLoader FileLoader { get; set; } = new SystemFileLoader();
 
 
     public void refreshDirectory()
@@ -73,20 +74,25 @@ public class SaveLoadManager : MonoBehaviour
         }
 
         string json = JsonConvert.SerializeObject(export, Formatting.Indented);
-        File.WriteAllText(filePath, json);
+        FileLoader.WriteAllText(filePath, json);
         Debug.Log($"Map saved to: {filePath}");
         refreshDirectory();
     }
 
     public static Board LoadBoardFromJson(string filePath, Map mapContext, Transform parent)
     {
-        if (!File.Exists(filePath))
+        IFileLoader loader = SaveLoadInstance != null ? SaveLoadInstance.FileLoader : new SystemFileLoader();
+        string json;
+        try
+        {
+            json = loader.ReadAllText(filePath);
+        }
+        catch (IOException)
         {
             Debug.LogError("File not found: " + filePath);
             return null;
         }
 
-        string json = File.ReadAllText(filePath);
         ExportData data = JsonConvert.DeserializeObject<ExportData>(json);
 
         Dictionary<string, TileDataSO> idLookup = new Dictionary<string, TileDataSO>();
@@ -103,7 +109,10 @@ public class SaveLoadManager : MonoBehaviour
             }
         }
 
-        Board board = new Board(new Vector2Int(data.Board.x_Height, data.Board.y_Width));
+        Board board = new Board(new Vector2Int(data.Board.x_Height, data.Board.y_Width), 0, 0);
+
+        int qStart = -data.Board.x_Height / 2;
+        int rStart = -data.Board.y_Width / 2;
 
         for (int y = 0; y < data.Board.y_Width; y++)
         {
@@ -115,7 +124,11 @@ public class SaveLoadManager : MonoBehaviour
                 GameObject holder = new GameObject($"Hex {x},{y}", typeof(Tile));
                 Tile tile = holder.GetComponent<Tile>();
                 tile.Data = tileType;
-                tile.SetPositionAndHeight(new Vector2Int(x, y), x, y, sTile.Height);
+
+                int q = x - board.qOffset;
+                int r = y - board.rOffset;
+
+                tile.SetPositionAndHeight(new Vector2Int(x, y), q, r, sTile.Height);
                 Vector3 tilePosition = mapContext.GetHexPositionFromCoordinate(new Vector2Int(x, y));
                 tilePosition.y += tile.Height / 2;
                 holder.transform.position = tilePosition;

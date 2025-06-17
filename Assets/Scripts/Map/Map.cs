@@ -76,24 +76,28 @@ public class Map : MonoBehaviour
     /// <summary>
     /// Converts axial grid coordinates <c>(q,r)</c> into Unity world space.
     /// <para>
-    /// The width and height of a hexagon are derived from the outer radius
-    /// <c>size</c> as:
-    /// <code>
-    /// width  = sqrt(3) * size
-    /// height = 2 * size
-    /// </code>
-    /// For flat topped layouts the origin is shifted horizontally by
-    /// <c>width / 2</c>. A <c>0.9</c> factor leaves a small gap between tiles.
+    /// World coordinates are derived from the axial coordinate pair “(q, r)”
+    /// using orientation specific formulas.  A <c>0.9</c> multiplier is applied
+    /// so tiles do not visually touch.
     /// </para>
-    /// <para>Sample positions when <c>size = 1</c>:</para>
+    /// <para>When <c>size = 1</c> and spacing is <c>0.9</c> the equations become:</para>
+    /// <code>
+    /// // flat topped
+    /// x = 1.5 * q
+    /// z = sqrt(3) * (r + q/2)
+    /// // pointy topped
+    /// x = sqrt(3) * (q + r/2)
+    /// z = 1.5 * r
+    /// </code>
+    /// Multiplying by <c>0.9</c> gives the following sample positions:
     /// <code>
     /// | q | r | layout | expected (x,z) |
-    /// | 0 | 0 | flat   | (0.866,  0.000) |
-    /// | 1 | 0 | flat   | (2.425, -0.900) |
-    /// | 0 | 1 | flat   | (0.866, -1.800) |
+    /// | 0 | 0 | flat   | (0.000,  0.000) |
+    /// | 1 | 0 | flat   | (1.350, -0.779) |
+    /// | 0 | 1 | flat   | (0.000, -1.559) |
     /// | 0 | 0 | pointy | (0.000,  0.000) |
-    /// | 1 | 0 | pointy | (1.559, -0.900) |
-    /// | 1 | 1 | pointy | (1.559, -2.700) |
+    /// | 1 | 0 | pointy | (1.559,  0.000) |
+    /// | 1 | 1 | pointy | (2.338, -1.350) |
     /// </code>
     /// <para>Coordinate diagram:</para>
     /// <code>
@@ -106,19 +110,44 @@ public class Map : MonoBehaviour
     /// </summary>
     public Vector3 GetHexPositionFromCoordinate(Vector2Int coordinates)
     {
+        // Using the axial-to-world formulas from redblobgames.com ensures the
+        // origin is consistent for both orientations.  The previous version
+        // added a width/2 offset for flat topped grids which shifted the entire
+        // board.  Applying the standard equations avoids that bug and works for
+        // negative coordinates too.
         int q = coordinates.x;
         int r = coordinates.y;
         float size = outerSize;
 
-        float width = Mathf.Sqrt(3) * size;
-        float height = 2f * size;
+        // Slightly shrink the hex grid so neighbouring tiles don't touch.
+        // This was present in the previous implementation so we keep it
+        // for visual consistency.
+        float spacing = 0.90f;
+        float xPosition;
+        float zPosition;
 
-        float offset = isFlatTopped ? width / 2f : 0f;
+        if (isFlatTopped)
+        {
+            // Flat topped orientation aligns hex edges horizontally
+            //  x = size * 3/2 * q
+            //  z = size * sqrt(3) * (r + q/2)
+            xPosition = size * 1.5f * q;
+            zPosition = size * Mathf.Sqrt(3f) * (r + q / 2f);
+        }
+        else
+        {
+            // Pointy topped orientation rotates the grid 90 degrees
+            //  x = size * sqrt(3) * (q + r/2)
+            //  z = size * 3/2 * r
+            xPosition = size * Mathf.Sqrt(3f) * (q + r / 2f);
+            zPosition = size * 1.5f * r;
+        }
 
-        float xPosition = (q * (width * 0.90f) + offset);
-        float yPosition = -((r + q / 2f) * height * 0.90f);
+        xPosition *= spacing;
+        zPosition *= spacing;
 
-        return new Vector3(xPosition, 0f, yPosition);
+        // Negate z so the grid's "forward" direction matches Unity's.
+        return new Vector3(xPosition, 0f, -zPosition);
     }
 
     //If for any reason the board needs to be entirely redrawn

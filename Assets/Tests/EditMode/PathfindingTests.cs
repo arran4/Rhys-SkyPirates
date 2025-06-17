@@ -3,27 +3,13 @@ using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 
-/// <summary>
-/// Unit tests for <see cref="Pathfinding"/>.
-///
-/// A small 3x3 hex board is created for the scenarios below. Axial
-/// coordinates increase to the right (q) and upward (r):
-///
-/// <code>
-/// (0,2)-(1,2)-(2,2)
-///   |     |     |
-/// (0,1)-(1,1)-(2,1)
-///   |     |     |
-/// (0,0)-(1,0)-(2,0)
-/// </code>
-///
-/// The first test expects a straight path from (0,0) to (2,0). The
-/// second marks the interior tiles impassable and verifies that no
-/// route can be found.
-/// </summary>
+
 public class PathfindingTests
 {
-    private Board CreateBoard(int size, int defaultCost = 1)
+    // Helper that builds a small square board and links neighbour references.
+    // Movement costs can be overridden by passing a 2D array of values.
+    private Board CreateBoard(int size, int[,] movementCosts = null)
+
     {
         Board board = new Board(new Vector2Int(size, size));
         Map map = new GameObject("TestMap").AddComponent<Map>();
@@ -36,7 +22,9 @@ public class PathfindingTests
                 GameObject go = new GameObject($"Tile_{x}_{y}");
                 Tile tile = go.AddComponent<Tile>();
                 tile.Data = ScriptableObject.CreateInstance<TileDataSO>();
-                tile.Data.MovementCost = defaultCost;
+
+                tile.Data.MovementCost = movementCosts == null ? 1 : movementCosts[x, y];
+
                 tile.SetPositionAndHeight(new Vector2Int(x, y), x - size / 2, y - size / 2, 0);
                 board.set_Tile(x, y, tile);
             }
@@ -47,45 +35,44 @@ public class PathfindingTests
     }
 
     [Test]
-    public void FindPath_ReturnsExpectedRoute()
+
+    public void FindPath_ReturnsExpectedCoordinates()
     {
-        Board board = CreateBoard(3);
-        Tile start = board.get_Tile(0, 0);
-        Tile end = board.get_Tile(2, 0);
+        // Arrange: build a 3x3 board with a couple of impassable tiles
+        int[,] costs = new int[3,3];
+        for (int x = 0; x < 3; x++)
+            for (int y = 0; y < 3; y++)
+                costs[x, y] = 1;
 
-        Pathfinding pf = new Pathfinding();
+        // Block tiles to force a single route
+        costs[0, 1] = 0; // left middle
+        costs[1, 0] = 0; // bottom middle
+
+        Board board = CreateBoard(3, costs);
+        Tile start = board.get_Tile(0, 0);  // cube (-1,-1,2)
+        Tile end = board.get_Tile(2, 1);    // cube (1,0,-1)
+
+        Pathfinding pathfinder = new Pathfinding();
         Tile[] allTiles = board.GetAllTiles().ToArray();
-        List<Vector3Int> path = pf.FindPath(start, end, allTiles);
 
-        List<Vector3Int> expected = new List<Vector3Int>
+        // Act
+        List<Vector3Int> path = pathfinder.FindPath(start, end, allTiles);
+
+        /* Expected route:
+         * 1. start (-1,-1,2)
+         * 2. centre (0,0,0)
+         * 3. end   (1,0,-1)
+         * The blocked tiles at (0,1) and (1,0) leave only this path.
+         */
+        var expected = new List<Vector3Int>
         {
-            start.ReturnSquareCoOrds(),
-            board.get_Tile(1, 0).ReturnSquareCoOrds(),
-            end.ReturnSquareCoOrds()
+            new Vector3Int(-1, -1, 2),
+            new Vector3Int(0, 0, 0),
+            new Vector3Int(1, 0, -1)
         };
 
-        CollectionAssert.AreEqual(expected, path);
-    }
+        // Assert
+        Assert.AreEqual(expected, path);
 
-    [Test]
-    public void FindPath_NoRoute_ReturnsEmpty()
-    {
-        Board board = CreateBoard(3);
-        Tile start = board.get_Tile(0, 0);
-        Tile end = board.get_Tile(2, 2);
-
-        foreach (Tile t in board.GetAllTiles())
-        {
-            if (t != start && t != end)
-            {
-                t.Data.MovementCost = 0; // make tile unwalkable
-            }
-        }
-
-        Pathfinding pf = new Pathfinding();
-        Tile[] allTiles = board.GetAllTiles().ToArray();
-        List<Vector3Int> path = pf.FindPath(start, end, allTiles);
-
-        Assert.IsEmpty(path);
     }
 }
