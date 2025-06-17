@@ -111,6 +111,9 @@ public class SaveLoadManager : MonoBehaviour
 
         Board board = new Board(new Vector2Int(data.Board.x_Height, data.Board.y_Width));
 
+        int qStart = -data.Board.x_Height / 2;
+        int rStart = -data.Board.y_Width / 2;
+
         for (int y = 0; y < data.Board.y_Width; y++)
         {
             for (int x = 0; x < data.Board.x_Height; x++)
@@ -121,7 +124,9 @@ public class SaveLoadManager : MonoBehaviour
                 GameObject holder = new GameObject($"Hex {x},{y}", typeof(Tile));
                 Tile tile = holder.GetComponent<Tile>();
                 tile.Data = tileType;
-                tile.SetPositionAndHeight(new Vector2Int(x, y), x, y, sTile.Height);
+                int q = qStart + x;
+                int r = rStart + y;
+                tile.SetPositionAndHeight(new Vector2Int(x, y), q, r, sTile.Height);
                 Vector3 tilePosition = mapContext.GetHexPositionFromCoordinate(new Vector2Int(x, y));
                 tilePosition.y += tile.Height / 2;
                 holder.transform.position = tilePosition;
