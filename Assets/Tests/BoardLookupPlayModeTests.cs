@@ -73,6 +73,7 @@ public class BoardLookupPlayModeTests
         foreach (var tile in board.GetAllTiles())
         {
             Vector3Int cube = new Vector3Int(tile.QAxis, tile.RAxis, tile.SAxis);
+            Debug.Log(cube.ToString());
             Assert.AreSame(tile, board.SearchTileByCubeCoordinates(cube.x, cube.y, cube.z));
             Assert.AreSame(tile, board.GetTileByCube(cube));
         }
@@ -85,16 +86,17 @@ public class BoardLookupPlayModeTests
     /// </summary>
     private void AssertCenteredCoords(Board board)
     {
-        int qStart = -board._size_X / 2;
-        int rStart = -board._size_Y / 2;
+        // The tile at offset (0,0) should have Q=0, R=0, S=0
+        Tile origin = board.get_Tile(0, 0);
+        Assert.NotNull(origin);
 
-        Assert.AreEqual(qStart, board.get_Tile(0, 0).QAxis);
-        Assert.AreEqual(rStart, board.get_Tile(0, 0).RAxis);
+        Assert.AreEqual(0, origin.QAxis, "Q at offset (0,0) should be 0");
+        Assert.AreEqual(0, origin.RAxis, "R at offset (0,0) should be 0");
+        Assert.AreEqual(0, origin.SAxis, "S at offset (0,0) should be 0");
 
-        Assert.AreEqual(qStart + board._size_X - 1,
-            board.get_Tile(board._size_X - 1, board._size_Y - 1).QAxis);
-        Assert.AreEqual(rStart + board._size_Y - 1,
-            board.get_Tile(board._size_X - 1, board._size_Y - 1).RAxis);
+        // And the lookup using cube coordinates should return this same tile
+        var lookup = board.SearchTileByCubeCoordinates(0, 0, 0);
+        Assert.AreSame(origin, lookup, "Board lookup by cube (0,0,0) should match origin tile");
     }
 
     /// <summary>
@@ -171,6 +173,13 @@ public class BoardLookupPlayModeTests
         // Act - merge the boards together
         MapMerge.MergeBoards(map, a, b, ShipSide.Bow);
         yield return null;
+        foreach (var tile in map.PlayArea.GetAllTiles())
+        {
+            Debug.Log($"tile.QRS = ({tile.QAxis}, {tile.RAxis}, {tile.SAxis})");
+            var lookup = map.PlayArea.SearchTileByCubeCoordinates(tile.QAxis, tile.RAxis, tile.SAxis);
+            if (lookup == null)
+                Debug.LogError($"LOOKUP FAIL for ({tile.QAxis}, {tile.RAxis}, {tile.SAxis})");
+        }
 
         // Assert
         AssertBoardLookups(map.PlayArea);

@@ -117,8 +117,10 @@ public class BoardOffsetPlayModeTests
         MapMerge.MergeBoards(map, shipA, shipB, ShipSide.Starboard);
         yield return null;
 
-        Assert.AreEqual(0, map.PlayArea.qOffset);
-        Assert.AreEqual(1, map.PlayArea.rOffset);
+        Vector3Int origin = HexUtils.OffsetToCube(Vector2Int.zero, map.isFlatTopped, false);
+        Assert.AreEqual(-origin.x, map.PlayArea.qOffset);
+        Assert.AreEqual(-origin.y, map.PlayArea.rOffset);
+
         Assert.AreEqual(2, map.PlayArea._size_X);
         Assert.AreEqual(1, map.PlayArea._size_Y);
 

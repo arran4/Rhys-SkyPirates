@@ -111,24 +111,19 @@ public class SaveLoadManager : MonoBehaviour
 
         Board board = new Board(new Vector2Int(data.Board.x_Height, data.Board.y_Width), 0, 0);
 
-        int qStart = -data.Board.x_Height / 2;
-        int rStart = -data.Board.y_Width / 2;
-
         for (int y = 0; y < data.Board.y_Width; y++)
         {
             for (int x = 0; x < data.Board.x_Height; x++)
             {
-                SerializableTile sTile = data.Board.Tiles[y][x];
+                SerializableTile sTile = data.Board.Tiles[x][y];
                 TileDataSO tileType = idLookup.ContainsKey(sTile.TileTypeID) ? idLookup[sTile.TileTypeID] : mapContext.TileTypes[0];
 
                 GameObject holder = new GameObject($"Hex {x},{y}", typeof(Tile));
                 Tile tile = holder.GetComponent<Tile>();
                 tile.Data = tileType;
 
-                int q = x - board.qOffset;
-                int r = y - board.rOffset;
 
-                tile.SetPositionAndHeight(new Vector2Int(x, y), q, r, sTile.Height);
+                tile.SetPositionAndHeight(new Vector2Int(x, y), x, y, sTile.Height);
                 Vector3 tilePosition = mapContext.GetHexPositionFromCoordinate(new Vector2Int(x, y));
                 tilePosition.y += tile.Height / 2;
                 holder.transform.position = tilePosition;

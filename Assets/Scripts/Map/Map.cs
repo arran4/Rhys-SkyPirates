@@ -31,6 +31,8 @@ public class Map : MonoBehaviour
         if (generate != null)
         {
             PlayArea = generate.Generate(this);
+            SetNeighbours(PlayArea, isFlatTopped);
+            setFirstHex();
         }
         // int nuberofenemies = PawnManager.PawnManagerInstance.GetAllEnemies().Count - 1;
 
@@ -38,8 +40,8 @@ public class Map : MonoBehaviour
         {
             Arrow.SetMap(PlayArea);
         }
-        SetNeighbours(PlayArea, isFlatTopped);
-        setFirstHex();
+        
+
 
         if (!typeof(GenerateMerge).IsInstanceOfType(generate) && generate != null)
         {

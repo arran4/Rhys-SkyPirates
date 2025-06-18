@@ -78,9 +78,8 @@ public class MapMerge : MonoBehaviour
         int widthB = shipB._size_X;
         int heightB = shipB._size_Y;
 
-        // Determine where each board should be positioned in the merged grid.
+        // Calculate layout dimensions
         var layout = GetMergeLayout(new Vector2Int(widthA, heightA), new Vector2Int(widthB, heightB), sideToAttach);
-
         int offsetXA = layout.offsetA.x;
         int offsetYA = layout.offsetA.y;
         int offsetXB = layout.offsetB.x;
@@ -88,105 +87,55 @@ public class MapMerge : MonoBehaviour
         int mergedWidth = layout.merged.x;
         int mergedHeight = layout.merged.y;
 
-        int minQ = int.MaxValue;
-        int minR = int.MaxValue;
+        // Align cube (0,0,0) with offset (0,0)
+        Vector3Int cubeOrigin = HexUtils.OffsetToCube(Vector2Int.zero, map.isFlatTopped, false);
+        int qOffset = -cubeOrigin.x;
+        int rOffset = -cubeOrigin.y;
 
-        // First pass to compute cube coordinate bounds
+        map.PlayArea = new Board(new Vector2Int(mergedWidth, mergedHeight), qOffset, rOffset);
+
+        // Helper function to add a tile from source board
+        void CopyTile(Board source, int x, int y, int dx, int dy)
+        {
+            Tile tile = source.get_Tile(x, y);
+            if (tile == null) return;
+
+            int mx = x + dx;
+            int my = y + dy;
+            Vector2Int offsetCoords = new Vector2Int(mx, my);
+            Vector3Int cubeCoords = HexUtils.OffsetToCube(offsetCoords, map.isFlatTopped, false);
+
+            Tile newTile = Object.Instantiate(tile, map.transform);
+
+            newTile.SetQUSPosition(cubeCoords.x, cubeCoords.y);           
+            newTile.SetPosition(offsetCoords);
+            newTile.SetHeight(tile.Height);
+            newTile.SetPawnPos();
+            newTile.SetupHexRenderer(map.innerSize, map.outerSize, map.isFlatTopped);
+            newTile.transform.position = map.GetHexPositionFromCoordinate(offsetCoords);
+
+            map.PlayArea.set_Tile(mx, my, newTile);                       
+        }
+
+
+        // Place tiles from ship A
         for (int x = 0; x < widthA; x++)
-        {
             for (int y = 0; y < heightA; y++)
-            {
-                Tile tile = shipA.get_Tile(x, y);
-                if (tile != null)
-                {
-                    int mx = x + offsetXA;
-                    int my = y + offsetYA;
-                    Vector3Int cube = HexUtils.OffsetToCube(new Vector2Int(mx, my), map.isFlatTopped);
-                    if (cube.x < minQ) minQ = cube.x;
-                    if (cube.y < minR) minR = cube.y;
-                }
-            }
-        }
+                CopyTile(shipA, x, y, offsetXA, offsetYA);
 
+        // Place tiles from ship B
         for (int x = 0; x < widthB; x++)
-        {
             for (int y = 0; y < heightB; y++)
-            {
-                Tile tile = shipB.get_Tile(x, y);
-                if (tile != null)
-                {
-                    int mx = x + offsetXB;
-                    int my = y + offsetYB;
-                    Vector3Int cube = HexUtils.OffsetToCube(new Vector2Int(mx, my), map.isFlatTopped);
-                    if (cube.x < minQ) minQ = cube.x;
-                    if (cube.y < minR) minR = cube.y;
-                }
-            }
-        }
+                CopyTile(shipB, x, y, offsetXB, offsetYB);
 
-        map.PlayArea = new Board(new Vector2Int(mergedWidth, mergedHeight), -minQ, -minR);
-
-        // Gather Ship A tiles
-        for (int x = 0; x < widthA; x++)
-        {
-            for (int y = 0; y < heightA; y++)
-            {
-                Tile tile = shipA.get_Tile(x, y);
-                if (tile != null)
-                {
-                    int mx = x + offsetXA;
-                    int my = y + offsetYA;
-                    Vector2Int tilePos = new Vector2Int(mx, my);
-
-                    // Boards are currently generated using even-q/even-r layout
-                    // so we pass 'useOdd:false' explicitly for clarity.
-                    Vector3Int cubeCoords = HexUtils.OffsetToCube(tilePos, map.isFlatTopped, false);
-
-                    Tile newTile = Object.Instantiate(tile, map.transform);
-                    newTile.SetPosition(tilePos);
-                    newTile.SetQUSPosition(cubeCoords.x, cubeCoords.y);
-                    newTile.SetPawnPos();
-                    newTile.SetupHexRenderer(map.innerSize, map.outerSize, map.isFlatTopped);
-
-                    map.PlayArea.set_Tile(mx, my, newTile);
-                    newTile.transform.position = map.GetHexPositionFromCoordinate(tilePos);
-
-                }
-            }
-        }
-
-        // Gather Ship B tiles
-        for (int x = 0; x < widthB; x++)
-        {
-            for (int y = 0; y < heightB; y++)
-            {
-                Tile tile = shipB.get_Tile(x, y);
-                if (tile != null)
-                {
-                    int mx = x + offsetXB;
-                    int my = y + offsetYB;
-                    Vector2Int tilePos = new Vector2Int(mx, my);
-
-                    Vector3Int cubeCoords = HexUtils.OffsetToCube(tilePos, map.isFlatTopped, false);
-
-                    Tile newTile = Object.Instantiate(tile, map.transform);
-                    newTile.SetPosition(tilePos);
-                    newTile.SetQUSPosition(cubeCoords.x, cubeCoords.y);
-                    newTile.SetPawnPos();
-                    newTile.SetupHexRenderer(map.innerSize, map.outerSize, map.isFlatTopped);
-
-                    map.PlayArea.set_Tile(mx, my, newTile);
-                    newTile.transform.position = map.GetHexPositionFromCoordinate(tilePos);
-                }
-            }
-        }
-
+        // Fill gaps, assign neighbors, and finalize
         FillNulls(map.PlayArea, map);
         map.MapSize = new Vector2Int(mergedWidth, mergedHeight);
         map.SetNeighbours(map.PlayArea, map.isFlatTopped);
         map.setFirstHex();
         Debug.Log("Merged boards into map.");
     }
+
 
     public static void FillNulls(Board board, Map mapData)
     {
@@ -203,6 +152,7 @@ public class MapMerge : MonoBehaviour
                     // Convert offset to cube
                     Vector2Int offsetCoords = new Vector2Int(x, y);
                     Vector3Int cubeCoords = HexUtils.OffsetToCube(offsetCoords, mapData.isFlatTopped, false);
+                    Debug.Log(offsetCoords.ToString() +  cubeCoords.ToString());
 
                     // Create empty GameObject with Tile component
                     GameObject holder = new GameObject($"Hex {x},{y}", typeof(Tile));
@@ -211,7 +161,10 @@ public class MapMerge : MonoBehaviour
 
                     // Setup position and height
                     int height = tile.Data == mapData.TileTypes[0] ? 5 : 20;
-                    tile.SetPositionAndHeight(offsetCoords, cubeCoords.x, cubeCoords.y, height);
+                    tile.SetQUSPosition(cubeCoords.x, cubeCoords.y);
+                    tile.SetHeight(height);
+                    tile.Column = x;
+                    tile.Row = y;
 
                     // Set world position
                     Vector3 worldPos = mapData.GetHexPositionFromCoordinate(offsetCoords);
@@ -229,8 +182,6 @@ public class MapMerge : MonoBehaviour
                     tile.SetupHexRenderer(mapData.innerSize, mapData.outerSize, mapData.isFlatTopped);
 
                     // Final setup
-                    tile.SetPosition(offsetCoords);
-                    tile.SetQUSPosition(cubeCoords.x, cubeCoords.y);
                     tile.SetPawnPos();
 
                     // Assign to board

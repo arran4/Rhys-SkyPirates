@@ -71,8 +71,7 @@ public class MapMergePlayModeTests
 
     private Tile CreateTile(Vector2Int coords, Vector2Int boardSize, Map map, TileDataSO data)
     {
-        int qStart = -boardSize.x / 2;
-        int rStart = -boardSize.y / 2;
+
 
         GameObject go = new GameObject($"Tile_{coords.x}_{coords.y}");
 
@@ -84,7 +83,7 @@ public class MapMergePlayModeTests
         tile.Data = data;
 
         float height = data == map.TileTypes[0] ? 5f : 20f;
-        tile.SetPositionAndHeight(coords, qStart + coords.x, rStart + coords.y, height);
+        tile.SetPositionAndHeight(coords, coords.x, coords.y, height);
 
         // Setup HexRenderer before Start() is called
         tile.SetupHexRenderer(map.innerSize, map.outerSize, map.isFlatTopped);
@@ -92,7 +91,7 @@ public class MapMergePlayModeTests
         // Manually simulate what Start() would do to prevent nulls
         tile.Hex.DrawMesh();             // this sets .H_ColiderMesh
         tile.Hex.GetColliderMesh();
-        tile.SetColliderMesh();          // now safe – Hex.H_ColiderMesh is valid
+        tile.SetColliderMesh();          // now safe â€“ Hex.H_ColiderMesh is valid
 
         // Final positioning
         Vector3 pos = map.GetHexPositionFromCoordinate(coords);
@@ -208,11 +207,12 @@ public class MapMergePlayModeTests
                 Tile t = board.get_Tile(x, y);
                 Assert.NotNull(t);
 
-                int qStart = -board._size_X / 2;
-                int rStart = -board._size_Y / 2;
-                int expectedQ = qStart + x;
-                int expectedR = rStart + y;
-                Vector3Int expectedCube = new Vector3Int(expectedQ, expectedR, -expectedQ - expectedR);
+                Vector2Int offsetCoords = new Vector2Int(x, y);
+                Vector3Int expectedCube = HexUtils.OffsetToCube(offsetCoords, map.isFlatTopped, false);
+
+                // Print actual
+                Debug.Log($"At {offsetCoords} expectedCube: {expectedCube}, actual: ({t.QAxis},{t.RAxis},{t.SAxis})");
+
 
                 Assert.AreEqual(expectedCube.x, t.QAxis);
                 Assert.AreEqual(expectedCube.y, t.RAxis);

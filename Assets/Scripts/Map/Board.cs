@@ -50,21 +50,12 @@ public class Board
             cubeLookup.Remove(oldKey);
         }
 
-        toset.SetPosition(new Vector2Int(x, y));
-
-        // Remove existing tile from dictionary if replacing
-        existing = _board_Contents[x, y];
-        if (existing != null)
-        {
-            var oldCube = new Vector3Int(existing.QAxis, existing.RAxis, existing.SAxis);
-            cubeLookup.Remove(oldCube);
-        }
-
+        // Do NOT reset the tile's offset/cube position here. It was already set.
         _board_Contents[x, y] = toset;
 
         Vector3Int cube = new Vector3Int(toset.QAxis, toset.RAxis, toset.SAxis);
         cubeLookup[cube] = toset;
-
+        Debug.Log($"set_Tile: offset=({x},{y}) → cube=({cube.x},{cube.y},{cube.z})");
     }
 
     public void swap_Tiles(Vector2Int Tile1, Vector2Int Tile2)
