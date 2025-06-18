@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Item", menuName = "ScriptableObject/AccesoriesItem")]
+[CreateAssetMenu(fileName = "Item", menuName = "ScriptableObject/AccessoriesItem")]
 
-public class AccesoriesItem : Item
+public class AccessoriesItem : Item
 {
     // Start is called before the first frame update
     public void Awake()

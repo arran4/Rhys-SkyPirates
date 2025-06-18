@@ -7,7 +7,7 @@ public class EquipedItems : MonoBehaviour
     public HeadItem Head;
     public WeaponItem Weapon;
     public BodyItem Body;
-    public AccesoriesItem Accessorie;
+    public AccessoriesItem Accessorie;
     public FeetItem Feet;
     public int chuzpah;
     public int cadishness;
@@ -65,7 +65,7 @@ public class EquipedItems : MonoBehaviour
                 break;
             case ItemType.Accessory:
                 Equipment.Remove(Accessorie);
-                Accessorie = (AccesoriesItem)newItem;
+                Accessorie = (AccessoriesItem)newItem;
                 Equipment.Add(Accessorie);
                 break;
         }

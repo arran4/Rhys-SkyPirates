@@ -9,13 +9,14 @@ public class MenuSelect : MonoBehaviour, ISelectionResponce
     public Tile SelectedTile { get; private set; } = null;
     public Pawn SelectedContents { get; private set; } = null;
 
-    public int CharaterNo;
+    [UnityEngine.Serialization.FormerlySerializedAs("CharaterNo")]
+    public int CharacterNo;
 
     private bool isReselecting = false;
 
     public void Start()
     {
-        CharaterNo = -1;
+        CharacterNo = -1;
     }
 
     public GameObject CurrentSelection()
@@ -32,7 +33,7 @@ public class MenuSelect : MonoBehaviour, ISelectionResponce
             SelectedContents = null;
             SelectedObject = null;
         }
-        if (CharaterNo == -1 && !isReselecting)
+        if (CharacterNo == -1 && !isReselecting)
         {
             HexSelectManager.Instance.SwitchToDefaultState();
         }
@@ -57,7 +58,7 @@ public class MenuSelect : MonoBehaviour, ISelectionResponce
             SelectedContents = SelectedTile.Contents;
             if (SelectedContents == null || !(SelectedContents is PlayerPawns))
             {
-                CharaterNo = -1;
+                CharacterNo = -1;
             }
             else
             {
@@ -66,7 +67,7 @@ public class MenuSelect : MonoBehaviour, ISelectionResponce
                 {
                     if (a == SelectedContents)
                     {
-                        CharaterNo = index;
+                        CharacterNo = index;
                     }
                     index++;
                 }
@@ -79,7 +80,7 @@ public class MenuSelect : MonoBehaviour, ISelectionResponce
             isReselecting = false;
 
             Select(Selection);
-            CharaterNo = -1;
+            CharacterNo = -1;
         }
     }
 }
