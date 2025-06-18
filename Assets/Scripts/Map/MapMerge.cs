@@ -103,7 +103,12 @@ public class MapMerge : MonoBehaviour
             int mx = x + dx;
             int my = y + dy;
             Vector2Int offsetCoords = new Vector2Int(mx, my);
-            Vector3Int cubeCoords = HexUtils.OffsetToCube(offsetCoords, map.isFlatTopped, false);
+            Vector3Int cubeCoords = new Vector3Int(
+     offsetCoords.x - map.PlayArea.qOffset,
+     offsetCoords.y - map.PlayArea.rOffset,
+     -((offsetCoords.x - map.PlayArea.qOffset) + (offsetCoords.y - map.PlayArea.rOffset))
+ );
+
 
             Tile newTile = Object.Instantiate(tile, map.transform);
 

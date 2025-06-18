@@ -7,20 +7,17 @@ public class RandomGeneration : MonoBehaviour, IGenerate
     public Board Generate(Map Data)
     {
 
-        int qStart = -Data.MapSize.x / 2;
-        int rStart = -Data.MapSize.y / 2;
-        Board PlayArea = new Board(Data.MapSize, -qStart, -rStart);
+        Vector3Int zeroCube = HexUtils.OffsetToCube(Vector2Int.zero, Data.isFlatTopped, false);
+        Board PlayArea = new Board(Data.MapSize, -zeroCube.x, -zeroCube.y);
 
         for (int x = 0; x < Data.MapSize.x; x++)
         {
             for (int y = 0; y < Data.MapSize.y; y++)
             {
-                int q = x - PlayArea.qOffset;
-                int r = y - PlayArea.rOffset;
                 GameObject holder = new GameObject($"Hex {x},{y}", typeof(Tile));
                 Tile tile = holder.GetComponent<Tile>();
                 tile.Data = Data.TileTypes[Random.Range(0, 2)];
-                tile.SetPositionAndHeight(new Vector2Int(x, y), q, r, tile.Data == Data.TileTypes[0] ? 5 : 20);
+                tile.SetPositionAndHeight(new Vector2Int(x, y), x, y, tile.Data == Data.TileTypes[0] ? 5 : 20);
                 Vector3 tilePosition = Data.GetHexPositionFromCoordinate(new Vector2Int(x, y));
                 tilePosition.y = tilePosition.y + tile.Height / 2;
                 holder.transform.position = tilePosition;

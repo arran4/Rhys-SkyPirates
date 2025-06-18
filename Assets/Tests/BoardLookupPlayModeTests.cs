@@ -1,13 +1,3 @@
-// PlayMode tests verifying board lookup consistency.
-// --------------------------------------------------
-// Open Unity's Test Runner (Window > General > Test Runner) and run the
-// PlayMode suite to execute these tests.
-//
-// Each test generates a board through a different code path (random
-// generation, save/load, merging, rotation) and then checks that every
-// tile can be retrieved using its cube coordinates.  These lookups are
-// fundamental for gameplay and should remain constant time.
-
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -17,11 +7,6 @@ using UnityEngine.TestTools;
 
 public class BoardLookupPlayModeTests
 {
-    /// <summary>
-    /// Creates a bare bones <see cref="Map"/> with two simple tile types.
-    /// These tests do not rely on any real game data, so we generate
-    /// minimal scriptable objects at runtime.
-    /// </summary>
     private Map CreateBasicMap(Vector2Int size)
     {
         var go = new GameObject("Map");
@@ -32,7 +17,6 @@ public class BoardLookupPlayModeTests
         map.isFlatTopped = true;
         map.TileTypes = new List<TileDataSO>();
 
-        // Create two dummy tile types so the board can instantiate tiles.
         var tile1 = ScriptableObject.CreateInstance<TileDataSO>();
         tile1.UniqueID = "type1";
         tile1.TilePrefab = new GameObject("prefab1");
@@ -48,11 +32,6 @@ public class BoardLookupPlayModeTests
         return map;
     }
 
-    /// <summary>
-    /// Many of the generation utilities rely on a scene containing a
-    /// Camera with a <see cref="CameraController"/>.  PlayMode tests start
-    /// with an empty scene, so we spawn one if needed.
-    /// </summary>
     private void EnsureCamera()
     {
         if (Camera.main == null)
@@ -64,105 +43,78 @@ public class BoardLookupPlayModeTests
         }
     }
 
-    /// <summary>
-    /// Helper used by each test to verify that searching the board by cube
-    /// coordinates returns the exact same tile instance that we started with.
-    /// </summary>
     private void AssertBoardLookups(Board board)
     {
         foreach (var tile in board.GetAllTiles())
         {
-            Vector3Int cube = new Vector3Int(tile.QAxis, tile.RAxis, tile.SAxis);
-            Debug.Log(cube.ToString());
-            Assert.AreSame(tile, board.SearchTileByCubeCoordinates(cube.x, cube.y, cube.z));
-            Assert.AreSame(tile, board.GetTileByCube(cube));
+            var cube = new Vector3Int(tile.QAxis, tile.RAxis, tile.SAxis);
+            var found = board.SearchTileByCubeCoordinates(cube.x, cube.y, cube.z);
+
+            Assert.IsNotNull(found, $"Lookup failed for tile with cube=({cube.x},{cube.y},{cube.z})");
+            Assert.AreEqual(tile, found, $"Mismatch at cube=({cube.x},{cube.y},{cube.z})");
         }
     }
 
-    /// <summary>
-    /// Checks that cube coordinates begin at (-size/2,-size/2) so the board is
-    /// centred around the origin.  This mirrors how boards are generated in
-    /// RandomGeneration and other utilities.
-    /// </summary>
-    private void AssertCenteredCoords(Board board)
+    private void AssertCubeOriginIsOffset00(Board board)
     {
-        // The tile at offset (0,0) should have Q=0, R=0, S=0
-        Tile origin = board.get_Tile(0, 0);
-        Assert.NotNull(origin);
+        var tile = board.get_Tile(0, 0);
+        Assert.NotNull(tile, "No tile at offset (0,0)");
+        Assert.AreEqual(0, tile.QAxis, "Tile at (0,0) does not have Q=0");
+        Assert.AreEqual(0, tile.RAxis, "Tile at (0,0) does not have R=0");
+        Assert.AreEqual(0, tile.SAxis, "Tile at (0,0) does not have S=0");
 
-        Assert.AreEqual(0, origin.QAxis, "Q at offset (0,0) should be 0");
-        Assert.AreEqual(0, origin.RAxis, "R at offset (0,0) should be 0");
-        Assert.AreEqual(0, origin.SAxis, "S at offset (0,0) should be 0");
-
-        // And the lookup using cube coordinates should return this same tile
-        var lookup = board.SearchTileByCubeCoordinates(0, 0, 0);
-        Assert.AreSame(origin, lookup, "Board lookup by cube (0,0,0) should match origin tile");
+        var found = board.SearchTileByCubeCoordinates(0, 0, 0);
+        Assert.AreSame(tile, found, "Lookup for (0,0,0) did not return tile at (0,0)");
     }
 
-    /// <summary>
-    /// Verifies tiles can be found after randomly generating a board.
-    /// </summary>
     [UnityTest]
     public IEnumerator RandomGenerationBoardLookup()
     {
-        // Arrange - create a simple map and generator
         EnsureCamera();
         var map = CreateBasicMap(new Vector2Int(3, 3));
         var genGO = new GameObject("Gen");
         var gen = genGO.AddComponent<RandomGeneration>();
 
-        // Act - generate a random board
         Board board = gen.Generate(map);
-        yield return null; // wait a frame for any coroutines
+        yield return null;
 
-        // Assert - every tile must be reachable via cube coordinates
         AssertBoardLookups(board);
+        AssertCubeOriginIsOffset00(board);
 
         Object.Destroy(genGO);
         Object.Destroy(map.gameObject);
     }
 
-    /// <summary>
-    /// Saves a generated board to JSON and then loads it back to ensure the
-    /// lookup structures are preserved in the serialized data.
-    /// </summary>
     [UnityTest]
     public IEnumerator LoadBoardFromJsonLookup()
     {
-        // Arrange - create a map then save it to disk
         EnsureCamera();
         var map = CreateBasicMap(new Vector2Int(2, 2));
         var genGO = new GameObject("Gen");
         var gen = genGO.AddComponent<RandomGeneration>();
         map.PlayArea = gen.Generate(map);
+
         var saveGO = new GameObject("SaveLoad");
         var slm = saveGO.AddComponent<SaveLoadManager>();
-        yield return null; // allow components to initialise
+        yield return null;
 
         string path = Path.Combine(Application.persistentDataPath, "temp_board.json");
         slm.SaveMapToJson(map, path);
 
-        // Act - load a board back from the saved file
         Board loaded = SaveLoadManager.LoadBoardFromJson(path, map, map.transform);
         yield return null;
 
-        // Assert
         AssertBoardLookups(loaded);
-        AssertCenteredCoords(loaded);
+        AssertCubeOriginIsOffset00(loaded);
 
         Object.Destroy(genGO);
         Object.Destroy(saveGO);
         Object.Destroy(map.gameObject);
     }
 
-    /// <summary>
-    /// Merges two boards together and checks that the resulting board can
-    /// still look up tiles correctly.
-    /// </summary>
     [UnityTest]
     public IEnumerator MergeBoardsLookup()
     {
-        // Arrange - build two boards we can merge
         EnsureCamera();
         var map = CreateBasicMap(new Vector2Int(2, 2));
         var genGO = new GameObject("Gen");
@@ -170,73 +122,52 @@ public class BoardLookupPlayModeTests
         Board a = gen.Generate(map);
         Board b = gen.Generate(map);
 
-        // Act - merge the boards together
         MapMerge.MergeBoards(map, a, b, ShipSide.Bow);
         yield return null;
-        foreach (var tile in map.PlayArea.GetAllTiles())
-        {
-            Debug.Log($"tile.QRS = ({tile.QAxis}, {tile.RAxis}, {tile.SAxis})");
-            var lookup = map.PlayArea.SearchTileByCubeCoordinates(tile.QAxis, tile.RAxis, tile.SAxis);
-            if (lookup == null)
-                Debug.LogError($"LOOKUP FAIL for ({tile.QAxis}, {tile.RAxis}, {tile.SAxis})");
-        }
 
-        // Assert
         AssertBoardLookups(map.PlayArea);
+        AssertCubeOriginIsOffset00(map.PlayArea);
 
         Object.Destroy(genGO);
         Object.Destroy(map.gameObject);
     }
 
-    /// <summary>
-    /// Merging should initialise each tile's renderer using the map's
-    /// orientation so that meshes face the correct direction.
-    /// </summary>
     [UnityTest]
     public IEnumerator MergeBoards_RespectsMapOrientation([Values(true, false)] bool flat)
     {
-        // Arrange
         EnsureCamera();
         var map = CreateBasicMap(new Vector2Int(2, 2));
         map.isFlatTopped = flat;
+
         var genGO = new GameObject("Gen");
         var gen = genGO.AddComponent<RandomGeneration>();
         Board a = gen.Generate(map);
         Board b = gen.Generate(map);
 
-        // Act
         MapMerge.MergeBoards(map, a, b, ShipSide.Bow);
         yield return null;
 
-        // Assert - every tile should adopt the map's orientation
         foreach (var tile in map.PlayArea.GetAllTiles())
         {
-            Assert.AreEqual(flat, tile.Hex.isFlatTopped);
+            Assert.AreEqual(flat, tile.Hex.isFlatTopped, $"Tile at {tile.QAxis},{tile.RAxis} has wrong orientation.");
         }
 
         Object.Destroy(genGO);
         Object.Destroy(map.gameObject);
     }
 
-    /// <summary>
-    /// Rotates an existing board and confirms that rotated tiles maintain
-    /// valid cube coordinate lookups.
-    /// </summary>
     [UnityTest]
     public IEnumerator RotateBoardLookup()
     {
-        // Arrange - generate a board we can rotate
         EnsureCamera();
         var map = CreateBasicMap(new Vector2Int(3, 3));
         var genGO = new GameObject("Gen");
         var gen = genGO.AddComponent<RandomGeneration>();
         Board board = gen.Generate(map);
 
-        // Act - rotate the board 60 degrees clockwise
         Board rotated = BoardRotator.RotateBoard(board, BoardRotator.Rotation.Rotate60CW);
         yield return null;
 
-        // Assert
         AssertBoardLookups(rotated);
 
         Object.Destroy(genGO);

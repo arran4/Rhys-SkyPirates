@@ -43,20 +43,29 @@ public class Board
 
     public void set_Tile(int x, int y, Tile toset)
     {
+        // Remove old cube key if one exists
         Tile existing = _board_Contents[x, y];
         if (existing != null)
         {
-            Vector3Int oldKey = new Vector3Int(existing.QAxis, existing.RAxis, existing.SAxis);
-            cubeLookup.Remove(oldKey);
+            Vector3Int oldCube = new Vector3Int(existing.QAxis, existing.RAxis, existing.SAxis);
+            if (cubeLookup.ContainsKey(oldCube) && cubeLookup[oldCube] == existing)
+            {
+                cubeLookup.Remove(oldCube);
+            }
         }
 
-        // Do NOT reset the tile's offset/cube position here. It was already set.
+        // Set new tile
         _board_Contents[x, y] = toset;
 
-        Vector3Int cube = new Vector3Int(toset.QAxis, toset.RAxis, toset.SAxis);
-        cubeLookup[cube] = toset;
-        Debug.Log($"set_Tile: offset=({x},{y}) → cube=({cube.x},{cube.y},{cube.z})");
+        Vector3Int newCube = new Vector3Int(toset.QAxis, toset.RAxis, toset.SAxis);
+        cubeLookup[newCube] = toset;
+
+        toset.Column = x;
+        toset.Row = y;
+
+        Debug.Log($"set_Tile: offset=({x},{y}) → cube={newCube}");
     }
+
 
     public void swap_Tiles(Vector2Int Tile1, Vector2Int Tile2)
     {
