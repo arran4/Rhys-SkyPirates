@@ -1,0 +1,27 @@
+root = true
+
+[*]
+end_of_line = lf
+charset = utf-8
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.cs]
+indent_style = space
+indent_size = 4
+
+# PascalCase naming for public members
+
+# Naming rule
+dotnet_naming_rule.public_members_pascal_case.severity = suggestion
+dotnet_naming_rule.public_members_pascal_case.symbols = public_symbols
+dotnet_naming_rule.public_members_pascal_case.style = pascal_case_style
+dotnet_naming_symbols.public_symbols.applicable_kinds = property, method, field, event
+dotnet_naming_symbols.public_symbols.applicable_accessibilities = public
+dotnet_naming_style.pascal_case_style.capitalization = pascal_case
+
+[{*.meta,*.unity,*.prefab,*.asset,*.mat,*.anim,*.controller}]
+trim_trailing_whitespace = false
+indent_style = unset
+indent_size = unset
+insert_final_newline = false
