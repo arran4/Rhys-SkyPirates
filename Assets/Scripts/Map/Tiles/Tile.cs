@@ -6,8 +6,8 @@ using UnityEngine;
 [RequireComponent(typeof(MeshCollider))]
 public class Tile : MonoBehaviour
 {
-    public int Column { get; private set; }
-    public int Row { get; private set; }
+    public int Column;
+    public int Row;
 
     public int QAxis;
     public int RAxis;

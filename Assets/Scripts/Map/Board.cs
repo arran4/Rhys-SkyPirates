@@ -9,9 +9,6 @@ public class Board
     public int qOffset { get; private set; }
     public int rOffset { get; private set; }
 
-    public int qOffset { get; private set; }
-    public int rOffset { get; private set; }
-
     private Tile[,] _board_Contents;
 
     private Dictionary<Vector3Int, Tile> cubeLookup;
@@ -56,11 +53,11 @@ public class Board
         toset.SetPosition(new Vector2Int(x, y));
 
         // Remove existing tile from dictionary if replacing
-        Tile existing = _board_Contents[x, y];
+        existing = _board_Contents[x, y];
         if (existing != null)
         {
             var oldCube = new Vector3Int(existing.QAxis, existing.RAxis, existing.SAxis);
-            _cubeIndex.Remove(oldCube);
+            cubeLookup.Remove(oldCube);
         }
 
         _board_Contents[x, y] = toset;
@@ -99,7 +96,7 @@ public class Board
         return Neighbours;
     }
     public Tile SearchTileByCubeCoordinates(int q, int r, int s)
- 
+    {
         // Convert cube coordinates (q, r, s) to array indices (x, y)
         // using the stored offsets so boards with different origins work
 
@@ -147,12 +144,13 @@ public class Board
             if (x != null)
             {
                 var cube = new Vector3Int(x.QAxis, x.RAxis, x.SAxis);
-                _cubeIndex.Remove(cube);
+                cubeLookup.Remove(cube);
                 MonoBehaviour.Destroy(x.gameObject);
             }
         }
-        _cubeIndex.Clear();
+        cubeLookup.Clear();
     }
+
     public Tile FirstNonNullTile()
     {
         for (int x = 0; x < _size_X; x++)

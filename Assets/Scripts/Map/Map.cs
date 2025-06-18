@@ -28,14 +28,20 @@ public class Map : MonoBehaviour
     {
         generate = GetComponent<IGenerate>();
         Arrow = GetComponent<MovementLine>();
-        PlayArea = generate.Generate(this);
-       // int nuberofenemies = PawnManager.PawnManagerInstance.GetAllEnemies().Count - 1;
+        if (generate != null)
+        {
+            PlayArea = generate.Generate(this);
+        }
+        // int nuberofenemies = PawnManager.PawnManagerInstance.GetAllEnemies().Count - 1;
 
-        Arrow.SetMap(PlayArea);
+        if (Arrow != null)
+        {
+            Arrow.SetMap(PlayArea);
+        }
         SetNeighbours(PlayArea, isFlatTopped);
         setFirstHex();
 
-        if (!typeof(GenerateMerge).IsInstanceOfType(generate))
+        if (!typeof(GenerateMerge).IsInstanceOfType(generate) && generate != null)
         {
             foreach(PlayerPawns x in PawnManager.PawnManagerInstance.PlayerPawns)
             {
@@ -43,7 +49,11 @@ public class Map : MonoBehaviour
             }
             return;
         }
-        int count = PlayerList.ListInstance.AllPlayerPawns.Count;
+        int count = 0;
+        if (PlayerList.ListInstance != null)
+        {
+            count = PlayerList.ListInstance.AllPlayerPawns.Count;
+        }
         while (count > 0)
         {
             Tile playerPos = PlayArea.get_Tile(Random.Range(0, MapSize.x), Random.Range(0, MapSize.y));
@@ -56,7 +66,10 @@ public class Map : MonoBehaviour
                 }
             }
         }
-        count = PawnManager.PawnManagerInstance.EnemyPawns.Count;
+        if (PawnManager.PawnManagerInstance != null)
+        {
+            count = PawnManager.PawnManagerInstance.EnemyPawns.Count;
+        }
         while (count > 0)
         {
             Tile EnemyPos = PlayArea.get_Tile(Random.Range(0, MapSize.x), Random.Range(0, MapSize.y));

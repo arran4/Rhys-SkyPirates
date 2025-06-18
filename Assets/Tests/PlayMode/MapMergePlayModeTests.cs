@@ -23,7 +23,7 @@ using UnityEngine.TestTools.Utils;
 
 public class MapMergePlayModeTests
 {
-    private Map CreateBasicMap()
+    private Map CreateBasicMap(bool withGenerator = false)
     {
         var go = new GameObject("Map");
         var map = go.AddComponent<Map>();
@@ -33,34 +33,73 @@ public class MapMergePlayModeTests
         map.isFlatTopped = true;
         map.TileTypes = new List<TileDataSO>();
 
+        // Create dummy mesh
+        Mesh dummyMesh = new Mesh();
+        dummyMesh.vertices = new Vector3[] {
+        new Vector3(0, 0, 0),
+        new Vector3(1, 0, 0),
+        new Vector3(0, 0, 1)
+    };
+        dummyMesh.triangles = new int[] { 0, 1, 2 };
+
+        GameObject prefab1 = new GameObject("prefab1");
+        prefab1.AddComponent<MeshFilter>().mesh = dummyMesh;
+        prefab1.AddComponent<MeshRenderer>();
+        prefab1.AddComponent<MeshCollider>().sharedMesh = dummyMesh;
+
         var tile1 = ScriptableObject.CreateInstance<TileDataSO>();
         tile1.UniqueID = "type1";
-        tile1.TilePrefab = new GameObject("prefab1");
+        tile1.TilePrefab = prefab1;
         tile1.BaseMat = new Material(Shader.Find("Standard"));
         map.TileTypes.Add(tile1);
 
         var tile2 = ScriptableObject.CreateInstance<TileDataSO>();
         tile2.UniqueID = "type2";
-        tile2.TilePrefab = new GameObject("prefab2");
+        tile2.TilePrefab = prefab1; // reuse the same dummy mesh
         tile2.BaseMat = tile1.BaseMat;
         map.TileTypes.Add(tile2);
 
+        if (withGenerator)
+        {
+            map.generate = go.AddComponent<GenerateEmptyAir>();
+            map.PlayArea = map.generate.Generate(map);
+        }
+
         return map;
     }
+
 
     private Tile CreateTile(Vector2Int coords, Vector2Int boardSize, Map map, TileDataSO data)
     {
         int qStart = -boardSize.x / 2;
         int rStart = -boardSize.y / 2;
-        GameObject go = new GameObject($"Tile_{coords.x}_{coords.y}", typeof(Tile));
-        Tile tile = go.GetComponent<Tile>();
+
+        GameObject go = new GameObject($"Tile_{coords.x}_{coords.y}");
+
+        // Add required components
+        Tile tile = go.AddComponent<Tile>();
+        HexRenderer hexRenderer = go.AddComponent<HexRenderer>();
+        MeshCollider collider = go.AddComponent<MeshCollider>();
+
         tile.Data = data;
+
         float height = data == map.TileTypes[0] ? 5f : 20f;
         tile.SetPositionAndHeight(coords, qStart + coords.x, rStart + coords.y, height);
+
+        // Setup HexRenderer before Start() is called
+        tile.SetupHexRenderer(map.innerSize, map.outerSize, map.isFlatTopped);
+
+        // Manually simulate what Start() would do to prevent nulls
+        tile.Hex.DrawMesh();             // this sets .H_ColiderMesh
+        tile.Hex.GetColliderMesh();
+        tile.SetColliderMesh();          // now safe – Hex.H_ColiderMesh is valid
+
+        // Final positioning
         Vector3 pos = map.GetHexPositionFromCoordinate(coords);
         pos.y += height / 2f;
         go.transform.position = pos;
         go.transform.SetParent(map.transform);
+
         return tile;
     }
 

@@ -1,16 +1,47 @@
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools.Utils;
+using System.Collections;
+using System.Collections.Generic;
 
 public class MapGetHexPositionTests
 {
     private Map CreateMap(float innerSize, float outerSize, bool isFlatTopped)
     {
-        var go = new GameObject();
+        var go = new GameObject("Map");
         var map = go.AddComponent<Map>();
+        map.MapSize = new Vector2Int(1,1);
         map.innerSize = innerSize;
         map.outerSize = outerSize;
         map.isFlatTopped = isFlatTopped;
+        map.TileTypes = new List<TileDataSO>();
+
+        // Create dummy mesh
+        Mesh dummyMesh = new Mesh();
+        dummyMesh.vertices = new Vector3[] {
+        new Vector3(0, 0, 0),
+        new Vector3(1, 0, 0),
+        new Vector3(0, 0, 1)
+    };
+        dummyMesh.triangles = new int[] { 0, 1, 2 };
+
+        GameObject prefab1 = new GameObject("prefab1");
+        prefab1.AddComponent<MeshFilter>().mesh = dummyMesh;
+        prefab1.AddComponent<MeshRenderer>();
+        prefab1.AddComponent<MeshCollider>().sharedMesh = dummyMesh;
+
+        var tile1 = ScriptableObject.CreateInstance<TileDataSO>();
+        tile1.UniqueID = "type1";
+        tile1.TilePrefab = prefab1;
+        tile1.BaseMat = new Material(Shader.Find("Standard"));
+        map.TileTypes.Add(tile1);
+
+        var tile2 = ScriptableObject.CreateInstance<TileDataSO>();
+        tile2.UniqueID = "type2";
+        tile2.TilePrefab = prefab1; // reuse the same dummy mesh
+        tile2.BaseMat = tile1.BaseMat;
+        map.TileTypes.Add(tile2);
+
         return map;
     }
 

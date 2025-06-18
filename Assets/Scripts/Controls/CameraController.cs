@@ -24,7 +24,10 @@ public class CameraController : MonoBehaviour
     {
         newPosition = transform.position;
         newRotation = transform.rotation;
-        newZoom = cameraTransform.localPosition;
+        if (cameraTransform != null)
+        {
+            newZoom = cameraTransform.localPosition;
+        }
     }
 
     //Updates components of the camera controler that canchange from frame to frame, might find somewere else to put, rotate for example and zoom.
