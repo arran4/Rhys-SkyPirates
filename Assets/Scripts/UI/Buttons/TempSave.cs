@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
 
 public class TempSave : MonoBehaviour
 {
@@ -8,9 +9,13 @@ public class TempSave : MonoBehaviour
 
     public void Press()
     {
-        if (input.text != null || input.text != "" || input.text != " ")
+        if (!string.IsNullOrWhiteSpace(input.text))
         {
-            SaveLoadManager.SaveLoadInstance.SaveMapToJson(ToSave, Application.persistentDataPath + "/" + input.text.ToString() + ".json");
+            string safeFileName = Path.GetFileName(input.text);
+            if (!string.IsNullOrWhiteSpace(safeFileName))
+            {
+                SaveLoadManager.SaveLoadInstance.SaveMapToJson(ToSave, Application.persistentDataPath + "/" + safeFileName + ".json");
+            }
         }
     }
 }
