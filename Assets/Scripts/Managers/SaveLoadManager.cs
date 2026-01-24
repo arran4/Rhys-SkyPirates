@@ -37,8 +37,28 @@ public class SaveLoadManager : MonoBehaviour
     {
         info = dir.GetFiles("*.*");
     }
+
+    private static bool IsPathSafe(string path)
+    {
+        string fullPath = Path.GetFullPath(path);
+        string rootPath = Path.GetFullPath(Application.persistentDataPath);
+
+        if (!rootPath.EndsWith(Path.DirectorySeparatorChar.ToString()))
+        {
+            rootPath += Path.DirectorySeparatorChar;
+        }
+
+        return fullPath.StartsWith(rootPath);
+    }
+
     public void SaveMapToJson(Map map, string filePath)
     {
+        if (!IsPathSafe(filePath))
+        {
+            Debug.LogError($"Security Error: Attempted to save to unsafe path: {filePath}");
+            return;
+        }
+
         var export = new ExportData();
         export.TileTypeIDs = new List<string>();
         Dictionary<TileDataSO, string> tileTypeLookup = new Dictionary<TileDataSO, string>();
@@ -79,6 +99,12 @@ public class SaveLoadManager : MonoBehaviour
 
     public static Board LoadBoardFromJson(string filePath, Map mapContext, Transform parent)
     {
+        if (!IsPathSafe(filePath))
+        {
+            Debug.LogError($"Security Error: Attempted to load from unsafe path: {filePath}");
+            return null;
+        }
+
         IFileLoader loader = SaveLoadInstance != null ? SaveLoadInstance.FileLoader : new SystemFileLoader();
         string json;
         try
