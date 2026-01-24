@@ -9,6 +9,13 @@ public class ButtonHighlight : Selectable, IPointerEnterHandler, ISelectHandler
 {
     public override void OnPointerExit(PointerEventData eventData)
     {
+        base.OnPointerExit(eventData);
+        EventManager.TriggerInfoReset();
+    }
+
+    public override void OnDeselect(BaseEventData eventData)
+    {
+        base.OnDeselect(eventData);
         EventManager.TriggerInfoReset();
     }
 
@@ -49,6 +56,7 @@ public class ButtonHighlight : Selectable, IPointerEnterHandler, ISelectHandler
 
     public override void OnSelect(BaseEventData eventData)
     {
+        base.OnSelect(eventData);
         GameObject selectedObject = eventData.selectedObject;
 
         EventManager.TriggerInfoReset();

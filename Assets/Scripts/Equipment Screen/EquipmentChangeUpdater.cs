@@ -70,6 +70,7 @@ public class EquipmentChangeUpdater : MonoBehaviour
         {
             img.color = Color.gray;
         }
+        InfoText.text = "";
     }
 
     public void OnDestroy()
