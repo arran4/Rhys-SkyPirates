@@ -7,7 +7,7 @@ public class SceneLoader : MonoBehaviour
 {
     private static bool isLoading;
 
-    private static List<System.Type> DOTSSystems = new() { typeof(OptimizedFlockingBehaviorSystem) };
+    private static List<System.Type> DOTSSystems = new() { typeof(FlockingBehaviorSystem) };
 
     public static void LoadBattleScene()
     {

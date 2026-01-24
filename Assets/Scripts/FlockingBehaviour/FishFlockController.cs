@@ -4,49 +4,56 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 
-
 // Enhanced FishFlockController with prefab selection and closest spawn
 public partial class FishFlockController : SystemBase
 {
     private bool _hasSpawned;
-    private NativeHashSet<int> _spawnedFlocks;
+    private NativeHashSet<int> _spawnedFlocks;        // Authoritative baseline completed
+    private NativeHashSet<int> _knownFlockCenters;    // Seen in world (event-driven detection)
     private static FishFlockController _instance;
+
+    // STEP 1: Explicit spawn attribution
+    private enum SpawnReason
+    {
+        Startup,
+        RuntimeDetection,
+        ManualTrigger,
+        ManualTriggerClosest
+    }
+
+    // STEP 2: Explicit spawn classification
+    private enum SpawnType
+    {
+        Authoritative,
+        Additive
+    }
+
+    private enum SpawnPhase
+    {
+        Startup,
+        PostStartup
+    }
 
     protected override void OnCreate()
     {
         RequireForUpdate<FishPrefabComponent>();
+
         _spawnedFlocks = new NativeHashSet<int>(10, Allocator.Persistent);
+        _knownFlockCenters = new NativeHashSet<int>(10, Allocator.Persistent);
+
         _instance = this;
 
-        // Clean up duplicate settings on startup
         CleanupDuplicateSettings();
-    }
-
-    private void CleanupDuplicateSettings()
-    {
-        var settingsQuery = EntityManager.CreateEntityQuery(typeof(FishControllerSettingsComponent));
-        int count = settingsQuery.CalculateEntityCount();
-
-        if (count > 1)
-        {
-            Debug.LogWarning($"Found {count} FishControllerSettingsComponent on startup, removing duplicates");
-            var entities = settingsQuery.ToEntityArray(Allocator.Temp);
-
-            for (int i = 1; i < entities.Length; i++)
-            {
-                EntityManager.DestroyEntity(entities[i]);
-            }
-
-            entities.Dispose();
-        }
-
-        settingsQuery.Dispose();
     }
 
     protected override void OnDestroy()
     {
         if (_spawnedFlocks.IsCreated)
             _spawnedFlocks.Dispose();
+
+        if (_knownFlockCenters.IsCreated)
+            _knownFlockCenters.Dispose();
+
         if (_instance == this)
             _instance = null;
     }
@@ -54,60 +61,76 @@ public partial class FishFlockController : SystemBase
     protected override void OnStartRunning()
     {
         if (_hasSpawned) return;
+
         SpawnForAllFlockCenters();
         _hasSpawned = true;
     }
 
-    /// <summary>
-    /// Public method to spawn at the closest flock center to a given position
-    /// </summary>
+    public static FishFlockController Instance => _instance;
+
+    // ---------------- PUBLIC SPAWN TRIGGERS ----------------
+
+    public void TriggerSpawn(int flockId)
+    {
+        RequestSpawn(flockId, SpawnReason.ManualTrigger);
+    }
+
     public void TriggerSpawnAtClosest(float3 position)
     {
         int closestFlockId = FindClosestFlockCenter(position);
         if (closestFlockId >= 0)
-        {
-            Debug.Log($"Spawning additional boids at closest flock center (FlockID: {closestFlockId})");
-            SpawnFish(closestFlockId);
-        }
+            RequestSpawn(closestFlockId, SpawnReason.ManualTriggerClosest);
         else
-        {
             Debug.LogWarning("No flock centers found for closest spawn");
-        }
     }
 
-    /// <summary>
-    /// Static accessor for external scripts
-    /// </summary>
-    public static FishFlockController Instance => _instance;
+    // ---------------- SPAWN INTENT ENFORCEMENT ----------------
 
-    private int FindClosestFlockCenter(float3 position)
+    private void RequestSpawn(int flockId, SpawnReason reason)
     {
-        var query = SystemAPI.QueryBuilder()
-            .WithAll<FlockCenterData, BoidFlockID>()
-            .Build();
+        SpawnType type = GetSpawnType(reason);
+        SpawnPhase phase = _hasSpawned ? SpawnPhase.PostStartup : SpawnPhase.Startup;
 
-        if (query.IsEmpty) return -1;
-
-        var flockIDs = query.ToComponentDataArray<BoidFlockID>(Allocator.Temp);
-        var flockCenters = query.ToComponentDataArray<FlockCenterData>(Allocator.Temp);
-
-        float closestDistanceSq = float.MaxValue;
-        int closestFlockId = -1;
-
-        for (int i = 0; i < flockCenters.Length; i++)
+        if (type == SpawnType.Authoritative)
         {
-            float distanceSq = math.lengthsq(position - flockCenters[i].Position);
-            if (distanceSq < closestDistanceSq)
+            if (_spawnedFlocks.Contains(flockId))
             {
-                closestDistanceSq = distanceSq;
-                closestFlockId = flockIDs[i].FlockID;
+                Debug.Log(
+                    $"[FishFlockController] Authoritative spawn BLOCKED | " +
+                    $"FlockID={flockId} | Reason={reason} | Phase={phase}"
+                );
+                return;
             }
+
+            _spawnedFlocks.Add(flockId);
         }
 
-        flockIDs.Dispose();
-        flockCenters.Dispose();
-        return closestFlockId;
+        Debug.Log(
+            $"[FishFlockController] Spawn EXECUTED | " +
+            $"FlockID={flockId} | Reason={reason} | Type={type} | Phase={phase}"
+        );
+
+        SpawnFish(flockId);
     }
+
+    private static SpawnType GetSpawnType(SpawnReason reason)
+    {
+        switch (reason)
+        {
+            case SpawnReason.Startup:
+            case SpawnReason.RuntimeDetection:
+                return SpawnType.Authoritative;
+
+            case SpawnReason.ManualTrigger:
+            case SpawnReason.ManualTriggerClosest:
+                return SpawnType.Additive;
+
+            default:
+                return SpawnType.Authoritative;
+        }
+    }
+
+    // ---------------- STARTUP AUTHORITATIVE SPAWN ----------------
 
     private void SpawnForAllFlockCenters()
     {
@@ -117,39 +140,56 @@ public partial class FishFlockController : SystemBase
 
         if (query.IsEmpty)
         {
-            Debug.LogWarning("No flock centers found - spawning default flock at origin");
-            SpawnFish(0);
+            RequestSpawn(0, SpawnReason.Startup);
+            _knownFlockCenters.Add(0);
             return;
         }
 
         var flockIDs = query.ToComponentDataArray<BoidFlockID>(Allocator.Temp);
-        var flockCenters = query.ToComponentDataArray<FlockCenterData>(Allocator.Temp);
 
         for (int i = 0; i < flockIDs.Length; i++)
         {
             int flockId = flockIDs[i].FlockID;
-            if (!_spawnedFlocks.Contains(flockId))
-            {
-                SpawnFish(flockId);
-                _spawnedFlocks.Add(flockId);
-                Debug.Log($"Auto-spawned boids for FlockID {flockId} at {flockCenters[i].Position}");
-            }
+            _knownFlockCenters.Add(flockId);
+            RequestSpawn(flockId, SpawnReason.Startup);
         }
 
         flockIDs.Dispose();
-        flockCenters.Dispose();
     }
 
-    public void TriggerSpawn(int flockId)
+    // ---------------- STEP 4: EVENT-DRIVEN RUNTIME DETECTION ----------------
+
+    protected override void OnUpdate()
     {
-        SpawnFish(flockId);
+        var query = SystemAPI.QueryBuilder()
+            .WithAll<FlockCenterData, BoidFlockID>()
+            .Build();
+
+        if (query.IsEmpty)
+            return;
+
+        var flockIDs = query.ToComponentDataArray<BoidFlockID>(Allocator.Temp);
+
+        for (int i = 0; i < flockIDs.Length; i++)
+        {
+            int flockId = flockIDs[i].FlockID;
+
+            if (_knownFlockCenters.Contains(flockId))
+                continue;
+
+            _knownFlockCenters.Add(flockId);
+            RequestSpawn(flockId, SpawnReason.RuntimeDetection);
+        }
+
+        flockIDs.Dispose();
     }
+
+    // ---------------- EXISTING SPAWN LOGIC (AUTHORITATIVE SETTINGS RESOLUTION) ----------------
 
     private void SpawnFish(int flockId)
     {
         var entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
-        // Get available prefabs for this flock
         var availablePrefabs = GetPrefabsForFlock(flockId);
         if (availablePrefabs.Length == 0)
         {
@@ -158,53 +198,17 @@ public partial class FishFlockController : SystemBase
             return;
         }
 
-        // Get settings - MANUAL QUERY to avoid singleton validation
-        FishControllerSettingsComponent settings;
-        var settingsQuery = EntityManager.CreateEntityQuery(typeof(FishControllerSettingsComponent));
-        int settingsCount = settingsQuery.CalculateEntityCount();
+        FishControllerSettingsComponent settings = ResolveSettingsForSpawn();
 
-        if (settingsCount > 1)
-        {
-            Debug.LogWarning($"Found {settingsCount} FishControllerSettingsComponent instances, cleaning up duplicates");
-            var entities = settingsQuery.ToEntityArray(Allocator.Temp);
-
-            // Keep the first one, destroy the rest
-            for (int i = 1; i < entities.Length; i++)
-            {
-                EntityManager.DestroyEntity(entities[i]);
-            }
-
-            entities.Dispose();
-            settingsCount = 1;
-        }
-
-        if (settingsCount > 0)
-        {
-            var settingsArray = settingsQuery.ToComponentDataArray<FishControllerSettingsComponent>(Allocator.Temp);
-            settings = settingsArray[0];
-            settingsArray.Dispose();
-        }
-        else
-        {
-            settings = GetDefaultSettings();
-        }
-
-        settingsQuery.Dispose();
-
-        // Get spawn position
         float3 spawnCenter = GetFlockCenterPosition(flockId, settings.BoundaryCenter);
-
-        var random = new Unity.Mathematics.Random((uint)(UnityEngine.Random.Range(1, int.MaxValue) + flockId * 1000));
-
+        var random = new Unity.Mathematics.Random(
+            (uint)(UnityEngine.Random.Range(1, int.MaxValue) + flockId * 1000));
 
         for (int i = 0; i < settings.SpawnCount; i++)
         {
-            int prefabIndex = random.NextInt(0, availablePrefabs.Length);
-            Entity selectedPrefab = availablePrefabs[prefabIndex];
+            Entity instance = entityManager.Instantiate(
+                availablePrefabs[random.NextInt(0, availablePrefabs.Length)]);
 
-            Entity instance = entityManager.Instantiate(selectedPrefab);
-
-            // Ensure entity doesn’t get destroyed with the scene
             if (entityManager.HasComponent<SceneTag>(instance))
                 entityManager.RemoveComponent<SceneTag>(instance);
 
@@ -219,10 +223,8 @@ public partial class FishFlockController : SystemBase
                 }
             }
 
-            // Position + orientation
-            float3 randomOffset = random.NextFloat3Direction() * random.NextFloat(0f, settings.SpawnRadius);
-            float3 pos = spawnCenter + randomOffset;
             float3 forward = random.NextFloat3Direction();
+            float3 pos = spawnCenter + forward * random.NextFloat(0f, settings.SpawnRadius);
 
             entityManager.SetComponentData(instance, new LocalTransform
             {
@@ -231,10 +233,8 @@ public partial class FishFlockController : SystemBase
                 Scale = 1f
             });
 
-            entityManager.SetComponentData(instance, new Velocity
-            {
-                Value = forward * settings.InitialSpeed
-            });
+            entityManager.SetComponentData(instance,
+                new Velocity { Value = forward * settings.InitialSpeed });
 
             entityManager.SetComponentData(instance, new BoidSettings
             {
@@ -255,195 +255,172 @@ public partial class FishFlockController : SystemBase
             });
 
             entityManager.AddComponent<BoidTag>(instance);
-            entityManager.AddComponentData(instance, new BoidFlockID { FlockID = flockId });
+            entityManager.AddComponentData(instance,
+                new BoidFlockID { FlockID = flockId });
         }
 
-        Debug.Log($"Spawned {settings.SpawnCount} boids for FlockID {flockId} at {spawnCenter} using {availablePrefabs.Length} different prefabs");
+        Debug.Log($"Spawned {settings.SpawnCount} boids for FlockID {flockId} at {spawnCenter}");
         availablePrefabs.Dispose();
     }
-    public static void HideBoidsAndPause()
+
+    // ---------------- SETTINGS AUTHORITY (AUTHORITATIVE AT SPAWN) ----------------
+
+    private FishControllerSettingsComponent ResolveSettingsForSpawn()
     {
-        var em = World.DefaultGameObjectInjectionWorld.EntityManager;
+        var settingsQuery = EntityManager.CreateEntityQuery(typeof(FishControllerSettingsComponent));
+        int settingsCount = settingsQuery.CalculateEntityCount();
 
-        using var allBoids = em.CreateEntityQuery(new EntityQueryDesc
+        Debug.Log($"[FishFlockController] ResolveSettingsForSpawn: found {settingsCount} settings entities");
+
+        if (settingsCount > 1)
         {
-            All = new[] { ComponentType.ReadOnly<BoidTag>() },
-            Options = EntityQueryOptions.IncludeDisabledEntities
-        });
-
-        em.AddComponent<Disabled>(allBoids);
-    }
-
-    /// <summary>
-    /// Show + resume all boids (removes 'Disabled' from boids that have it).
-    /// </summary>
-    public static void ShowBoidsAndResume()
-    {
-        var em = World.DefaultGameObjectInjectionWorld.EntityManager;
-
-        using var pausedBoids = em.CreateEntityQuery(new EntityQueryDesc
-        {
-            All = new[]
+            var entities = settingsQuery.ToEntityArray(Allocator.Temp);
+            for (int i = 1; i < entities.Length; i++)
             {
-                ComponentType.ReadOnly<BoidTag>(),
-                ComponentType.ReadOnly<Disabled>()
-            },
-            Options = EntityQueryOptions.IncludeDisabledEntities
-        });
-
-        em.RemoveComponent<Disabled>(pausedBoids);
-    }
-
-
-    private NativeArray<Entity> GetPrefabsForFlock(int flockId)
-    {
-        Debug.Log($"Getting prefabs for FlockID {flockId}");
-
-        // Get all available prefabs from registry first
-        var allPrefabs = GetAllAvailablePrefabs();
-
-        // Try to find flock-specific prefab selection
-        var flockCenterQuery = SystemAPI.QueryBuilder()
-            .WithAll<FlockCenterData, BoidFlockID>()
-            .Build();
-
-        if (flockCenterQuery.IsEmpty)
-        {
-            Debug.Log($"No flock centers found, using all {allPrefabs.Length} prefabs for FlockID {flockId}");
-            return allPrefabs;
+                Debug.Log($"[FishFlockController] Destroying duplicate settings entity {entities[i]}");
+                EntityManager.DestroyEntity(entities[i]);
+            }
+            entities.Dispose();
+            settingsCount = 1;
         }
 
-        var flockEntities = flockCenterQuery.ToEntityArray(Allocator.Temp);
-        var flockIDs = flockCenterQuery.ToComponentDataArray<BoidFlockID>(Allocator.Temp);
+        FishControllerSettingsComponent settings;
 
-        Entity flockCenterEntity = Entity.Null;
-        for (int i = 0; i < flockIDs.Length; i++)
+        if (settingsCount > 0)
         {
-            if (flockIDs[i].FlockID == flockId)
-            {
-                flockCenterEntity = flockEntities[i];
-                Debug.Log($"Found flock center entity for FlockID {flockId}: {flockCenterEntity}");
-                break;
-            }
-        }
-
-        flockEntities.Dispose();
-        flockIDs.Dispose();
-
-        // If no specific flock center found, use all prefabs
-        if (flockCenterEntity == Entity.Null)
-        {
-            Debug.Log($"No flock center entity found for FlockID {flockId}, using all prefabs");
-            return allPrefabs;
-        }
-
-        // Check if this flock center has prefab selection buffer
-        if (EntityManager.HasBuffer<FlockPrefabSelection>(flockCenterEntity))
-        {
-            var selectionBuffer = EntityManager.GetBuffer<FlockPrefabSelection>(flockCenterEntity);
-            var selectedPrefabs = new NativeList<Entity>(Allocator.Temp);
-
-            Debug.Log($"FlockID {flockId} has {selectionBuffer.Length} prefab selection entries");
-
-            foreach (var selection in selectionBuffer)
-            {
-                Debug.Log($"Processing selection - PrefabIndex: {selection.PrefabIndex}, PrefabEntity: {selection.PrefabEntity}");
-
-                // If direct entity reference is set, use it
-                if (selection.PrefabEntity != Entity.Null)
-                {
-                    selectedPrefabs.Add(selection.PrefabEntity);
-                    Debug.Log($"Added direct prefab entity: {selection.PrefabEntity}");
-                }
-                // If index is -1, use all prefabs
-                else if (selection.PrefabIndex == -1)
-                {
-                    Debug.Log("Using all prefabs (index -1)");
-                    for (int i = 0; i < allPrefabs.Length; i++)
-                    {
-                        selectedPrefabs.Add(allPrefabs[i]);
-                    }
-                    break; // Don't add more since we're using all
-                }
-                // Use specific index
-                else if (selection.PrefabIndex >= 0 && selection.PrefabIndex < allPrefabs.Length)
-                {
-                    selectedPrefabs.Add(allPrefabs[selection.PrefabIndex]);
-                    Debug.Log($"Added prefab at index {selection.PrefabIndex}: {allPrefabs[selection.PrefabIndex]}");
-                }
-                else
-                {
-                    Debug.LogWarning($"Invalid prefab index {selection.PrefabIndex} for FlockID {flockId}. Available indices: 0-{allPrefabs.Length - 1}");
-                }
-            }
-
-            if (selectedPrefabs.Length > 0)
-            {
-                var result = new NativeArray<Entity>(selectedPrefabs.Length, Allocator.Temp);
-                for (int i = 0; i < selectedPrefabs.Length; i++)
-                {
-                    result[i] = selectedPrefabs[i];
-                }
-                selectedPrefabs.Dispose();
-                allPrefabs.Dispose();
-
-                Debug.Log($"FlockID {flockId} will use {result.Length} selected prefabs");
-                return result;
-            }
-            else
-            {
-                Debug.LogWarning($"No valid prefabs selected for FlockID {flockId}, falling back to all prefabs");
-                selectedPrefabs.Dispose();
-            }
+            var arr = settingsQuery.ToComponentDataArray<FishControllerSettingsComponent>(Allocator.Temp);
+            settings = arr[0];
+            arr.Dispose();
+            Debug.Log("[FishFlockController] Using resolved FishControllerSettingsComponent");
         }
         else
         {
-            Debug.Log($"FlockID {flockId} has no prefab selection buffer, using all prefabs");
+            settings = GetDefaultSettings();
+            Debug.Log("[FishFlockController] No settings entity found — using DEFAULT settings");
         }
 
-        // Fallback: use all available prefabs
-        return allPrefabs;
+        settingsQuery.Dispose();
+        return settings;
+    }
+
+    // ---------------- HELPERS (UNCHANGED) ----------------
+
+    private int FindClosestFlockCenter(float3 position)
+    {
+        var query = SystemAPI.QueryBuilder()
+            .WithAll<FlockCenterData, BoidFlockID>()
+            .Build();
+
+        if (query.IsEmpty) return -1;
+
+        var ids = query.ToComponentDataArray<BoidFlockID>(Allocator.Temp);
+        var centers = query.ToComponentDataArray<FlockCenterData>(Allocator.Temp);
+
+        float best = float.MaxValue;
+        int result = -1;
+
+        for (int i = 0; i < centers.Length; i++)
+        {
+            float d = math.lengthsq(position - centers[i].Position);
+            if (d < best)
+            {
+                best = d;
+                result = ids[i].FlockID;
+            }
+        }
+
+        ids.Dispose();
+        centers.Dispose();
+        return result;
+    }
+
+    private NativeArray<Entity> GetPrefabsForFlock(int flockId)
+    {
+        var all = GetAllAvailablePrefabs();
+
+        var query = SystemAPI.QueryBuilder()
+            .WithAll<FlockCenterData, BoidFlockID>()
+            .Build();
+
+        if (query.IsEmpty)
+            return all;
+
+        var entities = query.ToEntityArray(Allocator.Temp);
+        var ids = query.ToComponentDataArray<BoidFlockID>(Allocator.Temp);
+
+        Entity center = Entity.Null;
+        for (int i = 0; i < ids.Length; i++)
+            if (ids[i].FlockID == flockId)
+                center = entities[i];
+
+        entities.Dispose();
+        ids.Dispose();
+
+        if (center == Entity.Null || !EntityManager.HasBuffer<FlockPrefabSelection>(center))
+            return all;
+
+        var buffer = EntityManager.GetBuffer<FlockPrefabSelection>(center);
+        var selected = new NativeList<Entity>(Allocator.Temp);
+
+        foreach (var entry in buffer)
+        {
+            if (entry.PrefabEntity != Entity.Null)
+                selected.Add(entry.PrefabEntity);
+            else if (entry.PrefabIndex == -1)
+            {
+                selected.AddRange(all);
+                break;
+            }
+            else if (entry.PrefabIndex >= 0 && entry.PrefabIndex < all.Length)
+                selected.Add(all[entry.PrefabIndex]);
+        }
+
+        if (selected.Length > 0)
+        {
+            var result = new NativeArray<Entity>(selected.Length, Allocator.Temp);
+            for (int i = 0; i < selected.Length; i++)
+                result[i] = selected[i];
+
+            selected.Dispose();
+            all.Dispose();
+            return result;
+        }
+
+        selected.Dispose();
+        return all;
     }
 
     private NativeArray<Entity> GetAllAvailablePrefabs()
     {
-        // First priority: Try to get from registry buffer (this has ALL prefabs)
-        var registryQuery = SystemAPI.QueryBuilder()
+        var query = SystemAPI.QueryBuilder()
             .WithAll<FishPrefabReference>()
             .Build();
 
-        if (!registryQuery.IsEmpty)
+        if (!query.IsEmpty)
         {
-            var registryEntity = registryQuery.GetSingletonEntity();
-            var buffer = EntityManager.GetBuffer<FishPrefabReference>(registryEntity);
+            var e = query.GetSingletonEntity();
+            var buffer = EntityManager.GetBuffer<FishPrefabReference>(e);
 
             if (buffer.Length > 0)
             {
-                var prefabs = new NativeArray<Entity>(buffer.Length, Allocator.Temp);
+                var arr = new NativeArray<Entity>(buffer.Length, Allocator.Temp);
                 for (int i = 0; i < buffer.Length; i++)
-                {
-                    prefabs[i] = buffer[i].Prefab;
-                }
-                Debug.Log($"Found {buffer.Length} prefabs in registry");
-                return prefabs;
+                    arr[i] = buffer[i].Prefab;
+                return arr;
             }
         }
 
-        // Fallback: Try to get from FishPrefabComponent (single prefab only)
         if (SystemAPI.HasSingleton<FishPrefabComponent>())
         {
-            var singlePrefab = new NativeArray<Entity>(1, Allocator.Temp);
-            singlePrefab[0] = SystemAPI.GetSingleton<FishPrefabComponent>().prefab;
-            Debug.Log("Using single prefab from FishPrefabComponent");
-            return singlePrefab;
+            var arr = new NativeArray<Entity>(1, Allocator.Temp);
+            arr[0] = SystemAPI.GetSingleton<FishPrefabComponent>().prefab;
+            return arr;
         }
 
-        // Return empty array if no prefabs found
-        Debug.LogWarning("No prefabs found in registry or FishPrefabComponent");
         return new NativeArray<Entity>(0, Allocator.Temp);
     }
 
-    private float3 GetFlockCenterPosition(int flockId, float3 defaultPosition)
+    private float3 GetFlockCenterPosition(int flockId, float3 fallback)
     {
         var query = SystemAPI.QueryBuilder()
             .WithAll<FlockCenterData, BoidFlockID>()
@@ -451,25 +428,23 @@ public partial class FishFlockController : SystemBase
 
         if (!query.IsEmpty)
         {
-            var flockIDs = query.ToComponentDataArray<BoidFlockID>(Allocator.Temp);
-            var flockCenters = query.ToComponentDataArray<FlockCenterData>(Allocator.Temp);
+            var ids = query.ToComponentDataArray<BoidFlockID>(Allocator.Temp);
+            var centers = query.ToComponentDataArray<FlockCenterData>(Allocator.Temp);
 
-            for (int i = 0; i < flockIDs.Length; i++)
-            {
-                if (flockIDs[i].FlockID == flockId)
+            for (int i = 0; i < ids.Length; i++)
+                if (ids[i].FlockID == flockId)
                 {
-                    var result = flockCenters[i].Position;
-                    flockIDs.Dispose();
-                    flockCenters.Dispose();
-                    return result;
+                    var pos = centers[i].Position;
+                    ids.Dispose();
+                    centers.Dispose();
+                    return pos;
                 }
-            }
 
-            flockIDs.Dispose();
-            flockCenters.Dispose();
+            ids.Dispose();
+            centers.Dispose();
         }
 
-        return defaultPosition;
+        return fallback;
     }
 
     private FishControllerSettingsComponent GetDefaultSettings()
@@ -492,59 +467,34 @@ public partial class FishFlockController : SystemBase
         };
     }
 
-    // Remove Scene ownership from an entity and all linked children, and tag them as Overworld
-    private static void MakePersistentHierarchy(Entity root, EntityManager em)
+    void CleanupDuplicateSettings()
     {
-        // Gather the whole hierarchy (root + children) via LinkedEntityGroup if present
-        if (em.HasBuffer<LinkedEntityGroup>(root))
+        var settingsQuery = GetEntityQuery(typeof(FishControllerSettingsComponent));
+        var settings = settingsQuery.ToEntityArray(Allocator.Temp);
+
+        Debug.Log($"[FishFlockController] CleanupDuplicateSettings: found {settings.Length} settings entities");
+
+        if (settings.Length > 1)
         {
-            var group = em.GetBuffer<LinkedEntityGroup>(root);
-            for (int i = 0; i < group.Length; i++)
+            for (int i = 1; i < settings.Length; i++)
             {
-                MakePersistentEntity(group[i].Value, em);
+                Debug.Log($"[FishFlockController] Destroying duplicate FishControllerSettings entity {settings[i]}");
+                EntityManager.DestroyEntity(settings[i]);
             }
+
+            Debug.Log($"[FishFlockController] Settings authority resolved to entity {settings[0]}");
+        }
+        else if (settings.Length == 1)
+        {
+            Debug.Log($"[FishFlockController] Single settings entity present: {settings[0]}");
         }
         else
         {
-            // Single-entity prefab case
-            MakePersistentEntity(root, em);
+            Debug.Log("[FishFlockController] No FishControllerSettingsComponent found (defaults will be used later)");
         }
-    }
 
-    private static void MakePersistentEntity(Entity e, EntityManager em)
-    {
-        // Strip scene ownership so unloads don't kill them
-        if (em.HasComponent<SceneTag>(e)) em.RemoveComponent<SceneTag>(e);
-        if (em.HasComponent<SceneSection>(e)) em.RemoveComponent<SceneSection>(e);
-
-        // Add your own domain tag for explicit control
-        if (!em.HasComponent<OverworldTag>(e)) em.AddComponent<OverworldTag>(e);
-    }
-
-    protected override void OnUpdate()
-    {
-        // Check for new flock centers and spawn boids if needed
-        var query = SystemAPI.QueryBuilder()
-            .WithAll<FlockCenterData, BoidFlockID>()
-            .Build();
-
-        if (!query.IsEmpty)
-        {
-            var flockIDs = query.ToComponentDataArray<BoidFlockID>(Allocator.Temp);
-
-            for (int i = 0; i < flockIDs.Length; i++)
-            {
-                int flockId = flockIDs[i].FlockID;
-                if (!_spawnedFlocks.Contains(flockId))
-                {
-                    SpawnFish(flockId);
-                    _spawnedFlocks.Add(flockId);
-                    Debug.Log($"Runtime spawned boids for new FlockID {flockId}");
-                }
-            }
-
-            flockIDs.Dispose();
-        }
+        settings.Dispose();
     }
 }
+
 public struct OverworldTag : IComponentData { }

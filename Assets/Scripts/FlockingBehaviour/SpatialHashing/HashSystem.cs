@@ -14,6 +14,7 @@ public partial struct OptimizedSpatialHashSystem : ISystem
         public float3 Velocity;
     }
 
+
     private NativeParallelMultiHashMap<int3, BoidData> _spatialMap;
     private NativeParallelHashSet<int3> _touchedCells;
 
@@ -156,7 +157,11 @@ public partial struct OptimizedSpatialHashSystem : ISystem
             if (index < StartIndex || index >= StartIndex + Count) return;
 
             float3 pos = transform.Position;
-            int3 cell = SpatialHashUtils.GetSpatialHash(pos, CellSize);
+            int3 cell = new int3(
+                (int)math.floor(pos.x / CellSize),
+                (int)math.floor(pos.y / CellSize),
+                (int)math.floor(pos.z / CellSize)
+            );
 
             BoidData data = new BoidData
             {

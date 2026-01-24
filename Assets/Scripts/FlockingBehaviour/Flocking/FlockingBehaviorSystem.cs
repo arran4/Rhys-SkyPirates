@@ -5,23 +5,35 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 
+// Struct definitions from original system
+public struct BoidUpdateGroup : IComponentData { public int Group; }
+public struct CachedShipData : IComponentData { public ShipData Data; }
+public struct ShipData { public bool HasShip; public float3 Position; public float Radius; }
+
 [UpdateInGroup(typeof(SimulationSystemGroup))]
 [UpdateAfter(typeof(OptimizedSpatialHashSystem))]
 [UpdateAfter(typeof(AssignBoidUpdateGroupsSystem))]
-public partial struct OptimizedFlockingBehaviorSystem : ISystem
+public partial struct FlockingBehaviorSystem : ISystem
 {
     private double _lastShipUpdateTime;
     private int _currentUpdateGroup;
     private ComponentLookup<BoidUpdateGroup> _boidGroupLookup;
-
+    private ComponentLookup<TerrainHeightmapData> _terrainDataLookup;
+    private BufferLookup<TerrainHeightSample> _terrainBufferLookup;
     private EntityQuery _flockCenterQuery;
+    private EntityQuery _terrainQuery;
 
     public void OnCreate(ref SystemState state)
     {
         _boidGroupLookup = state.GetComponentLookup<BoidUpdateGroup>(isReadOnly: true);
-
-        // Query to enumerate all flock centers when building the hashmap
+        _terrainDataLookup = state.GetComponentLookup<TerrainHeightmapData>(isReadOnly: true);
+        _terrainBufferLookup = state.GetBufferLookup<TerrainHeightSample>(isReadOnly: true);
         _flockCenterQuery = state.GetEntityQuery(ComponentType.ReadOnly<FlockCenterData>());
+
+        _terrainQuery = state.GetEntityQuery(
+            ComponentType.ReadOnly<TerrainHeightmapData>(),
+            ComponentType.ReadOnly<TerrainTag>()
+        );
     }
 
     public void OnUpdate(ref SystemState state)
@@ -36,7 +48,36 @@ public partial struct OptimizedFlockingBehaviorSystem : ISystem
 
         if (spatialHashRef.GetLastBoidCount() == 0) return;
 
-        // Ship avoidance caching (same behavior as before)
+        // Build terrain grid lookup
+        bool hasTerrainData = !_terrainQuery.IsEmpty;
+        NativeParallelMultiHashMap<int2, Entity> terrainGrid = default;
+        TerrainSpatialGrid spatialGrid = default;
+
+        if (hasTerrainData)
+        {
+            var terrainEntities = _terrainQuery.ToEntityArray(Allocator.TempJob);
+            var terrainDataArray = _terrainQuery.ToComponentDataArray<TerrainHeightmapData>(Allocator.TempJob);
+
+            terrainGrid = new NativeParallelMultiHashMap<int2, Entity>(terrainEntities.Length, Allocator.TempJob);
+
+            for (int i = 0; i < terrainDataArray.Length; i++)
+            {
+                terrainGrid.Add(terrainDataArray[i].GridCoords, terrainEntities[i]);
+            }
+
+            terrainEntities.Dispose();
+            terrainDataArray.Dispose();
+
+            // Get spatial grid if available
+            var gridQuery = state.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<TerrainSpatialGrid>());
+            if (!gridQuery.IsEmpty)
+            {
+                spatialGrid = gridQuery.GetSingleton<TerrainSpatialGrid>();
+            }
+            gridQuery.Dispose();
+        }
+
+        // Ship avoidance caching
         var shipData = new ShipData { HasShip = false };
         if (currentTime - _lastShipUpdateTime > 0.2)
         {
@@ -49,22 +90,30 @@ public partial struct OptimizedFlockingBehaviorSystem : ISystem
                 break;
             }
 
-            if (SystemAPI.HasSingleton<CachedShipData>())
+            var shipQuery = state.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<CachedShipData>());
+            if (!shipQuery.IsEmpty)
             {
-                SystemAPI.SetSingleton(new CachedShipData { Data = shipData });
+                var shipEntity = shipQuery.GetSingletonEntity();
+                state.EntityManager.SetComponentData(shipEntity, new CachedShipData { Data = shipData });
             }
             else
             {
                 var shipEntity = state.EntityManager.CreateEntity();
                 state.EntityManager.AddComponentData(shipEntity, new CachedShipData { Data = shipData });
             }
+            shipQuery.Dispose();
         }
-        else if (SystemAPI.HasSingleton<CachedShipData>())
+        else
         {
-            shipData = SystemAPI.GetSingleton<CachedShipData>().Data;
+            var shipQuery = state.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<CachedShipData>());
+            if (!shipQuery.IsEmpty)
+            {
+                shipData = shipQuery.GetSingleton<CachedShipData>().Data;
+            }
+            shipQuery.Dispose();
         }
 
-        // Build a NativeParallelHashMap<int, float3> of flock centers for O(1) lookup in the job
+        // Build flock centers map
         int centerCount = _flockCenterQuery.CalculateEntityCount();
         var flockCenters = new NativeParallelHashMap<int, float3>(math.max(1, centerCount), Allocator.TempJob);
 
@@ -72,7 +121,6 @@ public partial struct OptimizedFlockingBehaviorSystem : ISystem
         {
             foreach (var fc in SystemAPI.Query<RefRO<FlockCenterData>>())
             {
-                // If duplicate FlockID exists, TryAdd will fail; override behavior is not expected but can be adjusted
                 flockCenters.TryAdd(fc.ValueRO.FlockID, fc.ValueRO.Position);
             }
         }
@@ -83,10 +131,11 @@ public partial struct OptimizedFlockingBehaviorSystem : ISystem
             .WithAll<BoidTag, LocalTransform, Velocity, BoidSettings, BoundarySettings, BoidFlockID>()
             .Build();
 
-        // Update the ComponentLookup right before scheduling the job
         _boidGroupLookup.Update(ref state);
+        _terrainDataLookup.Update(ref state);
+        _terrainBufferLookup.Update(ref state);
 
-        var flockingJob = new UltraOptimizedFlockingJob
+        var flockingJob = new FlockingJob
         {
             SpatialMap = spatialMap,
             DeltaTime = deltaTime * 4f,
@@ -94,22 +143,26 @@ public partial struct OptimizedFlockingBehaviorSystem : ISystem
             FrameCount = frameCount,
             CurrentUpdateGroup = _currentUpdateGroup,
             BoidUpdateGroupHandle = _boidGroupLookup,
-            FlockCenters = flockCenters
+            FlockCenters = flockCenters,
+            HasTerrainData = hasTerrainData,
+            TerrainGrid = terrainGrid,
+            SpatialGrid = spatialGrid,
+            TerrainDataLookup = _terrainDataLookup,
+            TerrainBufferLookup = _terrainBufferLookup
         };
 
-        // Schedule the job and then dispose the hashmap via dependency chaining (safe)
         state.Dependency = flockingJob.ScheduleParallel(boidQuery, state.Dependency);
         state.Dependency = flockCenters.Dispose(state.Dependency);
+
+        if (hasTerrainData)
+        {
+            state.Dependency = terrainGrid.Dispose(state.Dependency);
+        }
     }
 }
 
-public struct BoidUpdateGroup : IComponentData { public int Group; }
-public struct CachedShipData : IComponentData { public ShipData Data; }
-public struct ShipData { public bool HasShip; public float3 Position; public float Radius; }
-
-
 [BurstCompile]
-public partial struct UltraOptimizedFlockingJob : IJobEntity
+public partial struct FlockingJob : IJobEntity
 {
     [ReadOnly] public NativeParallelMultiHashMap<int3, OptimizedSpatialHashSystem.BoidData> SpatialMap;
     [ReadOnly] public float DeltaTime;
@@ -117,9 +170,13 @@ public partial struct UltraOptimizedFlockingJob : IJobEntity
     [ReadOnly] public int FrameCount;
     [ReadOnly] public int CurrentUpdateGroup;
     [ReadOnly] public ComponentLookup<BoidUpdateGroup> BoidUpdateGroupHandle;
-
-    // NEW: O(1) flock center lookup
     [ReadOnly] public NativeParallelHashMap<int, float3> FlockCenters;
+
+    [ReadOnly] public bool HasTerrainData;
+    [ReadOnly] public NativeParallelMultiHashMap<int2, Entity> TerrainGrid;
+    [ReadOnly] public TerrainSpatialGrid SpatialGrid;
+    [ReadOnly] public ComponentLookup<TerrainHeightmapData> TerrainDataLookup;
+    [ReadOnly] public BufferLookup<TerrainHeightSample> TerrainBufferLookup;
 
     void Execute(Entity entity, [EntityIndexInQuery] int index,
         ref LocalTransform transform, ref Velocity velocity,
@@ -140,7 +197,6 @@ public partial struct UltraOptimizedFlockingJob : IJobEntity
         float3 pos = transform.Position;
         if (math.any(math.isnan(pos))) return;
 
-        // Default to static boundary center if no flock center exists for this boid's flock
         float3 targetCenter = boundarySettings.Center;
         if (FlockCenters.TryGetValue(flockId.FlockID, out var mappedCenter))
         {
@@ -202,10 +258,17 @@ public partial struct UltraOptimizedFlockingJob : IJobEntity
             }
         }
 
+        float3 terrainAvoidance = zero;
+        if (HasTerrainData)
+        {
+            terrainAvoidance = CalculateTerrainAvoidance(pos, velocity.Value);
+        }
+
         boundaryForce = CalculateBoundaryForce(pos, targetCenter, boundarySettings);
+
         float3 totalForce = avoiding
-            ? obstacle * 5f + steer * 0.3f + boundaryForce * 0.5f
-            : steer + boundaryForce;
+            ? obstacle * 5f + steer * 0.3f + boundaryForce * 0.5f + terrainAvoidance * 0.3f
+            : steer + boundaryForce + terrainAvoidance;
 
         float3 newVel = velocity.Value + totalForce * DeltaTime;
 
@@ -236,10 +299,127 @@ public partial struct UltraOptimizedFlockingJob : IJobEntity
     }
 
     [BurstCompile]
+    private float3 CalculateTerrainAvoidance(float3 pos, float3 vel)
+    {
+        float3 localPos = pos - SpatialGrid.GridOrigin;
+        int2 gridCoords = new int2(
+            (int)math.floor(localPos.x / SpatialGrid.CellSize.x),
+            (int)math.floor(localPos.z / SpatialGrid.CellSize.y)
+        );
+
+        if (gridCoords.x < 0 || gridCoords.x >= SpatialGrid.GridDimensions.x ||
+            gridCoords.y < 0 || gridCoords.y >= SpatialGrid.GridDimensions.y)
+        {
+            return float3.zero;
+        }
+
+        if (!TerrainGrid.TryGetFirstValue(gridCoords, out Entity terrainEntity, out var iterator))
+        {
+            return float3.zero;
+        }
+
+        var terrainData = TerrainDataLookup[terrainEntity];
+        var heightBuffer = TerrainBufferLookup[terrainEntity];
+        float terrainHeight = SampleTerrainHeight(pos, terrainData, heightBuffer);
+
+        float heightAboveTerrain = pos.y - terrainHeight;
+
+        if (heightAboveTerrain >= terrainData.MinFlightHeight)
+            return float3.zero;
+
+        float3 avoidanceForce = float3.zero;
+
+        if (heightAboveTerrain < 0)
+        {
+            float penetration = -heightAboveTerrain;
+            float urgency = math.min(penetration / 2f, 5f);
+            avoidanceForce = new float3(0, 1, 0) * terrainData.AvoidanceStrength * (2f + urgency);
+        }
+        else
+        {
+            float normalizedHeight = heightAboveTerrain / terrainData.MinFlightHeight;
+            float strength = (1f - normalizedHeight) * (1f - normalizedHeight);
+            avoidanceForce = new float3(0, 1, 0) * terrainData.AvoidanceStrength * strength;
+
+            if (vel.y < 0)
+            {
+                avoidanceForce.y += -vel.y * strength * 2f;
+            }
+        }
+
+        float3 lookAheadPos = pos + math.normalizesafe(vel) * 3f;
+        float3 lookAheadLocal = lookAheadPos - SpatialGrid.GridOrigin;
+        int2 lookAheadGrid = new int2(
+            (int)math.floor(lookAheadLocal.x / SpatialGrid.CellSize.x),
+            (int)math.floor(lookAheadLocal.z / SpatialGrid.CellSize.y)
+        );
+
+        if (lookAheadGrid.x >= 0 && lookAheadGrid.x < SpatialGrid.GridDimensions.x &&
+            lookAheadGrid.y >= 0 && lookAheadGrid.y < SpatialGrid.GridDimensions.y)
+        {
+            if (TerrainGrid.TryGetFirstValue(lookAheadGrid, out Entity lookAheadTerrain, out var _))
+            {
+                var lookAheadTerrainData = TerrainDataLookup[lookAheadTerrain];
+                var lookAheadHeightBuffer = TerrainBufferLookup[lookAheadTerrain];
+                float lookAheadHeight = SampleTerrainHeight(lookAheadPos, lookAheadTerrainData, lookAheadHeightBuffer);
+                float lookAheadClearance = lookAheadPos.y - lookAheadHeight;
+
+                if (lookAheadClearance < terrainData.MinFlightHeight * 0.5f)
+                {
+                    avoidanceForce += new float3(0, 1, 0) * terrainData.AvoidanceStrength * 0.5f;
+                }
+            }
+        }
+
+        return avoidanceForce;
+    }
+
+    [BurstCompile]
+    private float SampleTerrainHeight(float3 worldPos, TerrainHeightmapData terrainData, DynamicBuffer<TerrainHeightSample> heightSamples)
+    {
+        float3 localPos = worldPos - terrainData.TerrainPosition;
+
+        float normalizedX = localPos.x / terrainData.TerrainSize.x;
+        float normalizedZ = localPos.z / terrainData.TerrainSize.z;
+
+        normalizedX = math.clamp(normalizedX, 0f, 1f);
+        normalizedZ = math.clamp(normalizedZ, 0f, 1f);
+
+        float heightmapX = normalizedX * (terrainData.HeightmapResolution.x - 1);
+        float heightmapZ = normalizedZ * (terrainData.HeightmapResolution.y - 1);
+
+        int x0 = (int)math.floor(heightmapX);
+        int z0 = (int)math.floor(heightmapZ);
+        int x1 = math.min(x0 + 1, terrainData.HeightmapResolution.x - 1);
+        int z1 = math.min(z0 + 1, terrainData.HeightmapResolution.y - 1);
+
+        float tx = heightmapX - x0;
+        float tz = heightmapZ - z0;
+
+        float h00 = heightSamples[z0 * terrainData.HeightmapResolution.x + x0].Height;
+        float h10 = heightSamples[z0 * terrainData.HeightmapResolution.x + x1].Height;
+        float h01 = heightSamples[z1 * terrainData.HeightmapResolution.x + x0].Height;
+        float h11 = heightSamples[z1 * terrainData.HeightmapResolution.x + x1].Height;
+
+        float h0 = math.lerp(h00, h10, tx);
+        float h1 = math.lerp(h01, h11, tx);
+        float finalHeight = math.lerp(h0, h1, tz);
+
+        return finalHeight;
+    }
+
+    [BurstCompile]
     private int GetNeighbors(float3 pos, float radius, NativeArray<OptimizedSpatialHashSystem.BoidData> buffer)
     {
         float cellSize = 5f;
-        int3 center = SpatialHashUtils.GetSpatialHash(pos, cellSize);
+
+        // Inline the spatial hash calculation to avoid Burst errors
+        int3 center = new int3(
+            (int)math.floor(pos.x / cellSize),
+            (int)math.floor(pos.y / cellSize),
+            (int)math.floor(pos.z / cellSize)
+        );
+
         float radiusSq = radius * radius;
         int count = 0;
 

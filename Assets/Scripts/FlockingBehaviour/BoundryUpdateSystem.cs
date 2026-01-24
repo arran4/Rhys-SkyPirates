@@ -5,7 +5,7 @@ using Unity.Mathematics;
 using UnityEngine;
 
 [UpdateInGroup(typeof(SimulationSystemGroup))]
-[UpdateBefore(typeof(OptimizedFlockingBehaviorSystem))]
+[UpdateBefore(typeof(FlockingBehaviorSystem))]
 public partial struct BoundaryUpdateSystem : ISystem
 {
     private double _lastLogTime;
