@@ -7,72 +7,59 @@ public class Pathfinding
 
     public List<Vector3Int> FindPath(Tile startTile, Tile endTile, Tile[] allTiles)
     {
-        Dictionary<Tile, int> tileIndexMap = BuildTileIndexMap(allTiles);
-        List<PathNode> pathNodes = BuildPathNodes(allTiles, endTile, tileIndexMap);
-        List<int> pathIndices = new List<int>();
+        // Optimization: Use HashSet for O(1) lookup of valid tiles.
+        // This avoids creating PathNodes for the entire map upfront.
+        HashSet<Tile> validTiles = new HashSet<Tile>(allTiles);
 
-        if (FindPathInternal(startTile, endTile, pathNodes, pathIndices, tileIndexMap))
+        if (!validTiles.Contains(startTile) || !validTiles.Contains(endTile))
         {
-            return ConvertIndicesToPositions(pathIndices, allTiles);
+            return new List<Vector3Int>();
         }
 
-        return new List<Vector3Int>();
-    }
+        // Dictionary to store path nodes that we have visited or are considering (Lazy initialization)
+        Dictionary<Tile, PathNode> nodes = new Dictionary<Tile, PathNode>();
 
-    private Dictionary<Tile, int> BuildTileIndexMap(Tile[] allTiles)
-    {
-        Dictionary<Tile, int> tileIndexMap = new Dictionary<Tile, int>();
-        for (int i = 0; i < allTiles.Length; i++)
+        PathNode GetPathNode(Tile tile)
         {
-            tileIndexMap[allTiles[i]] = i;
-        }
-        return tileIndexMap;
-    }
-
-    private List<PathNode> BuildPathNodes(Tile[] allTiles, Tile endTile, Dictionary<Tile, int> tileIndexMap)
-    {
-        List<PathNode> pathNodes = new List<PathNode>(allTiles.Length);
-        foreach (Tile tile in allTiles)
-        {
-            pathNodes.Add(new PathNode
+            if (!nodes.TryGetValue(tile, out PathNode node))
             {
-                Tile = tile,
-                GCost = int.MaxValue,
-                HCost = CalculateHexDistance(tile, endTile),
-                IsWalkable = tile.Data.MovementCost > 0,
-                CameFrom = null
-            });
+                node = new PathNode
+                {
+                    Tile = tile,
+                    GCost = int.MaxValue,
+                    HCost = CalculateHexDistance(tile, endTile),
+                    IsWalkable = tile.Data.MovementCost > 0,
+                    CameFrom = null
+                };
+                nodes[tile] = node;
+            }
+            return node;
         }
-        return pathNodes;
-    }
 
-    private bool FindPathInternal(Tile startTile, Tile endTile, List<PathNode> pathNodes, List<int> pathIndices, Dictionary<Tile, int> tileIndexMap)
-    {
-        int startNodeIndex = tileIndexMap[startTile];
-        int endNodeIndex = tileIndexMap[endTile];
-
-        PathNode startNode = pathNodes[startNodeIndex];
+        PathNode startNode = GetPathNode(startTile);
         startNode.GCost = 0;
 
-        List<PathNode> openList = new List<PathNode> { startNode };
+        MinHeap<PathNode> openList = new MinHeap<PathNode>(allTiles.Length);
+        openList.Add(startNode);
+
         HashSet<PathNode> closedList = new HashSet<PathNode>();
 
         while (openList.Count > 0)
         {
-            PathNode currentNode = GetLowestCostFNode(openList);
+            PathNode currentNode = openList.RemoveFirst();
+
             if (currentNode.Tile == endTile)
             {
-                break;
+                return CalculatePath(startNode, currentNode);
             }
 
-            openList.Remove(currentNode);
             closedList.Add(currentNode);
 
             foreach (Tile neighbor in currentNode.Tile.Neighbours)
             {
-                if (neighbor == null || !tileIndexMap.ContainsKey(neighbor)) continue;
+                if (neighbor == null || !validTiles.Contains(neighbor)) continue;
 
-                PathNode neighborNode = pathNodes[tileIndexMap[neighbor]];
+                PathNode neighborNode = GetPathNode(neighbor);
                 if (closedList.Contains(neighborNode) || !neighborNode.IsWalkable) continue;
 
                 int tentativeGCost = currentNode.GCost + MOVE_COST;
@@ -80,33 +67,34 @@ public class Pathfinding
                 {
                     neighborNode.CameFrom = currentNode;
                     neighborNode.GCost = tentativeGCost;
+
                     if (!openList.Contains(neighborNode))
                     {
                         openList.Add(neighborNode);
+                    }
+                    else
+                    {
+                        openList.UpdateItem(neighborNode);
                     }
                 }
             }
         }
 
-        PathNode endNode = pathNodes[endNodeIndex];
-        if (endNode.CameFrom != null || endNode == startNode)
-        {
-            CalculatePathIndices(startNode, endNode, pathIndices, tileIndexMap);
-            pathIndices.Reverse(); // Reverse the path to start from the start node
-            return true;
-        }
-        return false;
+        return new List<Vector3Int>();
     }
 
-    private void CalculatePathIndices(PathNode startNode, PathNode endNode, List<int> pathIndices, Dictionary<Tile, int> tileIndexMap)
+    private List<Vector3Int> CalculatePath(PathNode startNode, PathNode endNode)
     {
+        List<Vector3Int> path = new List<Vector3Int>();
         PathNode currentNode = endNode;
         while (currentNode != startNode)
         {
-            pathIndices.Add(tileIndexMap[currentNode.Tile]);
+            path.Add(new Vector3Int(currentNode.Tile.QAxis, currentNode.Tile.RAxis, currentNode.Tile.SAxis));
             currentNode = currentNode.CameFrom;
         }
-        pathIndices.Add(tileIndexMap[startNode.Tile]); // Add the start node to the path
+        path.Add(new Vector3Int(startNode.Tile.QAxis, startNode.Tile.RAxis, startNode.Tile.SAxis));
+        path.Reverse();
+        return path;
     }
 
     private int CalculateHexDistance(Tile a, Tile b)
@@ -114,31 +102,7 @@ public class Pathfinding
         return (Mathf.Abs(a.QAxis - b.QAxis) + Mathf.Abs(a.RAxis - b.RAxis) + Mathf.Abs(a.SAxis - b.SAxis)) / 2;
     }
 
-    private PathNode GetLowestCostFNode(List<PathNode> openList)
-    {
-        PathNode lowestCostNode = openList[0];
-        foreach (var node in openList)
-        {
-            if (node.FCost < lowestCostNode.FCost)
-            {
-                lowestCostNode = node;
-            }
-        }
-        return lowestCostNode;
-    }
-
-    private List<Vector3Int> ConvertIndicesToPositions(List<int> pathIndices, Tile[] allTiles)
-    {
-        List<Vector3Int> finalPath = new List<Vector3Int>(pathIndices.Count);
-        foreach (int index in pathIndices)
-        {
-            Tile tile = allTiles[index];
-            finalPath.Add(new Vector3Int(tile.QAxis, tile.RAxis, tile.SAxis));
-        }
-        return finalPath;
-    }
-
-    private class PathNode
+    private class PathNode : IHeapItem<PathNode>
     {
         public Tile Tile;
         public int GCost;
@@ -146,8 +110,130 @@ public class Pathfinding
         public int FCost => GCost + HCost;
         public bool IsWalkable;
         public PathNode CameFrom;
+        public int HeapIndex { get; set; }
+
+        public int CompareTo(PathNode other)
+        {
+            int compare = FCost.CompareTo(other.FCost);
+            if (compare == 0)
+            {
+                compare = HCost.CompareTo(other.HCost);
+            }
+            return compare;
+        }
+    }
+
+    private interface IHeapItem<T> : System.IComparable<T>
+    {
+        int HeapIndex { get; set; }
+    }
+
+    private class MinHeap<T> where T : IHeapItem<T>
+    {
+        T[] items;
+        int currentItemCount;
+
+        public MinHeap(int maxHeapSize)
+        {
+            items = new T[maxHeapSize];
+        }
+
+        public void Add(T item)
+        {
+            item.HeapIndex = currentItemCount;
+            items[currentItemCount] = item;
+            SortUp(item);
+            currentItemCount++;
+        }
+
+        public T RemoveFirst()
+        {
+            T firstItem = items[0];
+            currentItemCount--;
+            items[0] = items[currentItemCount];
+            items[0].HeapIndex = 0;
+            SortDown(items[0]);
+            return firstItem;
+        }
+
+        public void UpdateItem(T item)
+        {
+            SortUp(item);
+        }
+
+        public int Count => currentItemCount;
+
+        public bool Contains(T item)
+        {
+            return item.HeapIndex < currentItemCount && Equals(items[item.HeapIndex], item);
+        }
+
+        void SortDown(T item)
+        {
+            while (true)
+            {
+                int childIndexLeft = item.HeapIndex * 2 + 1;
+                int childIndexRight = item.HeapIndex * 2 + 2;
+                int swapIndex = 0;
+
+                if (childIndexLeft < currentItemCount)
+                {
+                    swapIndex = childIndexLeft;
+
+                    if (childIndexRight < currentItemCount)
+                    {
+                        if (items[childIndexLeft].CompareTo(items[childIndexRight]) > 0)
+                        {
+                            swapIndex = childIndexRight;
+                        }
+                    }
+
+                    if (item.CompareTo(items[swapIndex]) > 0)
+                    {
+                        Swap(item, items[swapIndex]);
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+                else
+                {
+                    return;
+                }
+            }
+        }
+
+        void SortUp(T item)
+        {
+            int parentIndex = (item.HeapIndex - 1) / 2;
+            while (true)
+            {
+                T parentItem = items[parentIndex];
+                if (item.CompareTo(parentItem) < 0)
+                {
+                    Swap(item, parentItem);
+                }
+                else
+                {
+                    break;
+                }
+
+                parentIndex = (item.HeapIndex - 1) / 2;
+            }
+        }
+
+        void Swap(T itemA, T itemB)
+        {
+            items[itemA.HeapIndex] = itemB;
+            items[itemB.HeapIndex] = itemA;
+            int itemAIndex = itemA.HeapIndex;
+            itemA.HeapIndex = itemB.HeapIndex;
+            itemB.HeapIndex = itemAIndex;
+        }
     }
 }
+
 public struct PathfinderSelections
 {
     public List<List<Vector3Int>> Paths; // List of paths, where each path is a list of Vector3Ints
