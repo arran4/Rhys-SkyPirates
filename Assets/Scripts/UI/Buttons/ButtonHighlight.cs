@@ -5,9 +5,14 @@ using UnityEngine.UI;
 /// <summary>
 /// Handles button hover and selection events to display item information
 /// </summary>
-public class ButtonHighlight : Button, IPointerEnterHandler, ISelectHandler 
+public class ButtonHighlight : Button, IPointerEnterHandler, ISelectHandler, IDeselectHandler
 {
     public override void OnPointerExit(PointerEventData eventData)
+    {
+        EventManager.TriggerInfoReset();
+    }
+
+    public void OnDeselect(BaseEventData eventData)
     {
         EventManager.TriggerInfoReset();
     }
