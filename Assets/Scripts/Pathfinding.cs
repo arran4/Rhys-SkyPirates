@@ -5,13 +5,28 @@ public class Pathfinding
 {
     private const int MOVE_COST = 10;
 
-    public List<Vector3Int> FindPath(Tile startTile, Tile endTile, Tile[] allTiles)
+    // Optimization: Cache graph data to avoid O(N) allocations on every FindPath call.
+    // We assume that if the 'allTiles' list reference is the same, the graph structure hasn't changed.
+    private List<Tile> _lastTiles;
+    private Dictionary<Tile, int> _tileIndexMap;
+    private List<PathNode> _pathNodes;
+
+    public List<Vector3Int> FindPath(Tile startTile, Tile endTile, List<Tile> allTiles)
     {
-        Dictionary<Tile, int> tileIndexMap = BuildTileIndexMap(allTiles);
-        List<PathNode> pathNodes = BuildPathNodes(allTiles, endTile, tileIndexMap);
+        if (allTiles != _lastTiles)
+        {
+            _tileIndexMap = BuildTileIndexMap(allTiles);
+            _pathNodes = BuildPathNodes(allTiles, endTile);
+            _lastTiles = allTiles;
+        }
+        else
+        {
+            ResetNodes(endTile);
+        }
+
         List<int> pathIndices = new List<int>();
 
-        if (FindPathInternal(startTile, endTile, pathNodes, pathIndices, tileIndexMap))
+        if (FindPathInternal(startTile, endTile, _pathNodes, pathIndices, _tileIndexMap))
         {
             return ConvertIndicesToPositions(pathIndices, allTiles);
         }
@@ -19,19 +34,19 @@ public class Pathfinding
         return new List<Vector3Int>();
     }
 
-    private Dictionary<Tile, int> BuildTileIndexMap(Tile[] allTiles)
+    private Dictionary<Tile, int> BuildTileIndexMap(List<Tile> allTiles)
     {
         Dictionary<Tile, int> tileIndexMap = new Dictionary<Tile, int>();
-        for (int i = 0; i < allTiles.Length; i++)
+        for (int i = 0; i < allTiles.Count; i++)
         {
             tileIndexMap[allTiles[i]] = i;
         }
         return tileIndexMap;
     }
 
-    private List<PathNode> BuildPathNodes(Tile[] allTiles, Tile endTile, Dictionary<Tile, int> tileIndexMap)
+    private List<PathNode> BuildPathNodes(List<Tile> allTiles, Tile endTile)
     {
-        List<PathNode> pathNodes = new List<PathNode>(allTiles.Length);
+        List<PathNode> pathNodes = new List<PathNode>(allTiles.Count);
         foreach (Tile tile in allTiles)
         {
             pathNodes.Add(new PathNode
@@ -44,6 +59,16 @@ public class Pathfinding
             });
         }
         return pathNodes;
+    }
+
+    private void ResetNodes(Tile endTile)
+    {
+        foreach (var node in _pathNodes)
+        {
+            node.GCost = int.MaxValue;
+            node.HCost = CalculateHexDistance(node.Tile, endTile);
+            node.CameFrom = null;
+        }
     }
 
     private bool FindPathInternal(Tile startTile, Tile endTile, List<PathNode> pathNodes, List<int> pathIndices, Dictionary<Tile, int> tileIndexMap)
@@ -127,7 +152,7 @@ public class Pathfinding
         return lowestCostNode;
     }
 
-    private List<Vector3Int> ConvertIndicesToPositions(List<int> pathIndices, Tile[] allTiles)
+    private List<Vector3Int> ConvertIndicesToPositions(List<int> pathIndices, List<Tile> allTiles)
     {
         List<Vector3Int> finalPath = new List<Vector3Int>(pathIndices.Count);
         foreach (int index in pathIndices)

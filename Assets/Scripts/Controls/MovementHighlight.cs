@@ -50,7 +50,6 @@ public class MovementHighlight : MonoBehaviour, IHighlightResponce
 
     private void UpdatePath()
     {
-        Tile[] areaArray = Area.ToArray();
         List<Vector3Int> path = new List<Vector3Int>();
         List<Tile> route = ((MoveSelect)HexSelectManager.Instance.Responce).Selections;
         if (PathfinderSelections.NumSelections > 0)
@@ -62,14 +61,13 @@ public class MovementHighlight : MonoBehaviour, IHighlightResponce
                 }
         }
 
-        CurrentPath = pathfinder.FindPath(route[route.Count - 1], highlightTile, areaArray);
+        CurrentPath = pathfinder.FindPath(route[route.Count - 1], highlightTile, Area);
         path.AddRange(CurrentPath);
         EventManager.TriggerMovementChange(path);
     }
 
     public PathfinderSelections UpdateSelection()
     {
-        Tile[] areaArray = Area.ToArray();
         PathfinderSelections.AddPath(CurrentPath);
         return PathfinderSelections;
     }
