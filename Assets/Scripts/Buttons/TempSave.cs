@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
 
 public class TempSave : MonoBehaviour
 {
@@ -10,9 +11,13 @@ public class TempSave : MonoBehaviour
 
     public void Press()
     {
-        if (input.text != null || input.text != "" || input.text != " ")
+        if (!string.IsNullOrWhiteSpace(input.text))
         {
-            SaveLoadManager.SaveLoadInstance.SaveMapToJson(ToSave, Application.persistentDataPath + "/" + input.text.ToString() + ".json");
+            // SECURITY: Sanitize user input to prevent path traversal
+            string safeName = PathSanitizer.SanitizeFileName(input.text);
+            string fullPath = Path.Combine(Application.persistentDataPath, safeName + ".json");
+
+            SaveLoadManager.SaveLoadInstance.SaveMapToJson(ToSave, fullPath);
         }
     }
 }
