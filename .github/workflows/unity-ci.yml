@@ -41,10 +41,11 @@ jobs:
       id: unity-activate
       uses: game-ci/unity-activate@v2
       with:
-        unityVersion: 2020.3.14f1
+        unityVersion: 2022.3.62f1
         unitySerial: ${{ secrets.UNITY_SERIAL }}
         unityEmail: ${{ secrets.UNITY_EMAIL }}
         unityPassword: ${{ secrets.UNITY_PASSWORD }}
+        unityLicense: ${{ secrets.UNITY_LICENSE }}
 
     # 3) Build the project. This step compiles all scripts and creates
     #    a standalone player build. If the compilation fails, the job
@@ -53,7 +54,7 @@ jobs:
     - name: Build project
       uses: game-ci/unity-builder@v2
       with:
-        unityVersion: 2020.3.14f1
+        unityVersion: 2022.3.62f1
         targetPlatform: StandaloneLinux64
         buildPath: build
 
@@ -64,7 +65,7 @@ jobs:
     - name: Run tests
       uses: game-ci/unity-test-runner@v2
       with:
-        unityVersion: 2020.3.14f1
+        unityVersion: 2022.3.62f1
         testMode: playmode
         artifactsPath: test-results
 
@@ -74,5 +75,5 @@ jobs:
       if: always()
       uses: game-ci/unity-return-license@v2
       with:
-        unityVersion: 2020.3.14f1
+        unityVersion: 2022.3.62f1
         unitySerial: ${{ secrets.UNITY_SERIAL }}
