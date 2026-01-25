@@ -43,6 +43,13 @@ public class TurnManager : MonoBehaviour
         {
             if (a.TurnCounter >= TurnTime)
             {
+                if (a.Owner != null && a.Owner.IsInRescueMode)
+                {
+                    a.Owner.DecrementRescueTimer();
+                    a.TurnCounter = 0;
+                    continue;
+                }
+
                 a.TurnCounter = 0;
                 currentTurn = a;
                 return a.Owner;
