@@ -30,6 +30,7 @@ public class AbilitySelectState : HexSelectState
         manager.Highlight = abilityHighlight;
 
         abilitySelect.ActiveAbility = Active;
+        abilitySelect.SourceTile = selectedTile;
         abilityHighlight.SetActiveAbility(Active);
 
         abilitySelect.Area = GetTargetableTiles(selectedTile, Active);

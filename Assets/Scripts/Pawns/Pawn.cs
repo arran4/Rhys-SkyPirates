@@ -34,5 +34,39 @@ public abstract class Pawn : MonoBehaviour
         Set.Contents = this;
     }
 
+    public bool IsInRescueMode = false;
+    public int RescueTimer = 0;
+
+    public void EnterRescueMode()
+    {
+        IsInRescueMode = true;
+        RescueTimer = 3;
+        Debug.Log(name + " entered Rescue Mode!");
+    }
+
+    public void DecrementRescueTimer()
+    {
+        if (IsInRescueMode)
+        {
+            RescueTimer--;
+            Debug.Log(name + " Rescue Timer: " + RescueTimer);
+            if (RescueTimer <= 0)
+            {
+                Debug.Log(name + " has died due to lack of rescue!");
+                IHealth health = GetComponent<IHealth>();
+                if (health != null)
+                {
+                    health.TakeDamage(health.ReturnHealth(), DamageType.Death);
+                }
+            }
+        }
+    }
+
+    public void RecoverFromRescueMode()
+    {
+        IsInRescueMode = false;
+        RescueTimer = 0;
+        Debug.Log(name + " recovered from Rescue Mode!");
+    }
 
 }
