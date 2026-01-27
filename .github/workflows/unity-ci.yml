@@ -27,6 +27,9 @@ jobs:
     # GitHub provides Linux, Windows and macOS runners.
     # The GameCI actions use Docker so ubuntu-latest works well.
     runs-on: ubuntu-latest
+    env:
+      # UNITY_VERSION: 2022.3.62f1
+      UNITY_VERSION: 2020.3.14f1
     
     steps:
     # 1) Check out the repository so the workflow has the project files.
@@ -41,7 +44,7 @@ jobs:
       id: unity-activate
       uses: game-ci/unity-activate@v2
       with:
-        unityVersion: 2022.3.62f1
+        unityVersion: ${{ env.UNITY_VERSION }}
         unitySerial: ${{ secrets.UNITY_SERIAL }}
         unityEmail: ${{ secrets.UNITY_EMAIL }}
         unityPassword: ${{ secrets.UNITY_PASSWORD }}
@@ -54,7 +57,7 @@ jobs:
     - name: Build project
       uses: game-ci/unity-builder@v2
       with:
-        unityVersion: 2022.3.62f1
+        unityVersion: ${{ env.UNITY_VERSION }}
         targetPlatform: StandaloneLinux64
         buildPath: build
 
@@ -65,7 +68,7 @@ jobs:
     - name: Run tests
       uses: game-ci/unity-test-runner@v2
       with:
-        unityVersion: 2022.3.62f1
+        unityVersion: ${{ env.UNITY_VERSION }}
         testMode: playmode
         artifactsPath: test-results
 
@@ -75,5 +78,5 @@ jobs:
       if: always()
       uses: game-ci/unity-return-license@v2
       with:
-        unityVersion: 2022.3.62f1
+        unityVersion: ${{ env.UNITY_VERSION }}
         unitySerial: ${{ secrets.UNITY_SERIAL }}

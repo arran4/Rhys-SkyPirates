@@ -1,7 +1,7 @@
 
 # Guidelines for Automated Contributions
 
-This repository is a Unity project targeting **Unity 2022.3.62f1**. The project
+This repository is a Unity project targeting **Unity 2020.3.14f1**. The project
 uses [Git LFS](https://git-lfs.github.com/) to track most Unity assets and has
 continuous integration configured through GitHub Actions.
 
@@ -40,13 +40,13 @@ continuous integration configured through GitHub Actions.
 
 # SkyPirates Coding Agent Guide
 
-This repository contains a Unity 2022.3.62f1 project.  The project now includes
+This repository contains a Unity 2020.3.14f1 project.  The project now includes
 unit tests and CI which means even small changes can break the build.  Follow
 these conventions when contributing with an AI coding agent.
 
 ## General Guidelines
 
-* **Unity version**: use Unity **2022.3.62f1**.  The CI workflow assumes this
+* **Unity version**: use Unity **2020.3.14f1**.  The CI workflow assumes this
   version.
 * **.meta files**: Every asset added or moved must include the accompanying
   `.meta` file.  Unity will not recognise assets without them.
