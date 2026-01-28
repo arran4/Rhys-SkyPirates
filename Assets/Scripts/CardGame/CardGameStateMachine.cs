@@ -108,7 +108,6 @@ public class GameStateMachine : MonoBehaviour
                 isPlayerTurn = false;
                 OnTurnChanged?.Invoke(false);
                 EnablePlayerInput(false);
-                // TODO: Trigger AI opponent logic here
                 break;
 
             case GameState.ProcessingCapture:

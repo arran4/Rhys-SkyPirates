@@ -23,19 +23,36 @@ public class SimpleAI : MonoBehaviour
 
         if (gameLayout == null)
             gameLayout = FindObjectOfType<GameLayout>();
+
+        // Subscribe to turn events
+        if (GameStateMachine.Instance != null)
+        {
+            GameStateMachine.Instance.OnTurnChanged += OnTurnChanged;
+
+            // If we're already in opponent turn (e.g. game started before this script ran), trigger immediately
+            if (GameStateMachine.Instance.GetCurrentState() == GameState.OpponentTurn)
+            {
+                OnTurnChanged(false);
+            }
+        }
     }
 
-
-    private void Update()
+    private void OnDestroy()
     {
-        if (GameStateMachine.Instance == null)
-            return;
+        if (GameStateMachine.Instance != null)
+        {
+            GameStateMachine.Instance.OnTurnChanged -= OnTurnChanged;
+        }
+    }
 
-        if (GameStateMachine.Instance.GetCurrentState() != GameState.OpponentTurn)
-            return;
-
-        if (currentMoveCoroutine == null)
-            currentMoveCoroutine = StartCoroutine(MakeMove());
+    private void OnTurnChanged(bool isPlayerTurn)
+    {
+        // If it's NOT player turn (i.e. Opponent Turn), try to make a move
+        if (!isPlayerTurn)
+        {
+            if (currentMoveCoroutine == null)
+                currentMoveCoroutine = StartCoroutine(MakeMove());
+        }
     }
 
     private IEnumerator MakeMove()
