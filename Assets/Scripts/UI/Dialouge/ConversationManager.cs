@@ -306,6 +306,7 @@ public class ConversationManager : MonoBehaviour
     {
         isTyping = true;
         System.Text.StringBuilder displayedText = new System.Text.StringBuilder(text.Length);
+        var wait = new WaitForSeconds(typewriterSpeed);
 
         for (int i = 0; i < text.Length; i++)
         {
@@ -316,7 +317,7 @@ public class ConversationManager : MonoBehaviour
                 dialogueSystem.DisplayDialogue(displayedText.ToString());
             }
 
-            yield return new WaitForSeconds(typewriterSpeed);
+            yield return wait;
         }
 
         isTyping = false;
