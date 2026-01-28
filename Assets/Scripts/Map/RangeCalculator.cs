@@ -44,6 +44,17 @@ public static class RangeCalculator
     public static List<Tile> AreaRing(Board board, Tile center, int radius)
     {
         List<Tile> results = new List<Tile>();
+        AreaRing(board, center, radius, results);
+        return results;
+    }
+
+    /// <summary>
+    /// Calculates all tiles within a hexagonal area ring of <paramref name="radius"/> around <paramref name="center"/>,
+    /// populating the provided list.
+    /// </summary>
+    public static void AreaRing(Board board, Tile center, int radius, List<Tile> results)
+    {
+        results.Clear();
 
         for (int q = -radius; q <= radius; q++)
         {
@@ -59,7 +70,6 @@ public static class RangeCalculator
                 }
             }
         }
-        return results;
     }
 
     /// <summary>
@@ -72,7 +82,18 @@ public static class RangeCalculator
     public static List<Tile> HexRing(Board board, Tile center, int radius)
     {
         List<Tile> results = new List<Tile>();
-        if (center == null || radius <= 0) return results;
+        HexRing(board, center, radius, results);
+        return results;
+    }
+
+    /// <summary>
+    /// Gets all tiles at exactly <paramref name="radius"/> distance from <paramref name="center"/>,
+    /// populating the provided list.
+    /// </summary>
+    public static void HexRing(Board board, Tile center, int radius, List<Tile> results)
+    {
+        results.Clear();
+        if (center == null || radius <= 0) return;
 
         Vector3Int cube = new Vector3Int(center.QAxis, center.RAxis, center.SAxis);
 
@@ -94,8 +115,6 @@ public static class RangeCalculator
                 current += dir;
             }
         }
-
-        return results;
     }
 
 
@@ -109,6 +128,18 @@ public static class RangeCalculator
     /// <returns>List of reachable tiles including the start tile.</returns>
     public static List<Tile> HexReachable(Board board, Tile start, int movement)
     {
+        List<Tile> results = new List<Tile>();
+        HexReachable(board, start, movement, results);
+        return results;
+    }
+
+    /// <summary>
+    /// Finds all tiles reachable from <paramref name="start"/> given movement cost,
+    /// populating the provided list.
+    /// </summary>
+    public static void HexReachable(Board board, Tile start, int movement, List<Tile> results)
+    {
+        results.Clear();
         HashSet<Tile> visited = new HashSet<Tile>();
         Queue<(Tile tile, int cost)> fringes = new Queue<(Tile, int)>();
 
@@ -133,7 +164,7 @@ public static class RangeCalculator
             }
         }
 
-        return new List<Tile>(visited);
+        results.AddRange(visited);
     }
 
     /// <summary>
@@ -147,10 +178,21 @@ public static class RangeCalculator
     public static List<Tile> AreaLine(Board board, Tile origin, Tile target, int range)
     {
         List<Tile> line = new List<Tile>();
-        if (origin == null || target == null || range <= 0) return line;
+        AreaLine(board, origin, target, range, line);
+        return line;
+    }
+
+    /// <summary>
+    /// Creates a line of tiles starting from <paramref name="center"/> towards <paramref name="target"/>,
+    /// populating the provided list.
+    /// </summary>
+    public static void AreaLine(Board board, Tile origin, Tile target, int range, List<Tile> line)
+    {
+        line.Clear();
+        if (origin == null || target == null || range <= 0) return;
 
         Vector3Int direction = board.GetDirectionVector(origin, target);
-        if (direction == Vector3Int.zero) return line;
+        if (direction == Vector3Int.zero) return;
 
         Tile current = origin;
         for (int i = 0; i < range; i++)
@@ -159,8 +201,6 @@ public static class RangeCalculator
             if (current == null) break;
             line.Add(current);
         }
-
-        return line;
     }
 
 
@@ -168,13 +208,20 @@ public static class RangeCalculator
     public static List<Tile> AreaCone(Board board, Tile origin, Tile target, int range, int size)
     {
         List<Tile> result = new List<Tile>();
-        if (origin == null || target == null || range <= 0 || size <= 0) return result;
+        AreaCone(board, origin, target, range, size, result);
+        return result;
+    }
+
+    public static void AreaCone(Board board, Tile origin, Tile target, int range, int size, List<Tile> result)
+    {
+        result.Clear();
+        if (origin == null || target == null || range <= 0 || size <= 0) return;
 
         Vector3Int forward = board.GetDirectionVector(origin, target);
-        if (forward == Vector3Int.zero) return result;
+        if (forward == Vector3Int.zero) return;
 
         int directionIndex = System.Array.IndexOf(HexUtils.CubeDirections, forward);
-        if (directionIndex == -1) return result;
+        if (directionIndex == -1) return;
 
         // Get adjacent directions for spread
         Vector3Int leftDir = HexUtils.CubeDirections[(directionIndex + 5) % 6];
@@ -198,8 +245,6 @@ public static class RangeCalculator
                     result.Add(tile);
             }
         }
-
-        return result;
     }
 
     // Cube offset interpolation between left/right at given spread distance
@@ -232,8 +277,15 @@ public static class RangeCalculator
     public static List<Tile> AreaDiagonal(Board board, Tile center, int range)
     {
         List<Tile> diagonals = new List<Tile>();
+        AreaDiagonal(board, center, range, diagonals);
+        return diagonals;
+    }
 
-        if (center == null || range <= 0) return diagonals;
+    public static void AreaDiagonal(Board board, Tile center, int range, List<Tile> diagonals)
+    {
+        diagonals.Clear();
+
+        if (center == null || range <= 0) return;
 
         // Cube diagonal directions for flat-topped hexes
         Vector3Int[] diagonalDirections = new Vector3Int[]
@@ -266,15 +318,20 @@ public static class RangeCalculator
                 }
             }
         }
-
-        return diagonals;
     }
 
     public static List<Tile> AreaPath(Board board, Tile center, Tile target, int range)
     {
         List<Tile> path = new List<Tile>();
+        AreaPath(board, center, target, range, path);
+        return path;
+    }
 
-        if (center == null || target == null || range <= 0) return path;
+    public static void AreaPath(Board board, Tile center, Tile target, int range, List<Tile> path)
+    {
+        path.Clear();
+
+        if (center == null || target == null || range <= 0) return;
 
         // Use linear interpolation to create a line between center and target
         Vector3 centerCube = new Vector3(center.QAxis, center.RAxis, center.SAxis);
@@ -292,14 +349,19 @@ public static class RangeCalculator
                 path.Add(tile);
             }
         }
-
-        return path;
     }
 
     public static List<Tile> AreaLineFan(Board board, Tile origin, int range)
     {
         List<Tile> result = new List<Tile>();
-        if (origin == null || range <= 0) return result;
+        AreaLineFan(board, origin, range, result);
+        return result;
+    }
+
+    public static void AreaLineFan(Board board, Tile origin, int range, List<Tile> result)
+    {
+        result.Clear();
+        if (origin == null || range <= 0) return;
 
 
         foreach (Vector3Int direction in HexUtils.CubeDirections)
@@ -317,8 +379,6 @@ public static class RangeCalculator
                 else break;
             }
         }
-
-        return result;
     }
 
 
@@ -326,7 +386,14 @@ public static class RangeCalculator
     public static List<Tile> AreaConeFan(Board board, Tile origin, int range, int size)
     {
         List<Tile> result = new List<Tile>();
-        if (origin == null || range <= 0 || size <= 0) return result;
+        AreaConeFan(board, origin, range, size, result);
+        return result;
+    }
+
+    public static void AreaConeFan(Board board, Tile origin, int range, int size, List<Tile> result)
+    {
+        result.Clear();
+        if (origin == null || range <= 0 || size <= 0) return;
 
         foreach (var forward in HexUtils.CubeDirections)
         {
@@ -351,8 +418,6 @@ public static class RangeCalculator
                 }
             }
         }
-
-        return result;
     }
 
 
