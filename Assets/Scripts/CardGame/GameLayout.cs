@@ -37,6 +37,8 @@ public class GameLayout : MonoBehaviour
     private readonly Dictionary<Slate, Visualiser> cardVisuals
     = new Dictionary<Slate, Visualiser>();
 
+    private Visualiser currentSlateVisual;
+
 
     public void Start()
     {
@@ -190,7 +192,7 @@ public class GameLayout : MonoBehaviour
         }
     }
 
-    private void SpawnSlateVisual()
+    public void SpawnSlateVisual()
     {
         Vector2Int slatePos = cardBoard.FindSlate();
         Slate slate = cardBoard.GetCard(slatePos);
@@ -202,6 +204,7 @@ public class GameLayout : MonoBehaviour
         }
 
         Visualiser visual = Instantiate(slateVisualPrefab);
+        currentSlateVisual = visual;
         visual.Setup(slate);
         visual.GetComponent<CardSelect>().enabled = false;
 
@@ -209,6 +212,16 @@ public class GameLayout : MonoBehaviour
 
         RegisterVisual(slate, visual);
         UpdateGridVisuals();
+    }
+
+    public void ClearLayout()
+    {
+        if (currentSlateVisual != null)
+        {
+            Destroy(currentSlateVisual.gameObject);
+            currentSlateVisual = null;
+        }
+        cardVisuals.Clear();
     }
 
     public Visualiser GetVisualForCard(Slate card)

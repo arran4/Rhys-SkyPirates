@@ -27,6 +27,7 @@ public class GameStateMachine : MonoBehaviour
     [SerializeField] private CardBoard cardBoard;
     [SerializeField] private Hand playerHand;
     [SerializeField] private Hand opponentHand;
+    [SerializeField] private GameLayout gameLayout;
 
     [Header("State")]
     [SerializeField] private GameState currentState;
@@ -264,9 +265,19 @@ public class GameStateMachine : MonoBehaviour
 
     public void RestartGame()
     {
-        cardBoard.ResetBoard();
-        // TODO: Reset hands and redeal cards
+        if (gameLayout == null)
+            gameLayout = FindObjectOfType<GameLayout>();
 
+        gameLayout.ClearLayout();
+        cardBoard.ResetBoard();
+        gameLayout.SpawnSlateVisual();
+
+        playerHand.ResetHand();
+        opponentHand.ResetHand();
+
+        hasStarted = false;
+        hasSwapped = false;
+        ChangeState(GameState.GameStart);
     }
     private void FinalizeTurn()
     {

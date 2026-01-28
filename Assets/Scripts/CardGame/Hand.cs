@@ -36,15 +36,37 @@ public class Hand : MonoBehaviour
             gameLayout = FindObjectOfType<GameLayout>();
         }
 
+        InitializeHand();
+    }
+
+    public void InitializeHand()
+    {
         foreach (SOCard a in SOPlayerHand)
         {
             Card card = new Card(a, Player);
             Visualiser view = Instantiate(cardView);
             view.Setup(card);
-            gameLayout.RegisterVisual(card, view);
+            if (gameLayout != null)
+            {
+                gameLayout.RegisterVisual(card, view);
+            }
             PlayerHand.Add(card);
             handVisualisers.Add(view);
         }
+    }
+
+    public void ResetHand()
+    {
+        foreach (var visualiser in handVisualisers)
+        {
+            if (visualiser != null)
+            {
+                Destroy(visualiser.gameObject);
+            }
+        }
+        handVisualisers.Clear();
+        PlayerHand.Clear();
+        InitializeHand();
     }
 
 

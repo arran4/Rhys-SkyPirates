@@ -466,7 +466,11 @@ public class CardBoard : MonoBehaviour
             for (int y = 0; y < GRID_SIZE; y++)
             {
                 board[x, y] = null;
-                visuals[x, y] = null;
+                if (visuals[x, y] != null)
+                {
+                    Destroy(visuals[x, y].gameObject);
+                    visuals[x, y] = null;
+                }
             }
     }
 
