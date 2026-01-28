@@ -13,9 +13,11 @@ public class SimpleAI : MonoBehaviour
     [SerializeField] private float thinkingDelay = 1f; // Delay before AI makes a move
 
     private Coroutine currentMoveCoroutine;
+    private WaitForSeconds _thinkingWait;
 
     private void Start()
     {
+        _thinkingWait = new WaitForSeconds(thinkingDelay);
 
         // Find references if not set
         if (cardBoard == null)
@@ -51,7 +53,7 @@ public class SimpleAI : MonoBehaviour
         }
 
         // Wait a bit so it doesn't feel instant
-        yield return new WaitForSeconds(thinkingDelay);
+        yield return _thinkingWait;
 
         // Check AGAIN after the delay - state might have changed
         if (GameStateMachine.Instance.GetCurrentState() != GameState.OpponentTurn)
