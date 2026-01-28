@@ -140,7 +140,7 @@ public class HexRenderer : MonoBehaviour
 
     public Material currentMat()
     {
-        return H_Meshrenderer.material;
+        return H_Meshrenderer.sharedMaterial;
     }
 
     //Creates a mesh to be used as the colider mesh, which is the same as the drawn mesh but with a flat hex on top.
