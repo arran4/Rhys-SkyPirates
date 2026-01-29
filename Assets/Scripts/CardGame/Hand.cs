@@ -36,6 +36,11 @@ public class Hand : MonoBehaviour
             gameLayout = FindObjectOfType<GameLayout>();
         }
 
+        InitializeHand();
+    }
+
+    public void InitializeHand()
+    {
         foreach (SOCard a in SOPlayerHand)
         {
             Card card = new Card(a, Player);
@@ -45,6 +50,13 @@ public class Hand : MonoBehaviour
             PlayerHand.Add(card);
             handVisualisers.Add(view);
         }
+    }
+
+    public void ResetHand()
+    {
+        PlayerHand.Clear();
+        handVisualisers.Clear();
+        InitializeHand();
     }
 
 

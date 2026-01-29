@@ -190,7 +190,7 @@ public class GameLayout : MonoBehaviour
         }
     }
 
-    private void SpawnSlateVisual()
+    public void SpawnSlateVisual()
     {
         Vector2Int slatePos = cardBoard.FindSlate();
         Slate slate = cardBoard.GetCard(slatePos);
@@ -229,5 +229,21 @@ public class GameLayout : MonoBehaviour
 
             visual.transform.SetParent(transform);
         }
+    }
+
+    public void ClearAllVisuals()
+    {
+        foreach (var visual in cardVisuals.Values)
+        {
+            if (visual != null)
+                Destroy(visual.gameObject);
+        }
+        cardVisuals.Clear();
+    }
+
+    public void ResetLayout()
+    {
+        ClearAllVisuals();
+        SpawnSlateVisual();
     }
 }

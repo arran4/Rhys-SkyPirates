@@ -27,6 +27,7 @@ public class GameStateMachine : MonoBehaviour
     [SerializeField] private CardBoard cardBoard;
     [SerializeField] private Hand playerHand;
     [SerializeField] private Hand opponentHand;
+    [SerializeField] private GameLayout gameLayout;
 
     [Header("State")]
     [SerializeField] private GameState currentState;
@@ -53,6 +54,11 @@ public class GameStateMachine : MonoBehaviour
 
     private void Start()
     {
+        if (gameLayout == null)
+        {
+            gameLayout = FindObjectOfType<GameLayout>();
+        }
+
         // Subscribe to card placement events
         if (cardBoard != null)
         {
@@ -264,9 +270,34 @@ public class GameStateMachine : MonoBehaviour
 
     public void RestartGame()
     {
+        // Reset board logic (clears data)
         cardBoard.ResetBoard();
-        // TODO: Reset hands and redeal cards
 
+        // Reset visuals and spawn new slate visual
+        // Note: ResetBoard must be called before ResetLayout because SpawnSlateVisual needs the new slate
+        if (gameLayout != null)
+        {
+            gameLayout.ResetLayout();
+        }
+
+        // Reset hands (creates new cards and visuals)
+        if (playerHand != null) playerHand.ResetHand();
+        if (opponentHand != null) opponentHand.ResetHand();
+
+        // Position the new hands
+        if (gameLayout != null)
+        {
+            gameLayout.PositionHands();
+        }
+
+        // Reset state
+        hasStarted = false;
+        hasSwapped = false;
+        isPlayerTurn = false; // Will be set in StartGame
+        IsResolvingDraw = false;
+
+        // Restart flow
+        ChangeState(GameState.GameStart);
     }
     private void FinalizeTurn()
     {
