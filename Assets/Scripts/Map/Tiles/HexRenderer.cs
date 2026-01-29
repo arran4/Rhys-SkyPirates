@@ -40,7 +40,7 @@ public class HexRenderer : MonoBehaviour
         H_Mesh.name = "Hex";
 
         H_Meshfilter.mesh = H_Mesh;
-        H_Meshrenderer.material = H_Mat;
+        H_Meshrenderer.sharedMaterial = H_Mat;
 
     }
 
@@ -135,12 +135,12 @@ public class HexRenderer : MonoBehaviour
     //Changes the mesh of the renderer.
     public void meshupdate(Material Mat)
     {
-        H_Meshrenderer.material = Mat;
+        H_Meshrenderer.sharedMaterial = Mat;
     }
 
     public Material currentMat()
     {
-        return H_Meshrenderer.material;
+        return H_Meshrenderer.sharedMaterial;
     }
 
     //Creates a mesh to be used as the colider mesh, which is the same as the drawn mesh but with a flat hex on top.
