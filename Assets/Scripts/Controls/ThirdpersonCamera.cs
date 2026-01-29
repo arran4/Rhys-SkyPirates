@@ -225,8 +225,11 @@ public class ThirdPersonCameraController : MonoBehaviour
 
         if (validTargets.Count == 0) return;
 
+        // Cache the main camera to avoid repeated lookups
+        Camera mainCam = Camera.main;
+
         // Get current target's screen position
-        Vector3 currentScreenPos = Camera.main.WorldToScreenPoint(currentZTarget.position);
+        Vector3 currentScreenPos = mainCam.WorldToScreenPoint(currentZTarget.position);
 
         // Find targets to the left or right based on screen position
         Transform newTarget = null;
@@ -234,7 +237,7 @@ public class ThirdPersonCameraController : MonoBehaviour
 
         foreach (Transform t in validTargets)
         {
-            Vector3 screenPos = Camera.main.WorldToScreenPoint(t.position);
+            Vector3 screenPos = mainCam.WorldToScreenPoint(t.position);
             float horizontalDiff = screenPos.x - currentScreenPos.x;
 
             // Check if target is in the correct direction
