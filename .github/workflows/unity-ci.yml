@@ -44,6 +44,9 @@ jobs:
       uses: game-ci/unity-builder@v2
       env:
         UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+        UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
       with:
         unityVersion: ${{ env.UNITY_VERSION }}
         targetPlatform: StandaloneLinux64
@@ -58,6 +61,9 @@ jobs:
       uses: game-ci/unity-test-runner@v2
       env:
         UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+        UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
       with:
         unityVersion: ${{ env.UNITY_VERSION }}
         testMode: playmode
