@@ -48,6 +48,7 @@ jobs:
         unityVersion: ${{ env.UNITY_VERSION }}
         targetPlatform: StandaloneLinux64
         buildPath: build
+        allowDirtyBuild: true
 
     # 3) Run play mode tests defined under Assets/Tests.
     #    The Test Runner runs inside the editor and produces results
