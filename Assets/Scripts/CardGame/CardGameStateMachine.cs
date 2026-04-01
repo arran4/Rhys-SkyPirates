@@ -223,9 +223,6 @@ public class GameStateMachine : MonoBehaviour
 
         OnGameEnd?.Invoke(playerWon);
         ChangeState(GameState.GameOver);
-
-        // TODO: Show win/loss UI
-        // TODO: Offer rematch option
     }
 
     // ========================================================================
@@ -264,9 +261,14 @@ public class GameStateMachine : MonoBehaviour
 
     public void RestartGame()
     {
-        cardBoard.ResetBoard();
-        // TODO: Reset hands and redeal cards
+        Debug.Log("Restarting game...");
 
+        cardBoard.RedistributeCards(playerHand, opponentHand);
+        cardBoard.ResetBoard();
+
+        hasStarted = false;
+        hasSwapped = false;
+        ChangeState(GameState.GameStart);
     }
     private void FinalizeTurn()
     {
